@@ -37,6 +37,7 @@ export class Biliallsign extends plugin {
                 EX: 100
             });
             if (this.e) this.e.reply("开始执行哔站全部签到任务，请稍等....");
+            await Bili.Bilicheck()
             const [lists, botlists] = await Promise.all([
                 Bili.getuserlists(),
                 Bili.getQQlist()

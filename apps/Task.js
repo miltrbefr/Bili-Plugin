@@ -61,12 +61,12 @@ export class Bilitask extends plugin {
         for (const g of rawfestivalgroup) {
             groups.push(Number(g))
         }
+        await Bili.Bilicheck()
         const message = await Bili.getfestival()
         for (const g of groups) {
             await Bot.pickGroup(g).sendMsg(message)
             await Bili.sleep(2500)
         }
-
     }
     
     async update(e = this.e) {
@@ -85,6 +85,7 @@ export class Bilitask extends plugin {
             return
         }
         const isluckywordBots = [];
+        await Bili.Bilicheck()
         for (const bot of rawIsluckywordBots) {
             isluckywordBots.push(Number(bot.trim()));
         }

@@ -131,8 +131,8 @@ class Bili {
 
     async getfestival(num = 5) {
         const yunshiUrl = `${this.signApi}/jieri?num=${num}`;
-        let message = [];
-        message.push(`每日节日准时提醒！`);
+        let message = ["每日节日准时提醒！"];
+        
         try {
             const response = await fetch(yunshiUrl);
             if (!response.ok) {
@@ -143,14 +143,29 @@ class Bili {
             if (data.code === "0") {
                 message.push(`\r距离周末剩余：${data.weekend.daysToWeekend}天`);
                 data.festivals.forEach(festival => {
-                    message.push(`\r距离『${festival.name}』剩余${festival.days}天${festival.hours}小时${festival.minutes}分钟${festival.seconds}秒！`);
+                    const timeParts = [];
+                    if (festival.days > 0) {
+                        timeParts.push(`${festival.days}天`);
+                    }
+                    if (festival.hours > 0) {
+                        timeParts.push(`${festival.hours}小时`);
+                    }
+                    if (festival.minutes > 0) {
+                        timeParts.push(`${festival.minutes}分钟`);
+                    }
+                    if (festival.seconds > 0) {
+                        timeParts.push(`${festival.seconds}秒`);
+                    }
+                 //   const seconds = festival.seconds ?? 0;
+                 //   timeParts.push(`${seconds}秒`);
+                    message.push(`\r距离『${festival.name}』剩余${timeParts.join('')}！`);
                 });
             } else {
-                message.push("无法获取节日信息");
+                message.push("获取节日信息失败");
             }
         } catch (error) {
             logger.error('[Bili-Plugin]获取节日信息请求出错', error);
-            message.push("获取节日信息");
+            message.push("获取节日信息失败");
         }
         return message;
     }
