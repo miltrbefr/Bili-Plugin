@@ -4,6 +4,7 @@ import config from '../model/Config.js';
 import configModule from "../../../lib/config/config.js"
 import YAML from 'yaml';
 import fs from 'fs';
+import path from 'path';
 import lodash from 'lodash';
 import {
     pluginName,
@@ -126,6 +127,50 @@ class Bili {
             }
         }
         return null
+    }
+
+    async getfestival(num = 5) {
+        const yunshiUrl = `${this.signApi}/jieri?num=${num}`;
+        let message = [];
+        message.push(`每日节日准时提醒！\n`);
+        try {
+            const response = await fetch(yunshiUrl);
+            if (!response.ok) {
+                throw new Error(`[Bili-Plugin]获取节日信息请求出错: ${response.status}`);
+            }
+            const data = await response.json();
+    
+            if (data.code === "0") {
+                message.push(`距离周末剩余：${data.weekend.daysToWeekend}天\n`);
+                data.festivals.forEach(festival => {
+                    message.push(`距离『${festival.name}』剩余${festival.days}天${festival.hours}小时${festival.minutes}分钟${festival.seconds}秒！\n`);
+                });
+            } else {
+                message.push("无法获取节日信息");
+            }
+        } catch (error) {
+            logger.error('[Bili-Plugin]获取节日信息请求出错', error);
+            message.push("获取节日信息");
+        }
+        return message;
+    }
+    
+    async getyunshi(uin) {
+        const yunshiUrl = `${this.signApi}/yunshi?uin=${uin}`;
+        const response = await fetch(yunshiUrl);
+        const data = await response.json()
+        if(data.code === 0) {
+          let message = [
+            `运势：${data.msg.fortuneSummary}`,
+            '\r星级:' + data.msg.luckyStar,
+            '\r点评:' + data.msg.signText,
+            '\r解读:' + data.msg.unsignText
+          ];
+          
+          return message;
+        } else {
+          return ['获取运势信息失败。']
+        }
     }
 
     async getvideoinfo(url,cookies = config.SESSDATA) {
@@ -772,6 +817,19 @@ class Bili {
 
 
     async getFeed(userCookies) {
+        const tempDir = './temp/bilivideo';
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+        }
+
+        const userId = userCookies.DedeUserID;
+        const recordPath = path.join(tempDir, `${userId}.json`);
+        let usageRecord = {};
+        try {
+            const data = fs.readFileSync(recordPath, 'utf8');
+            usageRecord = JSON.parse(data);
+        } catch (err) {}
+
         let videoData = [];
         while (videoData.length < 5) {
             const feedUrl = `${this.signApi}/feed2?accesskey=${userCookies.access_token}&key=${this.key}`;
@@ -779,23 +837,35 @@ class Bili {
                 const response = await fetch(feedUrl);
                 const json = await response.json();
                 if (json.code !== 0) {
-                    logger.error(`[Bili-Plugin]未知错误`);
+                    logger.error(`[Bili-Plugin]获取推荐视频未知错误`);
                     break;
                 }
+
                 const items = json.data.items;
                 for (const item of items) {
-                    if (item.player_args && item.player_args.type === 'av' && videoData.length < 5) {
+                    if (videoData.length >= 5) break;
+                    
+                    if (item.player_args?.type === 'av') {
+                        const aid = item.player_args.aid;
+                        // 检查次数
+                        if ((usageRecord[aid] || 0) >= 2) continue;
+                        // 添加视频数据
                         videoData.push({
                             short_link: item.short_link,
-                            aid: item.player_args.aid,
+                            aid: aid,
                             cid: item.player_args.cid
                         });
+                        // 更新使用记录
+                        usageRecord[aid] = (usageRecord[aid] || 0) + 1;
                     }
                 }
+                fs.writeFileSync(recordPath, JSON.stringify(usageRecord));
+
+                if (videoData.length >= 5) break;
             } catch (err) {
                 logger.error("[Bili-Plugin]获取视频数据失败:", err);
             }
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await this.sleep(2500)
         }
         return videoData;
     }

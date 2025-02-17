@@ -19,9 +19,38 @@ export class BiliAccount extends plugin {
             },{
                 reg: /^#?校验(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?插件(可用性)?$/,
                 fnc: "BiliPlugin"
+            },{
+                reg: /^#?(我的|他的|她的)?今日运势$/,
+                fnc: "yunshi"
+            },{
+                reg: /^#?节(假)?日查询$/,
+                fnc: "festival"
             }]
         });
     }
+
+    async festival(e) {
+        const message = await Bili.getfestival()
+        await this.e.reply(message,true)
+    }
+
+    async yunshi(e) {
+        let userID = String(e.user_id)
+        let selfID = String(e.self_id)
+        let qqNumbers = []
+        for (let msg of e.message) {
+            if (msg.type === 'at') {
+              qqNumbers.push(msg.qq);
+            }
+          }
+          if(qqNumbers.length > 0){
+            userID = String(qqNumbers[0])
+          }
+        if(userID === selfID)userID =e.user_id
+        let message = await Bili.getyunshi(userID)
+        await this.e.reply(message)
+    }
+
     async BiliPlugin(e) {
         if (!e.isMaster) return
         const r = await e.reply("开始为您校验插件并获取统计信息....",true)

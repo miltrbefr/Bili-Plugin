@@ -106,7 +106,7 @@ export class Bilijx extends plugin {
             `视频时长：${data.length}\n`,
             `发布时间：${data.time}\n`,
             `${data.online.total}｜${data.online.count}\n`,
-            `视频大小：${videoSizeMB.toFixed(2)}MB\n`
+            `视频大小：${videoSizeMB.toFixed(2)}MB`
         ];
 
         const nodes = [{
@@ -117,7 +117,7 @@ export class Bilijx extends plugin {
         if (isOversize) {
             nodes.push({
                 ...ANONYMOUS_USER,
-                message: `\n视频过大请使用浏览器查看（有效时间 120 分钟）：\n${data.videoUrl}`
+                message: `视频过大请使用浏览器查看（有效时间 120 分钟）：\n${data.videoUrl}`
             });
         }
 

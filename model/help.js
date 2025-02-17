@@ -105,7 +105,19 @@ export const helpList = [{
         icon: 6,
         title: '(点赞/取消点赞/评论/收藏/取消收藏/点踩)视频',
         desc: '引用别人或自己或机器人的B站视频进行快捷操作'
-    },
+    },{
+        icon: 8,
+        title: '今日运势',
+        desc: '看看今天运势怎么样吧！'
+    },{
+        icon: 2,
+        title: '节日推送(添加|删除)群',
+        desc: '每天进行推送最近节日(群管理权限)'
+    },{
+        icon: 15,
+        title: '节日查询',
+        desc: '看看什么时候过节吧~'
+    }
   ]
 }, {
   group: '自动任务一览',
@@ -125,6 +137,10 @@ export const helpList = [{
     icon: 8,
     title: '群幸运字符任务',
     desc: `您的cron为:${config.luckywordcron}`
+}, {
+    icon: 8,
+    title: '节日自动推送任务',
+    desc: `您的cron为:${config.festivalpush}`
 }]
 }, {
   group: '管理命令，仅主人可用',

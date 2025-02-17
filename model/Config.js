@@ -77,6 +77,7 @@ class Config {
                 livecron: this.generateCronlive(),
                 QQDaily: this.generateCronluckyword() || this.generateCronExpression(),
                 luckywordcron: this.generateCronluckyword(),
+                festivalpush: this.generateCronfestival(),
                 yiyan: "http://113.44.131.92:3333/text?wb=yy&type=text",
                 totalApi: "http://113.44.131.92:2536/bili",
                 Switchjx: true,
@@ -86,7 +87,8 @@ class Config {
                 isviplists: [],
                 luckywordwhites: [],
                 luckywordblacks: [],
-                totalbody: []
+                totalbody: [],
+                festivalgroup: []
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -98,6 +100,7 @@ class Config {
                 livecron: currentConfig?.livecron || this.generateCronlive(),
                 QQDaily: currentConfig?.QQDaily || this.generateCronluckyword() || this.generateCronExpression(),
                 luckywordcron: currentConfig?.luckywordcron || this.generateCronluckyword(),
+                festivalpush: currentConfig?.festivalpush || this.generateCronfestival(),
                 yiyan: currentConfig?.yiyan || "http://113.44.131.92:3333/text?wb=yy&type=text",
                 totalApi: currentConfig?.totalApi || "http://113.44.131.92:2536/bili",
                 Switchjx: currentConfig?.Switchjx || true,
@@ -107,7 +110,8 @@ class Config {
                 isviplists: currentConfig?.isviplists || [],
                 luckywordwhites: currentConfig?.luckywordwhites || [],
                 luckywordblacks: currentConfig?.luckywordblacks || [],
-                totalbody: currentConfig?.totalbody || []
+                totalbody: currentConfig?.totalbody || [],
+                festivalgroup: currentConfig?.festivalgroup || []
             };
 
             let needsUpdate = false;
@@ -174,6 +178,11 @@ class Config {
         return this.cache?.cron;
     }
 
+    get festivalpush() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.festivalpush
+    }
+
     get QQDaily() {
         if (!this.cache) this.loadConfig();
         return this.cache?.QQDaily
@@ -208,10 +217,26 @@ class Config {
         logger.mark(`[Bili-Plugin]据说依据超强统计学原理，生成成功率99.99%`)
         return cronExpression;
     }
+    // 生成节日查询定时任务
+    generateCronfestival() {
+        // 生成特定的节日查询定时任务，据说依据超强统计学原理，生成成功率99.99%！！
+        let hour;
+        if (Math.random() < 0.5) {
+            hour = Math.floor(Math.random() * (9 - 6 + 1)) + 6; // 6到9
+        } else {
+            hour = Math.floor(Math.random() * (20 - 15 + 1)) + 15; // 15到20
+        }
+        let minute = Math.floor(Math.random() * 60);
+        let second = Math.floor(Math.random() * 60);
+        const cronExpression = `${second} ${minute} ${hour} * * *`;
+        logger.mark(`[Bili-Plugin]获取节日查询时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`)
+        logger.mark(`[Bili-Plugin]据说依据超强统计学原理，生成成功率99.99%`)
+        return cronExpression;
+    }
 
     // 生成幸运字符定时任务
     generateCronluckyword() {
-        // 生成特定的自动签到定时任务，据说依据超强统计学原理，生成成功率99.99%！！
+        // 生成特定的幸运字符定时任务，据说依据超强统计学原理，生成成功率99.99%！！
         let hour = Math.floor(Math.random() * (18 - 4 + 1)) + 4
         let minute = Math.floor(Math.random() * 60)
         let second = Math.floor(Math.random() * 60);
