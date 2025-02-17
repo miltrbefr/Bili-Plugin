@@ -59,7 +59,7 @@ export class Bilitask extends plugin {
         if (rawfestivalgroup.length === 0) return logger.info('[Bili-Plugin]自动节日推送未配置群组，已自动跳过...')
         let groups = [];
         for (const g of rawfestivalgroup) {
-            groups.push(Number(g.trim()));
+            groups.push(Number(g))
         }
         const message = await Bili.getfestival()
         for (const g of groups) {

@@ -132,7 +132,7 @@ class Bili {
     async getfestival(num = 5) {
         const yunshiUrl = `${this.signApi}/jieri?num=${num}`;
         let message = [];
-        message.push(`每日节日准时提醒！\n`);
+        message.push(`每日节日准时提醒！`);
         try {
             const response = await fetch(yunshiUrl);
             if (!response.ok) {
@@ -141,9 +141,9 @@ class Bili {
             const data = await response.json();
     
             if (data.code === "0") {
-                message.push(`距离周末剩余：${data.weekend.daysToWeekend}天\n`);
+                message.push(`\r距离周末剩余：${data.weekend.daysToWeekend}天`);
                 data.festivals.forEach(festival => {
-                    message.push(`距离『${festival.name}』剩余${festival.days}天${festival.hours}小时${festival.minutes}分钟${festival.seconds}秒！\n`);
+                    message.push(`\r距离『${festival.name}』剩余${festival.days}天${festival.hours}小时${festival.minutes}分钟${festival.seconds}秒！`);
                 });
             } else {
                 message.push("无法获取节日信息");
@@ -161,10 +161,10 @@ class Bili {
         const data = await response.json()
         if(data.code === 0) {
           let message = [
-            `运势：${data.msg.fortuneSummary}`,
-            '\r星级:' + data.msg.luckyStar,
-            '\r点评:' + data.msg.signText,
-            '\r解读:' + data.msg.unsignText
+            `『运势』${data.msg.fortuneSummary}`,
+            '\r『星级』' + data.msg.luckyStar,
+            '\r『点评』' + data.msg.signText,
+            '\r『解读』' + data.msg.unsignText
           ];
           
           return message;
