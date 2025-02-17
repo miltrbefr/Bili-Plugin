@@ -32,54 +32,15 @@ class Bili {
         this.config = this.loadConfig()
     }
 
-    async getmiyocode(action) {
+    async getmiyocode(action = 1) {
         try {
-            const actIds = {
-                '1': 'ea202501141852052146',  // 原神
-                '2': 'ea202502111418441019',  // 星铁
-                '3': 'ea202501091516567617'   // 绝区零
-            };
-    
-            const actId = actIds[action];
-            if (!actId) return { retcode: 0, data: [], date: null };
-            const timestamp = Math.floor(Date.now() / 1000);
-            const params = new URLSearchParams({
-                version: '524da7',
-                time: timestamp
-            });
-            const response = await fetch(`https://api-takumi-static.mihoyo.com/event/miyolive/refreshCode?${params}`, {
-                headers: {
-                    'Host': 'api-takumi-static.mihoyo.com',
-                    'accept': 'application/json, text/plain, */*',
-                    'x-rpc-act_id': actId,
-                    'user-agent': 'Mozilla/5.0 (Linux; Android 12; 24031PN0DC Build/V417IR; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 miHoYoBBS/2.80.1',
-                    'origin': 'https://webstatic.mihoyo.com',
-                    'x-requested-with': 'com.mihoyo.hyperion',
-                }
-            });
-    
-            const result = await response.json();
-            if (result.retcode !== 0 || !result.data?.code_list) {
-                return { retcode: 0, data: [], date: null };
+            const miyocodeUrl = `${this.signApi}/miyocode?num=${action}`;
+            const response = await fetch(miyocodeUrl);
+            if (!response.ok) {
+                throw new Error(`[Bili-Plugin]获取节日信息请求出错: ${response.status}`);
             }
-            const cleanHTML = (str) => str.replace(/<[^>]+>/g, '');
-            const codeList = result.data.code_list.map(item => ({
-                title: cleanHTML(item.title),
-                code: item.code,
-                img: item.img,
-                time: moment.unix(parseInt(item.to_get_time)).format('YYYY-MM-DD HH:mm:ss')
-            }));
-
-            let date = null;
-            if (codeList.length > 0) {
-                const firstTime = moment(codeList[0].time, 'YYYY-MM-DD HH:mm:ss');
-                date = firstTime.clone().add(1, 'days').set({ hour: 12, minute: 0, second: 0 }).format('YYYY-MM-DD HH:mm:ss');
-            }
-            return {
-                retcode: 0,
-                data: codeList,
-                date: date || null
-            };
+            const data = await response.json();
+            return data
         } catch (err) {
             logger.error("[Bili-Plugin]获取米游社兑换码失败", err);
             return { retcode: 0, data: [], date: null };
