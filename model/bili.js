@@ -727,7 +727,7 @@ class Bili {
             forwardNodes.push({
                 user_id: '80000000',
                 nickname: '匿名消息',
-                message: "没有查询到up主信息"
+                message: `没有查询到up主信息:${apiResponse.message}`
             });
         }
         return forwardNodes;
