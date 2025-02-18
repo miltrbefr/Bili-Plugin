@@ -696,6 +696,45 @@ class Bili {
         }
     }
 
+    async getupinfo(mids) {
+        const getInfoUrl = `${this.signApi}/userinfo?mid=${mids}&key=${this.key}`;
+        const apiResponse = await fetch(getInfoUrl).then(res => res.json()); 
+        const forwardNodes = [];
+        
+        if (apiResponse.code === 0 && apiResponse.data && apiResponse.data.length > 0) {
+            for (const card of apiResponse.data) {
+                const vipStatus = card.vip?.status !== 0;
+                const messageContent = [
+                    segment.image(card.face),
+                    `用户名：${card.name}\n`,
+                    `Uid：${card.mid}\n`,
+                    `性别：${card.sex}\n`,
+                    `签名：${card.sign}\n`,
+                    `会员：${vipStatus ? card.vip?.label?.text : '无会员'}\n`,
+                    vipStatus && card.vip?.due_date ? 
+                        `会员到期时间：${moment(card.vip.due_date).format('YYYY-MM-DD HH:mm:ss')}\n` : null,
+                    `账号状态：${card.silence === 0 ? '正常' : '封禁中'}\n`,
+                    `当前等级：${card.level}\n`,
+                    `认证信息：${card.official?.role !== 0 ? card.official?.title : '无'}\n`,
+                    `生日：${card.birthday ? moment(card.birthday * 1000).format('YYYY-MM-DD') : '未设置'}`
+                ].filter(item => item !== null && item !== undefined)
+                forwardNodes.push({
+                    user_id: '80000000',
+                    nickname: '匿名消息',
+                    message: messageContent
+                });
+            }
+        } else {
+            forwardNodes.push({
+                user_id: '80000000',
+                nickname: '匿名消息',
+                message: "没有查询到up主信息"
+            });
+        }
+        return forwardNodes;
+    }
+
+      
     async getInfo(userCookies) {
         const getInfoUrl = `${this.signApi}/space?accesskey=${userCookies.access_token}&mid=${userCookies.DedeUserID}&key=${this.key}`;
         const expLogUrl = `${this.signApi}/exp_log2?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`;
@@ -824,7 +863,7 @@ class Bili {
                     if (item.player_args?.type === 'av') {
                         const aid = item.player_args.aid;
                         // 检查次数
-                        if ((usageRecord[aid] || 0) >= 2) continue;
+                        if (userCookies.coin && (usageRecord[aid] || 0) >= 2) continue;
                         // 添加视频数据
                         videoData.push({
                             short_link: item.short_link,

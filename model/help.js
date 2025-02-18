@@ -114,7 +114,7 @@ export const helpList = [{
         title: '节日推送(添加|删除)群',
         desc: '每天进行推送最近节日(群管理权限)'
     },{
-        icon: 15,
+        icon: 25,
         title: '节日查询',
         desc: '看看什么时候过节吧~'
     }
@@ -138,9 +138,13 @@ export const helpList = [{
     title: '群幸运字符任务',
     desc: `您的cron为:${config.luckywordcron}`
 }, {
-    icon: 8,
+    icon: 33,
     title: '节日自动推送任务',
     desc: `您的cron为:${config.festivalpush}`
+}, {
+    icon: 39,
+    title: '查询up123456,789456',
+    desc: `批量查询up主基本信息`
 }]
 }, {
   group: '管理命令，仅主人可用',

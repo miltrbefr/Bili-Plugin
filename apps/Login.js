@@ -35,7 +35,8 @@ export class Bililogin extends plugin {
         }
         
         try {
-            const qrRes = await fetch(`${loginapi}/login?key=${e.user_id}`);
+            const loginkey = `${e.user_id}:${e.self_id}`
+            const qrRes = await fetch(`${loginapi}/login?key=${loginkey}`);
             const qrInfo = await qrRes.json();
             this.reply(['免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.url), '请在90s内使用哔站进行扫码'], true);
             redis.set(`login:${String(e.user_id).replace(/:/g, '_').trim()}`, "1", {
@@ -44,7 +45,7 @@ export class Bililogin extends plugin {
     
             const pollRequest = async () => {
                 try {
-                    const pollRes = await fetch(`${loginapi}/poll?key=${e.user_id}`);
+                    const pollRes = await fetch(`${loginapi}/poll?key=${loginkey}`);
                     const result = await pollRes.json();
                     logger.info("[Bili-Plugin]二维码轮询状态:", result);
     
