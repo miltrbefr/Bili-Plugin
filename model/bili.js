@@ -708,7 +708,7 @@ class Bili {
                     `用户名：${card.name}\n`,
                     `Uid：${card.mid}\n`,
                     `性别：${card.sex}\n`,
-                    `签名：${String(card.sign).replace(/./g, '·').trim()}\n`,
+                    `签名：${String(card.sign).replace(/\./g, '·').trim()}\n`,
                     `会员：${vipStatus ? card.vip?.label?.text : '无会员'}\n`,
                     vipStatus && card.vip?.due_date ? 
                         `会员到期时间：${moment(card.vip.due_date).format('YYYY-MM-DD HH:mm:ss')}\n` : null,
