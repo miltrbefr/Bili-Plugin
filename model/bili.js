@@ -696,11 +696,10 @@ class Bili {
         }
     }
 
-    async getupinfo(mids) {
-        const getInfoUrl = `${this.signApi}/userinfo?mid=${mids}&key=${this.key}`;
-        const apiResponse = await fetch(getInfoUrl).then(res => res.json()); 
+    async getupinfo(mids,userCookies) {
+        const getInfoUrl = `${this.signApi}/userinfo?mid=${mids}&key=${this.key}&accesskey=${userCookies.access_token}`;
+        const apiResponse = await (await fetch(getInfoUrl)).json()
         const forwardNodes = [];
-        
         if (apiResponse.code === 0 && apiResponse.data && apiResponse.data.length > 0) {
             for (const card of apiResponse.data) {
                 const vipStatus = card.vip?.status !== 0;
