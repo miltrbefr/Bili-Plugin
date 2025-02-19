@@ -50,7 +50,14 @@ export class Bilitask extends plugin {
             cron: config.festivalpush,
             name: '[Bili-Plugin]自动节日推送',
             fnc: () => this.autofestival()
+        }, {
+            cron: '0 15 * * * ?',
+            name: '[Bili-Plugin]自动校验插件',
+            fnc: () => this.autocheck()
         }]
+    }
+    async autocheck() {
+        await Bili.Bilicheck()
     }
 
     async autofestival() {
@@ -61,7 +68,6 @@ export class Bilitask extends plugin {
         for (const g of rawfestivalgroup) {
             groups.push(Number(g))
         }
-        await Bili.Bilicheck()
         const message = await Bili.getfestival()
         for (const g of groups) {
             await Bot.pickGroup(g).sendMsg(message)
@@ -85,7 +91,6 @@ export class Bilitask extends plugin {
             return
         }
         const isluckywordBots = [];
-        await Bili.Bilicheck()
         for (const bot of rawIsluckywordBots) {
             isluckywordBots.push(Number(bot.trim()));
         }

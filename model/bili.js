@@ -819,7 +819,7 @@ class Bili {
                 `粉丝：${card.fans}\n`,
                 `关注：${card.attention}\n`,
                 `硬币：${info2Ret.data.coins}\n`,
-                `签名：${String(card.sign).replace(/./g, '·').trim()}\n`,
+                `签名：${String(card.sign).replace(/\./g, '·').trim()}\n`,
                 `会员：${vipStatus ? card.vip.label.text : '无会员'}\n`,
                 vipStatus ? `会员到期时间：${moment(card.vip.vipDueDate).format('YYYY-MM-DD HH:mm:ss')}\n` : null,
                 `账号状态：${card.silence === 0 ? '正常' : '封禁中'}\n`,

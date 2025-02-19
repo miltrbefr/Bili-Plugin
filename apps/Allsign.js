@@ -36,8 +36,6 @@ export class Biliallsign extends plugin {
             await redis.set('bili:autosign:task', '正在初始化哔站签到任务，请勿重复执行签到操作....', {
                 EX: 100
             });
-            if (this.e) this.e.reply("开始执行哔站全部签到任务，请稍等....");
-            await Bili.Bilicheck()
             const [lists, botlists] = await Promise.all([
                 Bili.getuserlists(),
                 Bili.getQQlist()
