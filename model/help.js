@@ -70,7 +70,7 @@ export const helpList = [{
           desc: '如题'
       },
       {
-          icon: 32,
+          icon: 65,
           title: '(开启/关闭)直播间弹幕',
           desc: '打开弹幕功能，先已开播主播发送一句话'
       }, {
@@ -104,7 +104,7 @@ export const helpList = [{
     },{
         icon: 6,
         title: '(点赞/取消点赞/评论/收藏/取消收藏/点踩)视频',
-        desc: '引用别人或自己或机器人的B站视频进行快捷操作'
+        desc: '通过引用别人或自己或机器人的B站视频进行快捷操作'
     },{
         icon: 8,
         title: '今日运势',
@@ -117,6 +117,14 @@ export const helpList = [{
         icon: 25,
         title: '节日查询',
         desc: '看看什么时候过节吧~'
+    }, {
+        icon: 39,
+        title: '查询up123456,789456',
+        desc: `批量查询up主基本信息`
+    }, {
+        icon: 60,
+        title: '(关注|取关|拉黑|取消拉黑|踢出粉丝)主播',
+        desc: `通过引用别人或自己或机器人的B站视频进行快捷操作`
     }
   ]
 }, {
@@ -141,10 +149,6 @@ export const helpList = [{
     icon: 33,
     title: '节日自动推送任务',
     desc: `您的cron为:${config.festivalpush}`
-}, {
-    icon: 39,
-    title: '查询up123456,789456',
-    desc: `批量查询up主基本信息`
 }]
 }, {
   group: '管理命令，仅主人可用',

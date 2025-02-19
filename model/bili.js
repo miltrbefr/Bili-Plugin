@@ -32,6 +32,30 @@ class Bili {
         this.config = this.loadConfig()
     }
 
+    async relationup(userCookies, mid, act) {
+        const actionMap = {
+            1: '关注',
+            2: '取关',
+            5: '拉黑',
+            6: '取消拉黑',
+            7: '踢出粉丝'
+        };
+        const actionName = actionMap[act] || '未知操作';
+        const relationUrl = `${this.signApi}/relation?accesskey=${userCookies.access_token}&key=${this.key}&mid=${mid}&act=${act}`;
+        try {
+            const response = await fetch(relationUrl);
+            const json = await response.json();
+            if (json.code === 0) {
+                return `${actionName}成功`;
+            } else {
+                return `${actionName}失败: ${json.message || json.msg || '未知错误'}`;
+            }
+        } catch (err) {
+            logger.error("[Bili-Plugin]用户关系操作失败:", err);
+            return `用户关系操作请求失败，请检查日志输出`;
+        }
+    }
+
     async getmiyocode(action = 1) {
         try {
             const miyocodeUrl = `${this.signApi}/miyocode?num=${action}`;
@@ -260,7 +284,7 @@ class Bili {
 
     async isUpdate() {
         try {
-            const response = await fetch('https://api.github.com/repos/miltrbefr/Bili-Plugin/commits?per_page=1');
+            const response = await fetch('https://gitee.com/api/v5/repos/nennen-cn/Bili-Plugin/commits?per_page=1');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
