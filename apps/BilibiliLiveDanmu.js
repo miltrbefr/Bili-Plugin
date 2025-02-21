@@ -222,7 +222,7 @@ export class BilibiliLiveDanmu extends plugin {
           break;
 
         default:
-          logger.mark(`[未知消息] CMD: ${cmd}, 数据: ${JSON.stringify(data)}`);
+          logger.debug(`[未知消息] CMD: ${cmd}, 数据: ${JSON.stringify(data)}`);
       }
     } catch (err) {
       logger.error('处理消息时出错:', err);
