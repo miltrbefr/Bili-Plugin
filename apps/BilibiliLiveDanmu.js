@@ -26,6 +26,9 @@ export class BilibiliLiveDanmu extends plugin {
   }
 
   async bindLiveRoom(e) {
+    if (!e.isMaster && e.adapter_name !== 'QQBot') {
+      return e.reply('暂无权限请联系主人', true);
+  }
     const cookiesFilePath = path.join('./data/bili', `${String(e.user_id).replace(/:/g, '_').trim()}.json`);
     if (!fs.existsSync(cookiesFilePath)) {
       return await e.reply("未绑定哔站账号，请先发送【哔站登录】进行绑定", true);
