@@ -42,6 +42,11 @@ git clone --depth=1 https://github.com/miltrbefr/Bili-Plugin.git ./plugins/Bili-
 git clone --depth=1 https://gitee.com/nennen-cn/Bili-Plugin.git ./plugins/Bili-Plugin/
 ```
 
+ - 安装依赖
+``` bash 
+pnpm i
+```
+
 ## 使用说明
 请使用 `#哔站功能` 获取完整帮助(确保已安装喵喵插件)
 
