@@ -196,14 +196,24 @@ export class BilibiliLiveDanmu extends plugin {
           e.reply(`[礼物] ${uname} 赠送了 ${num} 个 ${giftName}`);
           break;
 
-        case 'INTERACT_WORD':
-          const interactName = cmdData.uname || '未知用户';
-          e.reply(`[进场] 欢迎 ${interactName} 进入直播间`);
-          break;
+          case 'INTERACT_WORD':
+            const msgType = cmdData.msg_type;
+            const userName2 = cmdData.uname || '未知用户';
+            const medalInfo = cmdData.fans_medal || {};
+            const medalName = medalInfo.medal_name ? `【${medalInfo.medal_name}${medalInfo.medal_level}】` : '';
+          
+            if (msgType === 1) {
+              e.reply(`[进场] 欢迎 ${userName2} ${medalName}进入直播间`);
+            } else if (msgType === 2) {
+              e.reply(`[关注] 感谢 ${userName2} ${medalName}关注主播`);
+            } else {
+              logger.debug(`[未知互动类型] CMD: ${cmd}, 类型: ${msgType}, 数据: ${JSON.stringify(data)}`);
+            }
+            break;
 
         case 'GUARD_BUY':
-          const guardLevel = cmdData.guard_level || 0;
-          const guardName = {1: "总督", 2: "提督", 3: "舰长"}[guardLevel] || "未知";
+          const guardLevel2 = cmdData.guard_level || 0;
+          const guardName = {1: "总督", 2: "提督", 3: "舰长"}[guardLevel2] || "未知";
           e.reply(`[上舰] ${cmdData.username} 成为了 ${guardName}`);
           break;
 
@@ -220,12 +230,89 @@ export class BilibiliLiveDanmu extends plugin {
           break;
 
         case 'ONLINE_RANK_COUNT':
+          const RANK_COUNT = cmdData.count || '未知';
+          e.reply(`[高能用户数] 直播间高能用户数量 ${RANK_COUNT} 人`)
+          break;
           case 'ONLINE_RANK_V2':
-          case 'STOP_LIVE_ROOM_LIST':
+          if (cmdData.list?.length) {
+            const top3 = cmdData.list.slice(0, 3)
+              .map(user => `${user.rank}位: ${user.uname}（${user.score}）`)
+              .join(' | ');
+            e.reply(`[高能榜刷新] 当前前三：${top3}`);
+          }
+          break;
+
+        case 'ROOM_CHANGE':
+          const newTitle = cmdData.title || '未知标题';
+          const areaName = cmdData.area_name || '未知分区';
+          e.reply(`[直播间信息更新] 新标题：${newTitle} | 分区：${areaName}`);
+          break;
+
+        case 'WATCHED_CHANGE':
+          const watchedCount = cmdData.num ? `${cmdData.num}人` : '数据更新';
+          e.reply(`[观众数据] 已观看人数：${watchedCount}`);
+          break;
+
+        case 'POPULARITY_RED_POCKET_START':
+          const gifts = cmdData.awards?.map(a => `${a.gift_name}×${a.num}`).join('+') || '神秘礼物';
+          e.reply(`[红包预告] ${cmdData.sender_name} 发送红包（含${gifts}），快去参与！`);
+          break;
+
+        case 'POPULARITY_RED_POCKET_WINNER_LIST':
+          const winners = cmdData.winner_info?.slice(0, 3)
+            .map(w => w[1])
+            .join(', ') || '神秘用户';
+          e.reply(`[红包结果] ${winners} 等${cmdData.total_num}人抢到红包`);
+          break;
+
+        case 'COMBO_SEND':
+          e.reply(`[连击礼物] ${cmdData.uname} 连续投喂 ${cmdData.gift_name}×${cmdData.total_num}`);
+          break;
+
+        case 'USER_TOAST_MSG':
+          const guardMap = {1: '总督', 2: '提督', 3: '舰长'};
+          const guardLevel = guardMap[cmdData.guard_level] || '船员';
+          e.reply(`[上舰通知] 🎉 ${cmdData.username} 开通了${guardLevel}（${cmdData.toast_msg}）`);
+          break;
+
+        case 'ROOM_REAL_TIME_MESSAGE_UPDATE':
+          const fans = cmdData.fans ? `粉丝数：${cmdData.fans}` : '';
+          const fansClub = cmdData.fans_club ? `粉丝团：${cmdData.fans_club}` : '';
+          if (fans || fansClub) {
+            e.reply(`[主播数据更新] ${fans} ${fansClub}`);
+          }
+          break;
+
+        case 'PREPARING':
+          const status = cmdData.round === 1 ? '轮播中' : '准备中';
+          e.reply(`[直播间状态] 主播进入${status}状态`);
+          break;
+
+        case 'LIKE_INFO_V3_UPDATE':
+          e.reply(`[点赞数据] 直播间累计点赞数：${cmdData.click_count}`);
+          break;
+
+        case 'ONLINE_RANK_TOP3':
+          const topList = cmdData.list?.map(item => `${item.rank}位: ${item.msg.match(/<%(.+?)%>/)?.[1]}`).join(' | ');
+          if (topList) {
+            e.reply(`[高能用户] ${topList}`);
+          }
+          break;
+
+        case 'GIFT_STAR_PROCESS':
+          e.reply(`[礼物星球] ${cmdData.tip}`);
+          break;
+        case 'STOP_LIVE_ROOM_LIST':
+        case 'ONLINE_RANK_COUNT':
           break;
 
         default:
-          logger.debug(`[未知消息] CMD: ${cmd}, 数据: ${JSON.stringify(data)}`);
+          if (![
+            'DANMU_MSG', 'SEND_GIFT', 'INTERACT_WORD', 
+            'GUARD_BUY', 'SUPER_CHAT_MESSAGE'
+          ].includes(cmd)) { 
+            logger.debug(`[未知消息] CMD: ${cmd}, 数据: ${JSON.stringify(data)}`);
+          }
       }
     } catch (err) {
       logger.error('处理消息时出错:', err);
