@@ -284,7 +284,7 @@ class Bili {
 
     async isUpdate() {
         try {
-            const response = await fetch('https://api.github.com/repos/miltrbefr/Bili-Plugin/commits?per_page=1');
+            const response = await fetch('https://gitee.com/api/v5/repos/nennen-cn/Bili-Plugin/commits?per_page=1');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -908,8 +908,8 @@ class Bili {
         return videoData;
     }
 
-    async addCoin(aid, userCookies) {
-        const coinUrl = `${this.signApi}/addcoin?accesskey=${userCookies.access_token}&aid=${aid}&coin=1&like=1&key=${this.key}`;
+    async addCoin(aid, userCookies, coin = 1) {
+        const coinUrl = `${this.signApi}/addcoin?accesskey=${userCookies.access_token}&aid=${aid}&coin=${coin}&like=1&key=${this.key}`;
         try {
             const response = await fetch(coinUrl);
             const json = await response.json();
