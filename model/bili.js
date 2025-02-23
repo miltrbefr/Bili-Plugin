@@ -284,7 +284,7 @@ class Bili {
 
     async isUpdate() {
         try {
-            const response = await fetch('https://gitee.com/api/v5/repos/nennen-cn/Bili-Plugin/commits?per_page=1');
+            const response = await fetch('https://api.github.com/repos/miltrbefr/Bili-Plugin/commits?per_page=1');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

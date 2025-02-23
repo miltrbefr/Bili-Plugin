@@ -6,12 +6,14 @@
 
 {{block 'main'}}
 {{each changelogs ds idx}}
-<div class="anemo-bg log-cont">
-  <div class="cont">
+<div class="hydro-bg log-cont">
+  {{set v = ds.version }}
+  {{set isDev = v[v.length-1] === 'v'}}
+  <div class="cont {{isDev ? 'dev-cont': ''}}">
     {{if idx === 0 }}
-    <div class="cont-title current-version">当前版本 {{ds.version}}</div>
+    <div class="cont-title current-version">当前版本 {{v}}</div>
     {{else}}
-    <div class="cont-title">拓展版本 {{ds.version}}</div>
+    <div class="cont-title">{{name || 'waves-plugin'}}版本 {{v}}</div>
     {{/if}}
     <div class="cont-body">
       <ul class="log-ul">
