@@ -4,7 +4,7 @@ import { pluginRoot, pluginResources } from '../model/constant.js'
 import fs from 'fs'
 let info
 function getScale(pct = null) {
-    pct = 1.5
+    pct = 2
     pct = Math.min(2, Math.max(0.5, pct))
     return `style=transform:scale(${pct});`
 }
@@ -67,7 +67,7 @@ const Render = {
                         scale: getScale(cfg.scale)
                     },
                     saveId: getsaveId(data.saveId),
-                    copyright: `Created By ${BotName}<span class="version">${Version.yunzai}</span>${pluginName} & ${info}`,
+                    copyright: `Created By ${BotName}<span class="version">${Version.yunzai}</span>${pluginName} ${info}`,
                 }
             }
         })
