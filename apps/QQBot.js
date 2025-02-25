@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import QQBot from '../model/QQBot.js';
 import config from '../model/Config.js';
-let QQBot_id = String(config.QQBot)
+let QQBot_id = config.QQBot
 const dataDir = './data/bili/QQBotenvent'
 
 function ensureDataDir() {
