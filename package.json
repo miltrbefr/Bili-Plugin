@@ -1,10 +1,11 @@
 {
   "name": "Bili-plugin",
-  "version": "1.0.1",
+  "version": "2.0.1",
   "type": "module",
   "dependencies": {
     "ws": "^8.16.0",
     "axios": "^1.7.7",
+    "image-size": "^1.2.0",
     "bufferpack": "^0.0.6"
   }
 }

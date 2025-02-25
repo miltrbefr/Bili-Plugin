@@ -4,7 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import imageSize from 'image-size'
 import configModule from "../../../lib/config/config.js"
-
+import {
+    pluginRoot
+} from '../model/constant.js'
+import Bili from '../model/bili.js';
 class QQBot {
     constructor() {
         this.signApi = config.signApi
@@ -12,15 +15,38 @@ class QQBot {
         this.ark = config.ark
         this.button = config.button
         this.ck = config.ck
-        this.appid = Bot[config.QQBot].info.appid
-        this.dataDir = './data/QQBotenvent'
+        this.appid = config.appid
+        this.dataDir = './data/bili/QQBotenvent'
     }
 
-    async clickButton(groupId) {
-        const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
-        const r = await res.json()
-        if (r.code !== '0') return logger.warn(r.msg)
+    async check(e) {
+        const filePath = `${pluginRoot}/config/config.yaml`;
+        const configs = await Bili.loadConfig(filePath);
+        const jiantingQQ = (await Bili.getConfig("jiantingQQ", configs)) || [];
+        const selfId = String(e.self_id);
+        const jiantingQQStr = jiantingQQ.map(id => String(id));
+        if (!jiantingQQStr.includes(selfId)) {
+            return false;
+        }
+        const filePath2 = './data/bili/QQBotGroupMap/Groupconfig.json';
+        try {
+            await fs.promises.access(filePath2);
+            const data = await fs.promises.readFile(filePath2, 'utf-8');
+            const groupConfig = JSON.parse(data);
+            const groupId = String(e.group_id);
+            for (const key in groupConfig) {
+                if (groupConfig[key] === groupId) {
+                    return true
+                }
+            }
+            return false;
+        } catch (err) {
+            return false;
+        }
     }
+
+
+
     async ensureDataDir() {
         if (!fs.existsSync(this.dataDir)) {
             fs.mkdirSync(this.dataDir, {
@@ -28,12 +54,13 @@ class QQBot {
             });
         }
     }
+
     async replaceReply(event) {
         const groupId = event.group_id;
         await this.ensureDataDir()
         const filePath = path.join(this.dataDir, `${groupId}.json`);
 
-        event.reply = async function(msgs, quote = false, data) {
+        event.reply = async (msgs, quote = false, data) => {
             if (!msgs) return false;
             if (!Array.isArray(msgs)) msgs = [msgs];
             if (!this.button) msgs = msgs.filter(msg => msg.type !== 'button');
@@ -54,16 +81,15 @@ class QQBot {
                     } catch (error) {
                         if (error.code === 'ENOENT') {
                             await fs.promises.writeFile(filePath, JSON.stringify({
-                                time: Date.now(),
+                                time: 1740480612310,
                                 event_id: 'default',
                                 openid: groupId
                             }));
                         }
                     }
-                    if (attempts % 2 === 0) {
-                        await clickButton(groupId);
-                    }
-
+                 const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
+                const r = await res.json()
+                logger.info(r)
                     await new Promise(resolve => setTimeout(resolve, retryInterval));
                     attempts++;
                 }
@@ -240,6 +266,7 @@ class QQBot {
     }
 
     async arkimage(imageUrl, summary) {
+        let customWords = ["签到", "芙宁娜面板", "米游社全部签到", "#扫码登录", "哔站签到", "哔站功能", "哔站登录", "菜单", "网易功能", "#深渊", "#练度统计", "*练度统计", "#角色", "*角色", "体力", "哔站签到记录", "我的哔站", "#原石预估", "芙宁娜伤害", "#队伍伤害 角色，角色", "#更新面板", "*更新面板"]
         const selectedWord = customWords[Math.floor(Math.random() * customWords.length)]
         const arkMessage = segment.raw({
             type: "ark",

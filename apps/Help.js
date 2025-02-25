@@ -11,11 +11,246 @@ export class Help extends plugin {
         super({
             name: "[Bili-Plugin]",
             event: "message",
-            priority: 1008,
+            priority: 1677979616,
             rule: [{
-                reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)(功能|菜单|帮助|指令|help)$',
-                fnc: "allHelp"
-            }]
+                    reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)(功能|菜单|帮助|指令|help)$',
+                    fnc: "allHelp"
+                },
+                {
+                    reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?野收官发(功能|菜单|帮助|指令|help)$',
+                    fnc: "QQBotHelp",
+                    permission: 'master'
+                },
+                {
+                    reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?视频(操作)?(功能|菜单|帮助|指令|help)$',
+                    fnc: "videoHelp"
+                },
+                {
+                    reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?小功能帮助$',
+                    fnc: "xgnHelp"
+                }
+            ]
+        })
+    }
+
+    async xgnHelp(e) {
+        const helpCfg = {
+            "themeSet": false,
+            "title": "小功能帮助",
+            "subTitle": "BILI XGN HELP",
+            "colWidth": 265,
+            "theme": "all",
+            "themeExclude": [
+                "default"
+            ],
+            "colCount": 4,
+            "bgBlur": true
+        }
+
+        const helpList = [{
+                group: '本插件均为开源项目，严禁将本库内容用于任何商业用途或违法行为'
+            },
+            {
+                group: '小功能',
+                list: [{
+                        icon: 82,
+                        title: '今日运势',
+                        desc: '查看今日运势'
+                    },
+                    {
+                        icon: 2,
+                        title: '节日推送(添加/删除)群',
+                        desc: '添加群到节日推送列表（群管理权限）'
+                    },
+                    {
+                        icon: 25,
+                        title: '节日查询',
+                        desc: '查询最近的节日'
+                    },
+                    {
+                        icon: 17,
+                        title: '(#/*/%)兑换码',
+                        desc: '获取米游社的游戏兑换码（注意命令前的符号）'
+                    }
+                ]
+            }
+        ]
+        let helpGroup = []
+        _.forEach(helpList, (group) => {
+            _.forEach(group.list, (help) => {
+                let icon = help.icon * 1
+                if (!icon) {
+                    help.css = 'display:none'
+                } else {
+                    let x = (icon - 1) % 10
+                    let y = (icon - x - 1) / 10
+                    help.css = `background-position:-${x * 50}px -${y * 50}px`
+                }
+            })
+            helpGroup.push(group)
+        })
+
+        let themeData = await this.getThemeData(helpCfg, helpCfg)
+        return await Render.render('help/index', {
+            helpCfg,
+            helpGroup,
+            ...themeData,
+            element: 'default'
+        }, {
+            e,
+            scale: 1.6
+        })
+    }
+
+    async videoHelp(e) {
+        const helpCfg = {
+            "themeSet": false,
+            "title": "VIDEO帮助",
+            "subTitle": "BILI VIDEO HELP",
+            "colWidth": 265,
+            "theme": "all",
+            "themeExclude": [
+                "default"
+            ],
+            "colCount": 3,
+            "bgBlur": true
+        }
+
+        const helpList = [{
+                group: '本插件均为开源项目，严禁将本库内容用于任何商业用途或违法行为'
+            },
+            {
+                group: '配置说明',
+                list: [{
+                        icon: 10,
+                        title: '(取消)点赞视频',
+                        desc: '引用的视频进行(取消)点赞'
+                    },
+                    {
+                        icon: 12,
+                        title: '评论视频',
+                        desc: '引用的视频进行评论'
+                    },
+                    {
+                        icon: 13,
+                        title: '(取消)收藏视频',
+                        desc: '引用的视频进行(取消)收藏'
+                    },
+                    {
+                        icon: 15,
+                        title: '点踩视频',
+                        desc: '对引用的视频进行点踩'
+                    }, {
+                        icon: 61,
+                        title: '(关注/取关)主播',
+                        desc: '引用视频关注/取关'
+                    },
+                    {
+                        icon: 63,
+                        title: '(取消)拉黑主播',
+                        desc: '引用视频主播(取消)拉黑'
+                    },
+                    {
+                        icon: 66,
+                        title: '踢出粉丝',
+                        desc: '引用视频踢出粉丝'
+                    },
+                    {
+                        icon: 39,
+                        title: '查询up124,156',
+                        desc: '查询up信息多个逗号隔开'
+                    },
+                ],
+            }
+        ]
+        let helpGroup = []
+        _.forEach(helpList, (group) => {
+            _.forEach(group.list, (help) => {
+                let icon = help.icon * 1
+                if (!icon) {
+                    help.css = 'display:none'
+                } else {
+                    let x = (icon - 1) % 10
+                    let y = (icon - x - 1) / 10
+                    help.css = `background-position:-${x * 50}px -${y * 50}px`
+                }
+            })
+            helpGroup.push(group)
+        })
+
+        let themeData = await this.getThemeData(helpCfg, helpCfg)
+        return await Render.render('help/index', {
+            helpCfg,
+            helpGroup,
+            ...themeData,
+            element: 'default'
+        }, {
+            e,
+            scale: 1.6
+        })
+    }
+
+
+    async QQBotHelp(e) {
+        const helpCfg = {
+            "themeSet": false,
+            "title": "QQBot帮助",
+            "subTitle": "BILI QQBot HELP",
+            "colWidth": 265,
+            "theme": "all",
+            "themeExclude": [
+                "default"
+            ],
+            "colCount": 3,
+            "bgBlur": true
+        }
+        const helpList = [{
+                group: '本插件均为开源项目，严禁将本库内容用于任何商业用途或违法行为'
+            },
+            {
+                group: '配置说明',
+                list: [{
+                        icon: 75,
+                        title: '(添加/删除)野收群聊<真实群号>',
+                        desc: '必须艾特官鸡'
+                    },
+                    {
+                        icon: 63,
+                        title: '(添加/删除)监听机器人<可选@>',
+                        desc: '监听的Bot'
+                    },
+                    {
+                        icon: 33,
+                        title: '必须手动添加配置文件！！',
+                        desc: 'QQBot、appid必填！'
+                    }
+                ],
+            }
+        ]
+        let helpGroup = []
+        _.forEach(helpList, (group) => {
+            _.forEach(group.list, (help) => {
+                let icon = help.icon * 1
+                if (!icon) {
+                    help.css = 'display:none'
+                } else {
+                    let x = (icon - 1) % 10
+                    let y = (icon - x - 1) / 10
+                    help.css = `background-position:-${x * 50}px -${y * 50}px`
+                }
+            })
+            helpGroup.push(group)
+        })
+
+        let themeData = await this.getThemeData(helpCfg, helpCfg)
+        return await Render.render('help/index', {
+            helpCfg,
+            helpGroup,
+            ...themeData,
+            element: 'default'
+        }, {
+            e,
+            scale: 1.6
         })
     }
 
@@ -36,7 +271,7 @@ export class Help extends plugin {
                 group: '本插件均为开源项目，严禁将本库内容用于任何商业用途或违法行为'
             },
             {
-                group: '登录与账号签到',
+                group: '登录与账号管理',
                 list: [{
                         icon: 8,
                         title: '哔站登录',
@@ -80,49 +315,6 @@ export class Help extends plugin {
                 ],
             },
             {
-                group: '视频快捷操作',
-                list: [{
-                        icon: 10,
-                        title: '(取消)点赞视频',
-                        desc: '引用的视频进行(取消)点赞'
-                    },
-                    {
-                        icon: 12,
-                        title: '评论视频',
-                        desc: '引用的视频进行评论'
-                    },
-                    {
-                        icon: 13,
-                        title: '(取消)收藏视频',
-                        desc: '引用的视频进行(取消)收藏'
-                    },
-                    {
-                        icon: 15,
-                        title: '点踩视频',
-                        desc: '对引用的视频进行点踩'
-                    }, {
-                        icon: 61,
-                        title: '(关注/取关)主播',
-                        desc: '引用视频关注/取关'
-                    },
-                    {
-                        icon: 39,
-                        title: '查询up123456,789456',
-                        desc: '批量查询UP主基本信息'
-                    },
-                    {
-                        icon: 63,
-                        title: '(取消)拉黑主播',
-                        desc: '引用视频主播(取消)拉黑'
-                    },
-                    {
-                        icon: 66,
-                        title: '踢出粉丝',
-                        desc: '引用视频踢出粉丝'
-                    } 
-                ],
-            },
-            {
                 group: '弹幕与直播',
                 list: [{
                         icon: 40,
@@ -144,36 +336,27 @@ export class Help extends plugin {
                         title: '(我的/他的)主播去哪了<@>',
                         desc: '获取当前开播的主播'
                     }
-                ],
+                ]
             },
             {
-                group: '小功能',
+                group: '更多的帮助',
                 list: [{
-                        icon: 82,
-                        title: '今日运势',
-                        desc: '查看今日运势'
-                    },
-                    {
-                        icon: 2,
-                        title: '节日推送(添加/删除)群',
-                        desc: '添加群到节日推送列表（群管理权限）'
-                    }, 
-                    {
-                        icon: 25,
-                        title: '节日查询',
-                        desc: '查询最近的节日'
-                    },
-                    {
-                        icon: 17,
-                        title: '(#/*/%)兑换码',
-                        desc: '获取米游社的游戏兑换码（注意命令前的符号）'
-                    }
-                ]
+                    icon: 99,
+                    title: '视频帮助',
+                    desc: '查看如何快捷操作视频'
+                }, {
+                    icon: 89,
+                    title: '小功能帮助',
+                    desc: '看看有什么小功能吧'
+                }, {
+                    icon: 79,
+                    title: '野收官发帮助',
+                    desc: '玩机高级功能'
+                }]
             }
-        ];
-      
+        ]
         if (e.isMaster) {
-            
+
             helpList.push({
                 group: '自动任务一览',
                 list: [{
@@ -185,7 +368,7 @@ export class Help extends plugin {
                         icon: 51,
                         title: '自动弹幕任务',
                         desc: `您的cron为:${config.livecron}`
-                    }, 
+                    },
                     {
                         icon: 7,
                         title: 'QQ日签卡任务',
@@ -208,7 +391,7 @@ export class Help extends plugin {
                     }
                 ]
             });
-           
+
             helpList.push({
                 group: '管理命令，仅主人可用',
                 list: [{
@@ -239,22 +422,21 @@ export class Help extends plugin {
                     {
                         icon: 88,
                         title: '哔站全部签到',
-                        desc: '所有账号的签到(仅主人)'
+                        desc: '所有账号的签到'
                     },
                     {
                         icon: 32,
                         title: '哔站用户统计',
-                        desc: '统计用户数量（仅主人）'
+                        desc: '统计用户数量'
                     },
                     {
                         icon: 18,
                         title: '校验哔站插件',
-                        desc: '手动校验插件可用性（仅主人）'
+                        desc: '手动校验插件可用性'
                     }
                 ]
             });
         }
-
         let helpGroup = []
         _.forEach(helpList, (group) => {
             _.forEach(group.list, (help) => {

@@ -31,7 +31,7 @@ export class Biliswitch extends plugin {
                     fnc: "deleteAccount"
                 },
                 {
-                    reg:/^#?(添加|新增|取消|删除)弹幕(拉黑|加白|黑名单|白名单)/,
+                    reg: /^#?(添加|新增|取消|删除)弹幕(拉黑|加白|黑名单|白名单)(.*)/mi,
                     fnc: "bililiveaction"
                 },
                 {
@@ -47,10 +47,104 @@ export class Biliswitch extends plugin {
                 {
                     reg: /^#?节日推送(添加|删除)群(.*)/mi,
                     fnc: "switchfestivalgroup"
+                },
+                {
+                    reg: /^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?(添加|删除)野收群聊(.*)/mi,
+                    fnc: "switchgroup",
+                    permission: 'master'
+                },
+                {
+                    reg: /^#?(添加|删除)监听(机器人||qq)(.*)/mi,
+                    fnc: "switchjiantingQQ",
+                    permission: 'master'
                 }
             ]
         });
     }
+
+    async switchjiantingQQ(e) {
+        let config = YAML.parse(fs.readFileSync(filePath, 'utf8'));
+        let QQ = e.msg.replace(/#?(添加|删除)监听(机器人||qq)/gi, '').trim() || e.self_id
+        let action = e.msg.match(/添加|删除/)[0];
+        if (!config.jiantingQQ) {
+            config.jiantingQQ = [];
+        }
+        if (action === '添加') {
+            if (!config.jiantingQQ.includes(QQ)) {
+                config.jiantingQQ.push(QQ);
+                fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
+            }
+        } else if (action === '删除') {
+            if (config.jiantingQQ.includes(QQ)) {
+                config.jiantingQQ = config.jiantingQQ.filter(item => item !== QQ);
+                fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
+            }
+        }
+        if (config.jiantingQQ.length > 0) {
+            e.reply(`操作成功！总监听列表\n${config.jiantingQQ.join('\n')}`,true);
+        } else {
+            e.reply('操作成功！当前没有任何监听',true);
+        }
+    }
+
+    async switchgroup(e) {
+        if (e.adapter_name !== 'QQBot') {
+            await e.reply("请艾特官鸡~", true)
+            return;
+        }
+        const actionMatch = e.msg.match(/添加|删除/);
+        if (!actionMatch) {
+            await e.reply("指令格式错误，请重新尝试~")
+            return
+        }
+        const action = actionMatch[0];
+        
+        const group = e.msg.replace(/#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?(添加|删除)野收群聊/gi, '')
+                           .replace(/[^0-9]/g, '')
+                           .trim();
+        if (!group) {
+            await e.reply("请提供有效的群号");
+            return;
+        }
+        const group2 = e.group_id;
+        const configDir = path.join('./data/bili/QQBotGroupMap');
+        const configPath = path.join(configDir, 'Groupconfig.json');
+    
+        try {
+            if (!fs.existsSync(configDir)) {
+                fs.mkdirSync(configDir, { recursive: true });
+            }
+            let config = {};
+            if (fs.existsSync(configPath)) {
+                const rawData = fs.readFileSync(configPath, 'utf-8');
+                config = JSON.parse(rawData);
+            }
+            if (action === '添加') {
+                config[group2] = String(group);
+            } else if (action === '删除') {
+                delete config[group2];
+            }
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
+            const result = [];
+            for (const [key, value] of Object.entries(config)) {
+                if (value === String(group2)) {
+                    result.push(key);
+                }
+            }
+            
+            const totalConfigCount = Object.keys(config).length;
+
+            await e.reply([
+                `操作成功！\n`,
+                `总配置数：${totalConfigCount}`
+            ])
+    
+        } catch (err) {
+            logger.error('配置操作失败:', err);
+            await e.reply(`操作失败：${err.message}`);
+        }
+    }
+
 
     async switchfestivalgroup(e) {
         if (!(e.isMaster || e.member.is_admin || e.member.is_owner)) {

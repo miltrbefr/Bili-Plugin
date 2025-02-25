@@ -88,7 +88,14 @@ class Config {
                 luckywordwhites: [],
                 luckywordblacks: [],
                 totalbody: [],
-                festivalgroup: []
+                festivalgroup: [],
+                jiantingQQ: [],
+                ark: false,
+                button: false,
+                ck: '花瓣网cookie，如果ark为true请填写，否则可忽略',
+                QQBot: '自行填写官方机器人QQ号',
+                appid: '自行填写官方机器人appid',
+                //qq: '野鸡qq用于获取事件id'
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -111,7 +118,14 @@ class Config {
                 luckywordwhites: currentConfig?.luckywordwhites || [],
                 luckywordblacks: currentConfig?.luckywordblacks || [],
                 totalbody: currentConfig?.totalbody || [],
-                festivalgroup: currentConfig?.festivalgroup || []
+                festivalgroup: currentConfig?.festivalgroup || [],
+                jiantingQQ: currentConfig?.jiantingQQ || [],
+                ark: currentConfig?.ark || false,
+                button: currentConfig?.button || false,
+                ck: currentConfig?.ck || '花瓣网cookie，如果ark为true请填写，否则可忽略',
+                QQBot: currentConfig?.QQBot || '自行填写官方机器人QQ号',
+                appid: currentConfig?.appid || '自行填写官方机器人appid',
+                //qq: currentConfig?.qq || '野鸡qq用于获取事件id'
             };
 
             let needsUpdate = false;
@@ -136,6 +150,36 @@ class Config {
         } catch (error) {
             logger.error(`[BILI PLUGIN] 配置加载失败: ${error}`);
         }
+    }
+/*
+    get qq() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.qq
+    }
+*/
+    get QQBot() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.QQBot
+    }
+
+    get appid() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.appid
+    }
+
+    get ark() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.ark
+    }
+
+    get ck() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.ck
+    }
+
+    get button() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.button
     }
 
     get maxVideoSizeMB() {
