@@ -68,7 +68,7 @@ export class Biliswitch extends plugin {
 
     async switchbaoshigroup(e) {
         if (!(e.isMaster || e.member.is_admin || e.member.is_owner)) {
-            await this.e.reply("暂无权限，仅群主或管理也添加", true)
+            await this.e.reply("暂无权限，仅群主或管理才能添加哦~", true)
             return
         }
         let config = YAML.parse(fs.readFileSync(filePath, 'utf8'));
@@ -86,23 +86,23 @@ export class Biliswitch extends plugin {
             if (!config.baoshigroup.includes(group)) {
                 config.baoshigroup.push(group);
                 fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
-                replyMessage = `群${group}已成功添加到报时推送列表:\n`;
+                replyMessage = `群${group}已成功添加到报时推送列表:`;
             } else {
-                replyMessage = `群${group}已在报时推送列表中\n`;
+                replyMessage = `群${group}已在报时推送列表中`;
             }
         } else if (action === '删除') {
             let index = config.baoshigroup.indexOf(group);
             if (index > -1) {
                 config.baoshigroup.splice(index, 1);
                 fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
-                replyMessage = `群${group}已成功从报时推送列表中删除\n`;
+                replyMessage = `群${group}已成功从报时推送列表中删除`;
             } else {
-                replyMessage = `群${group}不在报时推送列表中\n`;
+                replyMessage = `群${group}不在报时推送列表中`;
             }
         } else {
             return e.reply('未知操作', true);
         }
-        replyMessage += config.baoshigroup.join(", ");
+      //  replyMessage += config.baoshigroup.join(", ");
         return e.reply(replyMessage, true);
     }
 
@@ -193,7 +193,7 @@ export class Biliswitch extends plugin {
 
     async switchfestivalgroup(e) {
         if (!(e.isMaster || e.member.is_admin || e.member.is_owner)) {
-            await this.e.reply("暂无权限，仅群主或管理也添加", true)
+            await this.e.reply("暂无权限，仅群主或管理才能添加哦~", true)
             return
         }
         let config = YAML.parse(fs.readFileSync(filePath, 'utf8'));
@@ -211,23 +211,23 @@ export class Biliswitch extends plugin {
             if (!config.festivalgroup.includes(group)) {
                 config.festivalgroup.push(group);
                 fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
-                replyMessage = `群${group}已成功添加到节日推送列表:\n`;
+                replyMessage = `群${group}已成功添加到节日推送列表`;
             } else {
-                replyMessage = `群${group}已在节日推送列表中\n`;
+                replyMessage = `群${group}已在节日推送列表中`;
             }
         } else if (action === '删除') {
             let index = config.festivalgroup.indexOf(group);
             if (index > -1) {
                 config.festivalgroup.splice(index, 1);
                 fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
-                replyMessage = `群${group}已成功从节日推送列表中删除\n`;
+                replyMessage = `群${group}已成功从节日推送列表中删除`;
             } else {
-                replyMessage = `群${group}不在节日推送列表中\n`;
+                replyMessage = `群${group}不在节日推送列表中`;
             }
         } else {
             return e.reply('未知操作', true);
         }
-        replyMessage += config.festivalgroup.join(", ");
+     //   replyMessage += config.festivalgroup.join(", ");
         return e.reply(replyMessage, true);
     }
 
