@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import config from '../model/Config.js';
 import Bili from '../model/bili.js';
+import QQBot from '../model/QQBot.js';
 import moment from 'moment';
 import {
     pluginRoot
@@ -27,37 +28,63 @@ export class Bilitask extends plugin {
             }]
         });
         this.task = [{
-            cron: '50 59 23 * * *',
-            name: '[Bili-Plugin]b站自动删除日志文件',
-            fnc: () => this.Bilidellog()
-        }, {
-            cron: config.livecron,
-            name: '[Bili-Plugin]自动发送弹幕',
-            fnc: () => this.autodamu()
-        }, {
-            cron: config.QQDaily,
-            name: '[Bili-Plugin]日签打卡',
-            fnc: () => this.QQDailysign()
-        }, {
-            cron: config.luckywordcron,
-            name: '[Bili-Plugin]幸运字符',
-            fnc: () => this.autolukyword()
-        }, {
-            cron: '0 1/20 * * * ?',
-            name: '[Bili-Plugin]自动检测更新',
-            fnc: () => this.update()
-        }, {
-            cron: config.festivalpush,
-            name: '[Bili-Plugin]自动节日推送',
-            fnc: () => this.autofestival()
-        }, {
-            cron: '0 15 * * * ?',
-            name: '[Bili-Plugin]自动校验插件',
-            fnc: () => this.autocheck()
-        }]
+                cron: '50 59 23 * * *',
+                name: '[Bili-Plugin]b站自动删除日志文件',
+                fnc: () => this.Bilidellog()
+            }, {
+                cron: config.livecron,
+                name: '[Bili-Plugin]自动发送弹幕',
+                fnc: () => this.autodamu()
+            }, {
+                cron: config.QQDaily,
+                name: '[Bili-Plugin]日签打卡',
+                fnc: () => this.QQDailysign()
+            }, {
+                cron: config.luckywordcron,
+                name: '[Bili-Plugin]幸运字符',
+                fnc: () => this.autolukyword()
+            }, {
+                cron: '0 1/20 * * * ?',
+                name: '[Bili-Plugin]自动检测更新',
+                fnc: () => this.update()
+            }, {
+                cron: config.festivalpush,
+                name: '[Bili-Plugin]自动节日推送',
+                fnc: () => this.autofestival()
+            }, {
+                cron: '0 15 * * * ?',
+                name: '[Bili-Plugin]自动校验插件',
+                fnc: () => this.autocheck()
+            },
+            {
+                cron: '0 0 0/1 * * ?',
+                name: '[Bili-Plugin]整点报时',
+                fnc: () => this.autobaoshi()
+            }
+        ]
     }
     async autocheck() {
         await Bili.Bilicheck()
+    }
+
+    async autobaoshi() {
+        const configs = await Bili.loadConfig(filePath)
+        const rawbaoshigroup = (await Bili.getConfig("baoshigroup", configs)) || []
+        if (rawbaoshigroup.length === 0) return logger.info('[Bili-Plugin]自动节日推送未配置群组，已自动跳过...')
+        let groups = [];
+        for (const g of rawbaoshigroup) {
+            groups.push(Number(g))
+        }
+        const message = segment.record(config.baoshiapi)
+        for (const g of groups) {
+            if (await QQBot.isQQBotcheck(g)) {
+                await QQBot.sendmsgs(message, g)
+                await Bili.sleep(1000)
+                continue
+            }
+            await Bot.pickGroup(g).sendMsg(message)
+            await Bili.sleep(2500)
+        }
     }
 
     async autofestival() {
@@ -70,11 +97,16 @@ export class Bilitask extends plugin {
         }
         const message = await Bili.getfestival()
         for (const g of groups) {
+            if (await QQBot.isQQBotcheck(g)) {
+                await QQBot.sendmsgs(message, g)
+                await Bili.sleep(1000)
+                continue
+            }
             await Bot.pickGroup(g).sendMsg(message)
             await Bili.sleep(2500)
         }
     }
-    
+
     async update(e = this.e) {
         const action = await Bili.isUpdate()
         if (action) {
@@ -94,19 +126,22 @@ export class Bilitask extends plugin {
         for (const bot of rawIsluckywordBots) {
             isluckywordBots.push(Number(bot.trim()));
         }
-    
+
         if (isluckywordBots.length === 0) return this.e ? this.e.reply('幸运字符任务Bot名单为空，已自动跳过', true) : logger.info('幸运字符任务Bot名单为空，已自动跳过');
-    
+
         const rawLuckywordwhites = (await Bili.getConfig("luckywordwhites", configs)) || [];
         if (!Array.isArray(rawLuckywordwhites)) {
             logger.warn('配置项 "luckywordwhites" 不是一个数组');
-            return 
+            return
         }
         const luckywordwhites = rawLuckywordwhites.map(entry => {
             const [botQQ, group] = entry.trim().split(':');
-            return { botQQ: Number(botQQ), group: Number(group) };
+            return {
+                botQQ: Number(botQQ),
+                group: Number(group)
+            };
         });
-    
+
         const rawLuckywordblacks = (await Bili.getConfig("luckywordblacks", configs)) || [];
         if (!Array.isArray(rawLuckywordblacks)) {
             logger.warn('配置项 "luckywordblacks" 不是一个数组');
@@ -114,9 +149,14 @@ export class Bilitask extends plugin {
         }
         const luckywordblacks = rawLuckywordblacks.map(entry => {
             const parts = entry.trim().split(':');
-            return parts.length === 2 
-                ? { botQQ: Number(parts[0]), group: Number(parts[1]) }
-                : { group: Number(parts[0]) }
+            return parts.length === 2 ?
+                {
+                    botQQ: Number(parts[0]),
+                    group: Number(parts[1])
+                } :
+                {
+                    group: Number(parts[0])
+                }
         });
 
         const rawIsviplists = (await Bili.getConfig("isviplists", configs)) || [];
@@ -128,36 +168,36 @@ export class Bilitask extends plugin {
         for (const bot of rawIsviplists) {
             isviplists.push(Number(bot.trim()));
         }
-    
+
         const allMessages = [];
         if (this.e) {
             const r = await this.e.reply("开始执行抽取幸运字符任务，请稍等...", true);
             await Bili.recall(e, r, 5);
         }
-    
+
         const tsstart = moment();
         let Count = 0;
         let Count2 = 0;
-    
+
         for (const botQQ of isluckywordBots) {
             try {
-            const rawGroupList = ((await Bili.getQQgrouplist(botQQ))).msg || [];
-            const groupList = []
-            for (const group of rawGroupList) {
-                groupList.push(Number(group));
-            }
+                const rawGroupList = ((await Bili.getQQgrouplist(botQQ))).msg || [];
+                const groupList = []
+                for (const group of rawGroupList) {
+                    groupList.push(Number(group));
+                }
                 if (groupList.length === 0) {
                     logger.mark(`机器人${botQQ}群聊列表为空，自动跳过幸运字符抽取...`);
                     continue;
                 }
-    
+
                 const whiteGroups = [];
                 for (const entry of luckywordwhites) {
                     if (entry.botQQ === botQQ) {
                         whiteGroups.push(entry.group);
                     }
                 }
-    
+
                 let filteredGroups = [];
                 if (whiteGroups.length > 0) {
                     for (const g of groupList) {
@@ -168,7 +208,7 @@ export class Bilitask extends plugin {
                 } else {
                     filteredGroups = [...groupList];
                 }
-    
+
                 const blackGroups = [];
                 for (const entry of luckywordblacks) {
                     if (entry.botQQ && entry.botQQ === botQQ) {
@@ -177,30 +217,33 @@ export class Bilitask extends plugin {
                         blackGroups.push(entry.group);
                     }
                 }
-    
+
                 for (const g of filteredGroups.slice()) {
                     if (blackGroups.includes(g)) {
                         filteredGroups.splice(filteredGroups.indexOf(g), 1);
                     }
                 }
-    
+
                 filteredGroups = filteredGroups.filter(g => !blackGroups.includes(g));
-    
+
                 if (filteredGroups.length === 0) {
                     logger.mark(`机器人${botQQ}字符过滤配置后，群聊列表为空，自动跳过幸运字符抽取...`);
                     continue;
                 }
-    
+
                 const isVip = isviplists.includes(botQQ);
                 const execTimes = isVip ? 3 : 1;
                 const cookieRes = await Bili.getQQck(botQQ, "qun.qq.com");
-                const { skey, pskey } = cookieRes;
-    
+                const {
+                    skey,
+                    pskey
+                } = cookieRes;
+
                 if (!skey || !pskey) continue;
-    
+
                 for (const group of filteredGroups) {
                     logger.mark(`[${botQQ}@${group}]开始执行抽字符....`);
-    
+
                     for (let i = 0; i < execTimes; i++) {
                         const r = await Bili.luckyword(botQQ, skey, pskey, group)
                         if ([0, -1].includes(r.code)) { //只记录0，-1
@@ -212,33 +255,33 @@ export class Bilitask extends plugin {
             } catch (err) {
                 logger.error(`[Bili-Plugin]幸运字符在处理机器人 ${botQQ} 时出错:`, err)
             }
-    
+
             Count++;
             await Bili.sleep(4000);
         }
-    
+
         if (allMessages.length > 0) {
             const chunks = [];
             while (allMessages.length > 0) {
                 chunks.push(allMessages.splice(0, 10).join('\n'));
             }
-    
+
             const forwardNodes = chunks.map(chunk => ({
                 user_id: '80000000',
                 nickname: '匿名消息',
                 message: chunk
             }));
-    
+
             const tsfinish = moment();
             const duration = tsfinish.diff(tsstart);
             const time = moment.duration(duration).asSeconds();
-    
+
             forwardNodes.push({
                 user_id: '80000000',
                 nickname: '匿名消息',
                 message: `任务耗时：${time} 秒\n总共执行账号：${Count}\n总执行群数：${Count2}`
             });
-    
+
             try {
                 const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
                 if (this.e) {
@@ -259,10 +302,10 @@ export class Bilitask extends plugin {
             }
         }
     }
-    
-    
-    
-    
+
+
+
+
     async QQDailysign(e) {
         const forwardNodes = []
         const qq = await Bili.getQQlist()

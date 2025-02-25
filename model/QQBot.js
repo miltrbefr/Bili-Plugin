@@ -19,6 +19,76 @@ class QQBot {
         this.dataDir = './data/bili/QQBotenvent'
     }
 
+    async isQQBotcheck(groupId) {
+        const configDir = path.join('./data/bili/QQBotGroupMap');
+        const configPath = path.join(configDir, 'Groupconfig.json');
+        try {
+            const rawData = await fs.promises.readFile(configPath, 'utf8');
+            const groupMap = JSON.parse(rawData);
+            const targetId = String(groupId);
+            return Object.values(groupMap).includes(targetId);
+        } catch (error) {
+            return false
+        }
+    }
+
+    async sendmsgs(msgs, groupId) {
+        await this.ensureDataDir();
+        const filePath = path.join(this.dataDir, `${groupId}.json`);
+        if (!msgs) return false;
+        if (!Array.isArray(msgs)) msgs = [msgs];
+
+        const fetchValidEventData = async () => {
+            let attempts = 0;
+            const maxAttempts = 10
+            const retryInterval = 100;
+
+            while (attempts < maxAttempts) {
+                try {
+                    const rawData = await fs.promises.readFile(filePath, 'utf8');
+                    const eventData = JSON.parse(rawData);
+
+                    if (Date.now() - eventData.time <= 280 * 1000) {
+                        return eventData;
+                    }
+                } catch (error) {
+                    if (error.code === 'ENOENT') {
+                        await fs.promises.writeFile(filePath, JSON.stringify({
+                            time: 1740480612310,
+                            event_id: 'default',
+                            openid: groupId
+                        }));
+                    }
+                }
+                const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
+                const r = await res.json()
+                logger.info(r)
+                await new Promise(resolve => setTimeout(resolve, retryInterval));
+                attempts++;
+            }
+            return null;
+        };
+
+        try {
+            const eventData = await fetchValidEventData();
+            if (!eventData) {
+                logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
+                return false;
+            }
+
+            const group = Bot[config.QQBot].pickGroup(eventData.openid);
+            msgs.push({
+                type: "reply",
+                id: "event_" + eventData.event_id
+            });
+            await group.sendMsg(msgs);
+            return true;
+        } catch (error) {
+            logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error);
+            return false;
+        }
+    }
+
     async check(e) {
         const filePath = `${pluginRoot}/config/config.yaml`;
         const configs = await Bili.loadConfig(filePath);
@@ -45,8 +115,6 @@ class QQBot {
         }
     }
 
-
-
     async ensureDataDir() {
         if (!fs.existsSync(this.dataDir)) {
             fs.mkdirSync(this.dataDir, {
@@ -67,8 +135,8 @@ class QQBot {
             if (this.ark) msgs = await this.makeark(msgs);
             const fetchValidEventData = async () => {
                 let attempts = 0;
-                const maxAttempts = 5;
-                const retryInterval = 200;
+                const maxAttempts = 10
+                const retryInterval = 100;
 
                 while (attempts < maxAttempts) {
                     try {
@@ -87,9 +155,9 @@ class QQBot {
                             }));
                         }
                     }
-                 const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
-                const r = await res.json()
-                logger.info(r)
+                    const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
+                    const r = await res.json()
+                    logger.info(r)
                     await new Promise(resolve => setTimeout(resolve, retryInterval));
                     attempts++;
                 }

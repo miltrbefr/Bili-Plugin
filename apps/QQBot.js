@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import QQBot from '../model/QQBot.js';
 import config from '../model/Config.js';
-let QQBot_id = config.QQBot
+
 const dataDir = './data/bili/QQBotenvent'
 
 function ensureDataDir() {
@@ -27,7 +27,7 @@ Bot.on("notice.group.decrease", async event => {
     if (!(await QQBot.check(event))) {
         return false;
     }
-    if (event.user_id == QQBot_id) {
+    if (event.user_id == config.QQBot) {
         return false
     }
     await QQBot.replaceReply(event)
@@ -35,19 +35,15 @@ Bot.on("notice.group.decrease", async event => {
 });
 
 Bot.on("notice.group.increase", async event => {
-    if (qq == event.self_id || jiantingqq.includes(event.self_id)) {
-        if (!(await QQBot.check(event))) {
-            return false;
-        }
-
-        if (event.user_id == QQBot_id) {
-            return false
-        }
-
-        await QQBot.replaceReply(event)
+    if (!(await QQBot.check(event))) {
         return false;
     }
 
+    if (event.user_id == config.QQBot) {
+        return false
+    }
+
+    await QQBot.replaceReply(event)
     return false;
 });
 
@@ -60,15 +56,14 @@ Bot.on("notice.group.recall", async event => {
 });
 
 Bot.on("notice.group.poke", async e => {
-    if (!(await QQBot.check(e))) {
-        return false;
+        if (!(await QQBot.check(e))) {
+            return false;
+        }
+        e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
+        await QQBot.replaceReply(e)
+        return false
     }
-    if (e.target_id == QQBot_id) {
-        e.target_id = e.self_id
-    }
-    await QQBot.replaceReply(e)
-    return false
-})
+)
 
 
 Bot.on("message.group.callback", async e => {
@@ -109,11 +104,10 @@ export class BiliNB extends plugin {
         if (!(await QQBot.check(event))) {
             return false;
         }
-        if (event.at == QQBot_id) {
-            event.at = event.self_id;
+        if (event.at == config.QQBot) {
+            event.at = event.self_id
         }
         await QQBot.replaceReply(event)
         return false;
     }
 }
-

@@ -49,6 +49,10 @@ export class Biliswitch extends plugin {
                     fnc: "switchfestivalgroup"
                 },
                 {
+                    reg: /^#?报时推送(添加|删除)群(.*)/mi,
+                    fnc: "switchbaoshigroup"
+                },
+                {
                     reg: /^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?(添加|删除)野收群聊(.*)/mi,
                     fnc: "switchgroup",
                     permission: 'master'
@@ -61,6 +65,47 @@ export class Biliswitch extends plugin {
             ]
         });
     }
+
+    async switchbaoshigroup(e) {
+        if (!(e.isMaster || e.member.is_admin || e.member.is_owner)) {
+            await this.e.reply("暂无权限，仅群主或管理也添加", true)
+            return
+        }
+        let config = YAML.parse(fs.readFileSync(filePath, 'utf8'));
+        let group = e.msg.replace(/#?报时推送(添加|删除)群/gi, '').trim();
+        if (!group) {
+            if (e.group_id) {
+                group = e.group_id;
+            } else {
+                return e.reply('请键入群聊号', true);
+            }
+        }
+        let action = e.msg.match(/添加|删除/)[0];
+        let replyMessage = '';
+        if (action === '添加') {
+            if (!config.baoshigroup.includes(group)) {
+                config.baoshigroup.push(group);
+                fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
+                replyMessage = `群${group}已成功添加到报时推送列表:\n`;
+            } else {
+                replyMessage = `群${group}已在报时推送列表中\n`;
+            }
+        } else if (action === '删除') {
+            let index = config.baoshigroup.indexOf(group);
+            if (index > -1) {
+                config.baoshigroup.splice(index, 1);
+                fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
+                replyMessage = `群${group}已成功从报时推送列表中删除\n`;
+            } else {
+                replyMessage = `群${group}不在报时推送列表中\n`;
+            }
+        } else {
+            return e.reply('未知操作', true);
+        }
+        replyMessage += config.baoshigroup.join(", ");
+        return e.reply(replyMessage, true);
+    }
+
 
     async switchjiantingQQ(e) {
         let config = YAML.parse(fs.readFileSync(filePath, 'utf8'));

@@ -43,7 +43,7 @@ export class Help extends plugin {
             "themeExclude": [
                 "default"
             ],
-            "colCount": 4,
+            "colCount": 3,
             "bgBlur": true
         }
 
@@ -51,7 +51,7 @@ export class Help extends plugin {
                 group: '本插件均为开源项目，严禁将本库内容用于任何商业用途或违法行为'
             },
             {
-                group: '小功能',
+                group: '小功能(tips:推送功能支持QQBot推送啦~)',
                 list: [{
                         icon: 82,
                         title: '今日运势',
@@ -60,12 +60,17 @@ export class Help extends plugin {
                     {
                         icon: 2,
                         title: '节日推送(添加/删除)群',
-                        desc: '添加群到节日推送列表（群管理权限）'
+                        desc: '添加群到节日推送列表'
                     },
                     {
                         icon: 25,
                         title: '节日查询',
                         desc: '查询最近的节日'
+                    },
+                    {
+                        icon: 5,
+                        title: '报时推送(添加/删除)群',
+                        desc: '添加群到报时推送列表'
                     },
                     {
                         icon: 17,

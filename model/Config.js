@@ -80,6 +80,7 @@ class Config {
                 festivalpush: this.generateCronfestival(),
                 yiyan: "http://113.44.131.92:3333/text?wb=yy&type=text",
                 totalApi: "http://113.44.131.92:2536/bili",
+                baoshiapi: "http://113.44.131.92:3333/bs/zdbs",
                 Switchjx: true,
                 SESSDATA: '这里可以填写默认解析ck(仅SESSDATA字段即可)，用于解析视频(没有哔站登录的用户，已登录的用户使用自己的)，下面的配置是最大视频发送大小/MB',
                 maxVideoSizeMB: '15',
@@ -90,12 +91,12 @@ class Config {
                 totalbody: [],
                 festivalgroup: [],
                 jiantingQQ: [],
+                baoshigroup: [],
                 ark: false,
                 button: false,
                 ck: '花瓣网cookie，如果ark为true请填写，否则可忽略',
                 QQBot: '自行填写官方机器人QQ号',
                 appid: '自行填写官方机器人appid',
-                //qq: '野鸡qq用于获取事件id'
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -110,6 +111,7 @@ class Config {
                 festivalpush: currentConfig?.festivalpush || this.generateCronfestival(),
                 yiyan: currentConfig?.yiyan || "http://113.44.131.92:3333/text?wb=yy&type=text",
                 totalApi: currentConfig?.totalApi || "http://113.44.131.92:2536/bili",
+                baoshiapi: currentConfig?.baoshiapi || "http://113.44.131.92:3333/bs/zdbs",
                 Switchjx: currentConfig?.Switchjx || true,
                 SESSDATA: currentConfig?.SESSDATA || '这里可以填写默认解析ck(仅SESSDATA字段即可)，用于解析视频(没有哔站登录的用户，已登录的用户使用自己的)，下面的配置是最大视频发送大小/MB',
                 maxVideoSizeMB: currentConfig?.maxVideoSizeMB || '15',
@@ -120,12 +122,12 @@ class Config {
                 totalbody: currentConfig?.totalbody || [],
                 festivalgroup: currentConfig?.festivalgroup || [],
                 jiantingQQ: currentConfig?.jiantingQQ || [],
+                baoshigroup: currentConfig?.baoshigroup || [],
                 ark: currentConfig?.ark || false,
                 button: currentConfig?.button || false,
                 ck: currentConfig?.ck || '花瓣网cookie，如果ark为true请填写，否则可忽略',
                 QQBot: currentConfig?.QQBot || '自行填写官方机器人QQ号',
                 appid: currentConfig?.appid || '自行填写官方机器人appid',
-                //qq: currentConfig?.qq || '野鸡qq用于获取事件id'
             };
 
             let needsUpdate = false;
@@ -151,12 +153,12 @@ class Config {
             logger.error(`[BILI PLUGIN] 配置加载失败: ${error}`);
         }
     }
-/*
-    get qq() {
+
+    get baoshiapi() {
         if (!this.cache) this.loadConfig();
-        return this.cache?.qq
+        return this.cache?.baoshiapi
     }
-*/
+
     get QQBot() {
         if (!this.cache) this.loadConfig();
         return this.cache?.QQBot
