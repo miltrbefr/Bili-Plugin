@@ -191,7 +191,7 @@ class QQBot {
                             event.message_id && group.recallMsg(event.message_id).catch(() => {});
                         }, recallDelay);
                     }
-                    return true;
+                    return response
                 };
 
                 const normalMsgs = msgs.filter(msg => msg.type !== 'raw');
