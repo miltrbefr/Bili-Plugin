@@ -373,7 +373,7 @@ class Bili {
                 const keys = await key.json()
                 if (keys.code === 0) {
                     await redis.set('bili:apikey', keys.key, {
-                        EX: 21600
+                        EX: 300
                     })
                     return keys.key
                 } else {
