@@ -77,12 +77,19 @@ export class Bilitask extends plugin {
     async autogetevent() {
         const configDir = path.join('./data/bili/QQBotGroupMap');
         const configPath = path.join(configDir, 'Groupconfig.json');
-
+    
         try {
+            try {
+                await fs.promises.access(configDir);
+            } catch (error) {
+                logger.info('[BILIPLUGIN配置路径不存在，跳过自动获取事件ID...]');
+                return false;
+            }
             const configData = await fs.promises.readFile(configPath, 'utf-8');
             const groupConfig = JSON.parse(configData);
-            const channelIds = Object.values(groupConfig)
-            if (!channelIds) return logger.info('[BILIPLUGIN未配置野收官发跳过自动获取事件ID...]')
+            const channelIds = Object.values(groupConfig);
+            if (!channelIds) return logger.info('[BILIPLUGIN未配置野收官发跳过自动获取事件ID...]');
+    
             for (const channelId of channelIds) {
                 const eventFilePath = path.join('./data/bili/QQBotenvent', `${channelId}.json`);
                 let needRefresh = false;
@@ -107,6 +114,7 @@ export class Bilitask extends plugin {
             }
         } catch (error) {
             logger.error('[BILIPLUGIN获取事件ID错误]', error);
+            return false;
         }
     }
 
