@@ -32,6 +32,12 @@ class QQBot {
         }
     }
 
+    async getevent(groupId) {
+        const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
+        const r = await res.json()
+        logger.info(r)
+    }
+
     async sendmsgs(msgs, groupId) {
         await this.ensureDataDir();
         const filePath = path.join(this.dataDir, `${groupId}.json`);

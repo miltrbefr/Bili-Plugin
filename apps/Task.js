@@ -60,12 +60,56 @@ export class Bilitask extends plugin {
                 cron: '0 0 0/1 * * ?',
                 name: '[Bili-Plugin]整点报时',
                 fnc: () => this.autobaoshi()
+            },
+            {
+                cron: '0/30 * * * * ? ',
+                name: '[Bili-Plugin]获取事件ID',
+                fnc: () => this.autogetevent(),
+                log: false
             }
         ]
     }
+
     async autocheck() {
         await Bili.Bilicheck()
     }
+
+    async autogetevent() {
+        const configDir = path.join('./data/bili/QQBotGroupMap');
+        const configPath = path.join(configDir, 'Groupconfig.json');
+
+        try {
+            const configData = await fs.promises.readFile(configPath, 'utf-8');
+            const groupConfig = JSON.parse(configData);
+            const channelIds = Object.values(groupConfig)
+            if (!channelIds) return logger.info('[BILIPLUGIN未配置野收官发跳过自动获取事件ID...]')
+            for (const channelId of channelIds) {
+                const eventFilePath = path.join('./data/bili/QQBotenvent', `${channelId}.json`);
+                let needRefresh = false;
+                try {
+                    await fs.promises.access(eventFilePath);
+                    const eventData = await fs.promises.readFile(eventFilePath, 'utf-8');
+                    const eventInfo = JSON.parse(eventData);
+                    const timeDiff = (Date.now() - eventInfo.time) / 1000;
+                    if (timeDiff > 260) {
+                        needRefresh = true;
+                    }
+                } catch (error) {
+                    needRefresh = true;
+                }
+                if (needRefresh) {
+                    try {
+                        await QQBot.getevent(channelId);
+                    } catch (err) {
+                        logger.error(`[BILIPLUGIN获取${channelId}事件失败]`, err);
+                    }
+                }
+            }
+        } catch (error) {
+            logger.error('[BILIPLUGIN获取事件ID错误]', error);
+        }
+    }
+
 
     async autobaoshi() {
         const configs = await Bili.loadConfig(filePath)
@@ -149,14 +193,12 @@ export class Bilitask extends plugin {
         }
         const luckywordblacks = rawLuckywordblacks.map(entry => {
             const parts = entry.trim().split(':');
-            return parts.length === 2 ?
-                {
-                    botQQ: Number(parts[0]),
-                    group: Number(parts[1])
-                } :
-                {
-                    group: Number(parts[0])
-                }
+            return parts.length === 2 ? {
+                botQQ: Number(parts[0]),
+                group: Number(parts[1])
+            } : {
+                group: Number(parts[0])
+            }
         });
 
         const rawIsviplists = (await Bili.getConfig("isviplists", configs)) || [];
