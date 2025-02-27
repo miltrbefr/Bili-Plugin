@@ -2,9 +2,7 @@ import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
-import {
-    pluginRoot
-} from '../model/constant.js'
+import QQBot from '../model/QQBot.js';
 
 export class Biliuserlive extends plugin {
     constructor() {
@@ -94,12 +92,8 @@ export class Biliuserlive extends plugin {
                         `『房间链接：https://live.bilibili.com/${roomid}』\n`,
                         `『独立播放器：https://www.bilibili.com/blackboard/live/live-activity-player.html?enterTheRoom=0&cid=${roomid}』`,
                     ];
-                    const filePath = `${pluginRoot}/config/config.yaml`;
-                    const configs = await Bili.loadConfig(filePath);
-                    const jiantingQQ = (await Bili.getConfig("jiantingQQ", configs)) || [];
-                    const selfId = String(e.self_id);
-                    const jiantingQQStr = jiantingQQ.map(id => String(id));
-                    if (['QQBot'].includes(e.adapter_name) || jiantingQQStr.includes(selfId)) {
+                
+                    if (['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) {
                         replyMessage = replyMessage.map(item => {
                             if (typeof item === 'string') {
                                 return item.replace(/\./g, '·');

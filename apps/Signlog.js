@@ -1,9 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import Bili from '../model/bili.js';
-import {
-    pluginRoot
-} from '../model/constant.js'
+import QQBot from '../model/QQBot.js';
 
 export class Bililog extends plugin {
     constructor() {
@@ -40,16 +37,11 @@ export class Bililog extends plugin {
         const filePath = path.join('./data/bilisign', `${String(userID).replace(/:/g, '_').trim()}.json`);
         let forwardNodes = [];
         try {
-            const filePath2 = `${pluginRoot}/config/config.yaml`;
-            const configs = await Bili.loadConfig(filePath2);
-            const jiantingQQ = (await Bili.getConfig("jiantingQQ", configs)) || [];
-            const selfId = String(e.self_id);
-            const jiantingQQStr = jiantingQQ.map(id => String(id));
             const rawData = fs.readFileSync(filePath);
             const records = JSON.parse(rawData);
             records.forEach(record => {
                 let message = String(record.message)
-                if (['QQBot'].includes(e.adapter_name) || jiantingQQStr.includes(selfId)) {
+                if (['QQBot'].includes(e.adapter_name) || QQBot.check(e)) {
                     message = String(record.message).replace(/https:\/\/b23\.tv\//g, 'BV号:')
                 }
                 forwardNodes.push({

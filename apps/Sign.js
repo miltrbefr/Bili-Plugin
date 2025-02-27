@@ -1,9 +1,7 @@
 import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
-import {
-    pluginRoot
-} from '../model/constant.js'
+import QQBot from '../model/QQBot.js';
 
 export class Bilisign extends plugin {
     constructor() {
@@ -170,13 +168,8 @@ export class Bilisign extends plugin {
                 replyMessage += `漫画分享失败: 未知错误\n`;
             }
 
-            const filePath2 = `${pluginRoot}/config/config.yaml`;
-            const configs = await Bili.loadConfig(filePath2);
-            const jiantingQQ = (await Bili.getConfig("jiantingQQ", configs)) || [];
-            const selfId = String(e.self_id);
-            const jiantingQQStr = jiantingQQ.map(id => String(id));
 
-            if (['QQBot'].includes(e.adapter_name) || jiantingQQStr.includes(selfId)) {
+            if (['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) {
                 replyMessage = String(replyMessage).replace(/https:\/\/b23\.tv\//g, 'BV号:')
             }
             forwardNodes.push({
