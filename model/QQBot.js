@@ -8,6 +8,10 @@ import {
     pluginRoot
 } from '../model/constant.js'
 import Bili from '../model/bili.js';
+let groupConfigCache = null;
+let groupConfigMtime = 0;
+let groupIdsCache = new Set()
+
 class QQBot {
     constructor() {
         this.signApi = config.signApi
@@ -100,22 +104,25 @@ class QQBot {
         const configs = await Bili.loadConfig(filePath);
         const jiantingQQ = (await Bili.getConfig("jiantingQQ", configs)) || [];
         const selfId = String(e.self_id);
-        const jiantingQQStr = jiantingQQ.map(id => String(id));
-        if (!jiantingQQStr.includes(selfId)) {
+        const jiantingQQSet = new Set(jiantingQQ.map(id => String(id)));
+        if (!jiantingQQSet.has(selfId)) {
             return false;
         }
         const filePath2 = './data/bili/QQBotGroupMap/Groupconfig.json';
         try {
-            await fs.promises.access(filePath2);
-            const data = await fs.promises.readFile(filePath2, 'utf-8');
-            const groupConfig = JSON.parse(data);
-            const groupId = String(e.group_id);
-            for (const key in groupConfig) {
-                if (groupConfig[key] === groupId) {
-                    return true
+            const stats = await fs.promises.stat(filePath2);
+            const currentMtime = stats.mtimeMs;
+            if (!groupConfigCache || currentMtime !== groupConfigMtime) {
+                const data = await fs.promises.readFile(filePath2, 'utf-8');
+                groupConfigCache = JSON.parse(data);
+                groupConfigMtime = currentMtime;
+                groupIdsCache.clear();
+                for (const key in groupConfigCache) {
+                    groupIdsCache.add(String(groupConfigCache[key]));
                 }
             }
-            return false;
+            const groupId = String(e.group_id);
+            return groupIdsCache.has(groupId);
         } catch (err) {
             return false;
         }

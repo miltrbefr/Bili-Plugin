@@ -24,7 +24,7 @@ export class Bilipoke extends plugin {
     }
 
     async accept(e) {
-        if (!(QQBot.check(e))) {
+        if (!(await QQBot.check(e))) {
             return false;
         }
         e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
