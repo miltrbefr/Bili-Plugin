@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import Bili from '../model/bili.js';
 
 export class Bililog extends plugin {
     constructor() {
