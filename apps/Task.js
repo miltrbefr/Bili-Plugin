@@ -77,7 +77,7 @@ export class Bilitask extends plugin {
     async autogetevent() {
         const configDir = path.join('./data/bili/QQBotGroupMap');
         const configPath = path.join(configDir, 'Groupconfig.json');
-    
+
         try {
             try {
                 await fs.promises.access(configDir);
@@ -89,7 +89,7 @@ export class Bilitask extends plugin {
             const groupConfig = JSON.parse(configData);
             const channelIds = Object.values(groupConfig);
             if (!channelIds) return logger.info('[BILIPLUGIN未配置野收官发跳过自动获取事件ID...]');
-    
+
             for (const channelId of channelIds) {
                 const eventFilePath = path.join('./data/bili/QQBotenvent', `${channelId}.json`);
                 let needRefresh = false;
@@ -536,7 +536,11 @@ export class Bilitask extends plugin {
                     const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
                     const groupKey = await redis.get(`bili:group:${fileName}`);
                     if (groupKey) {
-                        Bot.pickGroup(groupKey).sendMsg(forwardMessage)
+                        if (await QQBot.isQQBotcheck(groupKey)) {
+                            await QQBot.sendmsgs(forwardMessage, groupKey)
+                        } else {
+                            Bot.pickGroup(groupKey).sendMsg(forwardMessage)
+                        }
                     }
                 } catch (err) {
                     logger.error('[Bili-Plugin] 消息发送失败：', err);

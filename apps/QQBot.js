@@ -24,7 +24,7 @@ export class Bilipoke extends plugin {
     }
 
     async accept(e) {
-        if (!(await QQBot.check(e))) {
+        if (!(QQBot.check(e))) {
             return false;
         }
         e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
@@ -32,57 +32,6 @@ export class Bilipoke extends plugin {
         return false
     }
 }
-
-Bot.on("notice.group.poke", async e => {
-    if (!(await QQBot.check(e))) {
-        return false;
-    }
-    e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
-    await QQBot.replaceReply(e)
-    return false
-}
-)
-
-Bot.on("notice.group.sign", async event => {
-    if (!(await QQBot.check(event))) {
-        return false
-    }
-    await QQBot.replaceReply(event)
-    return false
-});
-
-Bot.on("notice.group.decrease", async event => {
-
-    if (!(await QQBot.check(event))) {
-        return false;
-    }
-    if (event.user_id == config.QQBot) {
-        return true
-    }
-    await QQBot.replaceReply(event)
-    return false;
-});
-
-Bot.on("notice.group.increase", async event => {
-    if (!(await QQBot.check(event))) {
-        return false;
-    }
-
-    if (event.user_id == config.QQBot) {
-        return true
-    }
-
-    await QQBot.replaceReply(event)
-    return false;
-});
-
-Bot.on("notice.group.recall", async event => {
-    if (!(await QQBot.check(event))) {
-        return false;
-    }
-    await QQBot.replaceReply(event)
-    return false;
-});
 
 
 Bot.on("message.group.callback", async e => {
