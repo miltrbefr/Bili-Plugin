@@ -14,6 +14,16 @@ function ensureDataDir() {
 }
 
 
+Bot.on("notice.group.poke", async e => {
+    if (!(await QQBot.check(e))) {
+        return false;
+    }
+    e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
+    await QQBot.replaceReply(e)
+    return false
+}
+)
+
 Bot.on("notice.group.sign", async event => {
     if (!(await QQBot.check(event))) {
         return false
@@ -54,16 +64,6 @@ Bot.on("notice.group.recall", async event => {
     await QQBot.replaceReply(event)
     return false;
 });
-
-Bot.on("notice.group.poke", async e => {
-        if (!(await QQBot.check(e))) {
-            return false;
-        }
-        e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
-        await QQBot.replaceReply(e)
-        return false
-    }
-)
 
 
 Bot.on("message.group.callback", async e => {

@@ -166,7 +166,14 @@ export class Bilisign extends plugin {
                 logger.error(`[Bili-Plugin]漫画分享失败: ${error}`);
                 replyMessage += `漫画分享失败: 未知错误\n`;
             }
-            if (['QQBot'].includes(e.adapter_name)) {
+
+            const filePath2 = `${pluginRoot}/config/config.yaml`;
+            const configs = await Bili.loadConfig(filePath2);
+            const jiantingQQ = (await Bili.getConfig("jiantingQQ", configs)) || [];
+            const selfId = String(e.self_id);
+            const jiantingQQStr = jiantingQQ.map(id => String(id));
+
+            if (['QQBot'].includes(e.adapter_name) || jiantingQQStr.includes(selfId)) {
                 replyMessage = String(replyMessage).replace(/https:\/\/b23\.tv\//g, 'BV号:')
             }
             forwardNodes.push({
