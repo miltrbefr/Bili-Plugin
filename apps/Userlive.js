@@ -2,6 +2,9 @@ import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
+import {
+    pluginRoot
+} from '../model/constant.js'
 
 export class Biliuserlive extends plugin {
     constructor() {
