@@ -1,6 +1,9 @@
 import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
+import {
+    pluginRoot
+} from '../model/constant.js'
 
 export class Bilisign extends plugin {
     constructor() {
