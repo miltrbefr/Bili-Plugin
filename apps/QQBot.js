@@ -13,6 +13,25 @@ function ensureDataDir() {
     }
 }
 
+export class Bilipoke extends plugin {
+    constructor() {
+        super({
+            name: "[Bili-Plugin]",
+            desc: "野收官发",
+            event: "notice.group.poke",
+            priority: Infinity,
+        })
+    }
+
+    async accept(e) {
+        if (!(await QQBot.check(e))) {
+            return false;
+        }
+        e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
+        await QQBot.replaceReply(e)
+        return false
+    }
+}
 
 Bot.on("notice.group.poke", async e => {
     if (!(await QQBot.check(e))) {
@@ -38,7 +57,7 @@ Bot.on("notice.group.decrease", async event => {
         return false;
     }
     if (event.user_id == config.QQBot) {
-        return false
+        return true
     }
     await QQBot.replaceReply(event)
     return false;
@@ -50,7 +69,7 @@ Bot.on("notice.group.increase", async event => {
     }
 
     if (event.user_id == config.QQBot) {
-        return false
+        return true
     }
 
     await QQBot.replaceReply(event)
@@ -96,7 +115,7 @@ export class BiliNB extends plugin {
             name: "[Bili-Plugin]",
             desc: "野收官发",
             event: "message.group",
-            priority: 1677979616,
+            priority: Infinity,
         })
     }
 
