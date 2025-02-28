@@ -10,7 +10,10 @@ Bot.on("notice.group.poke", async event => {
     if (!(await QQBot.check(event))) {
         return false;
     }
-    event.target_id = (event.target_id == config.QQBot) ? event.self_id : event.target_id
+    if (event.target_id == config.QQBot) {
+        event.bot.nickname = Bot[config.QQBot].nickname;
+        event.target_id = event.self_id;
+    }
     await QQBot.replaceReply(event)
     return false
 })
