@@ -29,8 +29,12 @@ export class Bilipoke extends plugin {
         }
         // e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
         if (e.target_id == config.QQBot) {
-            e.bot.nickname = Bot[config.QQBot].nickname;
-            e.target_id = e.self_id
+            const updatedBot = {
+                ...e.bot,
+                nickname: Bot[config.QQBot].nickname,
+            };
+            e.bot = updatedBot
+            e.target_id = e.self_id;
         }
         await QQBot.replaceReply(e)
         return false
