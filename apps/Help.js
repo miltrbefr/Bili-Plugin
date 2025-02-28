@@ -160,11 +160,6 @@ export class Help extends plugin {
                         title: '踢出粉丝',
                         desc: '引用视频踢出粉丝'
                     },
-                    {
-                        icon: 39,
-                        title: '查询up124,156',
-                        desc: '查询up信息多个逗号隔开'
-                    },
                 ],
             }
         ]
@@ -221,7 +216,7 @@ export class Help extends plugin {
                     },
                     {
                         icon: 63,
-                        title: '(添加/删除)监听机器人<可选@>',
+                        title: '(添加/删除)监听机器人<@>',
                         desc: '监听的Bot'
                     },
                     {
@@ -340,6 +335,21 @@ export class Help extends plugin {
                         icon: 30,
                         title: '(我的/他的)主播去哪了<@>',
                         desc: '获取当前开播的主播'
+                    },
+                    {
+                        icon: 39,
+                        title: '查询up124,156',
+                        desc: '查询up信息多个逗号隔开'
+                    },
+                    {
+                        icon: 40,
+                        title: '(添加|删除)弹幕(黑名单|白名单)<房间号>',
+                        desc: '自动弹幕黑白名单'
+                    },
+                    {
+                        icon: 15,
+                        title: 'B站视频自动解析',
+                        desc: '支持链接、小程序等（配置文件可关闭）'
                     }
                 ]
             },
@@ -388,11 +398,6 @@ export class Help extends plugin {
                         icon: 33,
                         title: '节日自动推送任务',
                         desc: `您的cron为:${config.festivalpush}`
-                    },
-                    {
-                        icon: 15,
-                        title: 'B站视频自动解析',
-                        desc: '支持链接、小程序等（配置文件可关闭）'
                     }
                 ]
             });

@@ -108,20 +108,20 @@ export class Biliswitch extends plugin {
 
 
     async switchjiantingQQ(e) {
-        let config = YAML.parse(fs.readFileSync(filePath, 'utf8'));
+        let config = YAML.parse(fs.readFileSync(filePath, 'utf8'))
         let QQ = e.msg.replace(/#?(添加|删除)监听(机器人||qq)/gi, '').trim() || e.self_id
-        let action = e.msg.match(/添加|删除/)[0];
+        let action = e.msg.match(/添加|删除/)[0]
         if (!config.jiantingQQ) {
             config.jiantingQQ = [];
         }
         if (action === '添加') {
-            if (!config.jiantingQQ.includes(QQ)) {
-                config.jiantingQQ.push(QQ);
+            if (!config.jiantingQQ.includes(Number(QQ))) {
+                config.jiantingQQ.push(Number(QQ));
                 fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
             }
         } else if (action === '删除') {
-            if (config.jiantingQQ.includes(QQ)) {
-                config.jiantingQQ = config.jiantingQQ.filter(item => item !== QQ);
+            if (config.jiantingQQ.includes(Number(QQ))) {
+                config.jiantingQQ = config.jiantingQQ.filter(item => item !== Number(QQ));
                 fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
             }
         }
