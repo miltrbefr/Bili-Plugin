@@ -68,6 +68,11 @@ export class Help extends plugin {
                         desc: '查询最近的节日'
                     },
                     {
+                        icon: 6,
+                        title: '进群多久了<@>',
+                        desc: '看看他进群多久了'
+                    },
+                    {
                         icon: 5,
                         title: '报时推送(添加/删除)群',
                         desc: '添加群到报时推送列表'
@@ -78,7 +83,7 @@ export class Help extends plugin {
                         desc: '获取米游社的游戏兑换码（注意命令前的符号）'
                     },
                     {
-                        icon: 17,
+                        icon: 19,
                         title: '(添加/删除)撤回白名单群',
                         desc: '白名单群监听撤回消息并转发'
                     }
