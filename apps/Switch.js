@@ -7,6 +7,9 @@ import {
 import YAML from 'yaml';
 const filePath = `${pluginRoot}/config/config.yaml`
 
+const storagePath = './data/bili/Recall';
+const configPath = path.join(storagePath, 'BILI群消息撤回通知白名单.json');
+
 export class Biliswitch extends plugin {
     constructor() {
         super({
@@ -61,10 +64,49 @@ export class Biliswitch extends plugin {
                     reg: /^#?(添加|删除)监听(机器人||qq)(.*)/mi,
                     fnc: "switchjiantingQQ",
                     permission: 'master'
+                },
+                {
+                    reg: "^(添加|删除)撤回白名单群",
+                    fnc: 'recallwhile',
+                    permission: 'master'
                 }
             ]
         });
     }
+
+    async recallwhile (e) {
+        const action = e.msg.includes('添加') ? '添加' :
+            e.msg.includes('删除') ? '删除' : '';
+
+        if (!action) {
+            e.reply('指令格式不对，请使用 "添加撤回白名单群 [群号]" 或 "删除撤回白名单群 [群号]" 格式', true);
+            return;
+        }
+
+        const groupId = e.group_id
+
+        let whiteList = readWhiteList();
+        ensureDataDir()
+        if (action === '添加') {
+            if (!isGroupInWhiteList(groupId)) {
+                whiteList.push(groupId);
+                writeWhiteList(whiteList);
+                e.reply(`群号 ${groupId} 已成功添加到撤回白名单`, true);
+            } else {
+                e.reply(`群号 ${groupId} 已经存在于撤回白名单中`, true);
+            }
+        } else if (action === '删除') {
+            const index = whiteList.indexOf(groupId);
+            if (index > -1) {
+                whiteList.splice(index, 1);
+                writeWhiteList(whiteList);
+                e.reply(`群号 ${groupId} 已成功从撤回白名单移除`, true);
+            } else {
+                e.reply(`群号 ${groupId} 不在撤回白名单中`, true);
+            }
+        }
+    }
+
 
     async switchbaoshigroup(e) {
         if (!(e.isMaster || e.member.is_admin || e.member.is_owner)) {
@@ -513,5 +555,41 @@ export class Biliswitch extends plugin {
     }    
 }
 
+function ensureDataDir() {
+    if (!fs.existsSync(storagePath)) {
+        fs.mkdirSync(storagePath, {
+            recursive: true
+        });
+    }
+}
+function readWhiteList() {
+    ensureDataDir()
+    if (!fs.existsSync(configPath)) {
+        fs.writeFileSync(configPath, JSON.stringify({
+            whiteList: []
+        }, null, 2));
+    }
+    try {
+        return JSON.parse(fs.readFileSync(configPath)).whiteList || [];
+    } catch (error) {
+        logger.error('读取白名单文件时出错:', error);
+        return [];
+    }
+}
+
+function writeWhiteList(whiteList) {
+    ensureDataDir()
+    try {
+        fs.writeFileSync(configPath, JSON.stringify({
+            whiteList
+        }, null, 2));
+    } catch (error) {
+        logger.error('写入白名单文件时出错:', error);
+    }
+}
 
 
+function isGroupInWhiteList(groupId) {
+    const whiteList = readWhiteList();
+    return whiteList.includes(groupId)
+}

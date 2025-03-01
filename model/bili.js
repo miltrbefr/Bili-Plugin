@@ -32,6 +32,35 @@ class Bili {
         this.config = this.loadConfig()
     }
 
+    async SubscribeUP(mid) {
+        const UPUrl = `${this.signApi}/space?mid=${mid}&key=${this.key}`;
+        const response = await fetch(UPUrl);
+        const data = await response.json();
+        const live = data.data.live;
+        const archive = data.data.archive.item[0]
+        const liveItem = {
+            roomStatus: live.roomStatus,
+            roundStatus: live.roundStatus,
+            liveStatus: live.liveStatus,
+            url: live.url,
+            title: live.title,
+            cover: live.cover,
+            roomid: live.roomid,
+        }
+        const archiveInfo = {
+            title: archive.title,
+            cover: archive.cover,
+            param: archive.param,
+            bvid: archive.bvid,
+            author: archive.author
+        }
+        const result = {
+            liveItem,
+            archiveInfo
+        };
+        return JSON.stringify(result);
+    }
+    
     async relationup(userCookies, mid, act) {
         const actionMap = {
             1: '关注',

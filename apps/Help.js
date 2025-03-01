@@ -76,6 +76,11 @@ export class Help extends plugin {
                         icon: 17,
                         title: '(#/*/%)兑换码',
                         desc: '获取米游社的游戏兑换码（注意命令前的符号）'
+                    },
+                    {
+                        icon: 17,
+                        title: '(添加/删除)撤回白名单群',
+                        desc: '白名单群监听撤回消息并转发'
                     }
                 ]
             }
@@ -208,7 +213,7 @@ export class Help extends plugin {
                 group: '本插件均为开源项目，严禁将本库内容用于任何商业用途或违法行为'
             },
             {
-                group: '配置说明',
+                group: '必须使用<xiaoye12123/Yunzai-QQBot-Plugin>的适配器',
                 list: [{
                         icon: 75,
                         title: '(添加/删除)野收群聊<真实群号>',
@@ -216,13 +221,13 @@ export class Help extends plugin {
                     },
                     {
                         icon: 63,
-                        title: '(添加/删除)监听机器人<@>',
+                        title: '(添加/删除)监听机器人',
                         desc: '监听的Bot'
                     },
                     {
                         icon: 33,
-                        title: '必须手动添加配置文件！！',
-                        desc: 'QQBot、appid必填！'
+                        title: '必须手动添加配置文件！',
+                        desc: 'QQBot、appid必填！记得重启'
                     }
                 ],
             }
