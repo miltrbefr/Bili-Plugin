@@ -140,10 +140,33 @@ class QQBot {
         const groupId = event.group_id;
         await this.ensureDataDir()
         const filePath = path.join(this.dataDir, `${groupId}.json`);
-
-        event.reply = async (msgs, quote = false, data) => {
+        const defaultOptions = {
+            at: false,
+            recallMsg: 0
+          }
+        event.reply = async (msgs, quote = false, data = defaultOptions) => {
             if (!msgs) return false;
-            if (!Array.isArray(msgs)) msgs = [msgs];
+            if (!Array.isArray(msgs)) msgs = [msgs]
+            const { at, recallMsg } = data
+            const processedMsgs = []
+            if (at) {
+                let userId = at === true ? event.user_id : at;
+                msgs.unshift(segment.at(userId))
+            }
+            for (const msg of msgs) {
+                if (msg.type === 'at') {
+                    try {
+                        const member = event.bot.pickMember(groupId, msg.qq);
+                        const userInfo = await member.getInfo() || {}
+                        processedMsgs.push(segment.text(`@${userInfo.card || userInfo.nickname || msg.qq}`))
+                    } catch (err) {
+                        processedMsgs.push(segment.text(`@${msg.qq}`))
+                    }
+                } else {
+                    processedMsgs.push(msg);
+                }
+            }
+            msgs = processedMsgs
             if (!this.button) msgs = msgs.filter(msg => msg.type !== 'button');
             if (this.ark) msgs = await this.makeark(msgs);
             const fetchValidEventData = async () => {
