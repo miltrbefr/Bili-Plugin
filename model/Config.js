@@ -97,6 +97,9 @@ class Config {
                 ck: '花瓣网cookie，如果ark为true请填写，否则可忽略',
                 QQBot: '自行填写官方机器人QQ号',
                 appid: '自行填写官方机器人appid',
+                whoisMyWifecdTime: 300,
+                whoisMyWifecacheTime: 3600,
+                whoisMyWifemaxMembers: 5
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -128,6 +131,9 @@ class Config {
                 ck: currentConfig?.ck || '花瓣网cookie，如果ark为true请填写，否则可忽略',
                 QQBot: currentConfig?.QQBot || '自行填写官方机器人QQ号',
                 appid: currentConfig?.appid || '自行填写官方机器人appid',
+                whoisMyWifecdTime: currentConfig?.whoisMyWifecdTime || 300,
+                whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
+                whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5
             };
 
             let needsUpdate = false;
@@ -152,6 +158,19 @@ class Config {
         } catch (error) {
             logger.error(`[BILI PLUGIN] 配置加载失败: ${error}`);
         }
+    }
+
+    get whoisMyWifecdTime() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.whoisMyWifecdTime
+    }
+    get whoisMyWifecacheTime() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.whoisMyWifecacheTime
+    }
+    get whoisMyWifemaxMembers() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.whoisMyWifemaxMembers
     }
 
     get baoshiapi() {

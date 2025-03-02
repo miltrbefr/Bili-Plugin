@@ -86,6 +86,11 @@ export class Help extends plugin {
                         icon: 19,
                         title: '(添加/删除)撤回白名单群',
                         desc: '白名单群监听撤回消息并转发'
+                    },
+                    {
+                        icon: 39,
+                        title: '我(老婆/老公)呢',
+                        desc: '娶群友小功能'
                     }
                 ]
             }
