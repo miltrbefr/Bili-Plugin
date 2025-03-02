@@ -1,0 +1,58 @@
+#签到API
+signApi: http://113.44.131.92:2536/bili
+#登录API
+loginApi: http://113.44.131.92:3333/bili
+#自动签到cron
+cron: 0 58 7,12 * * *
+#自动弹幕cron
+livecron: 19 18,34,49 * * * *
+#自动日签卡cron
+QQDaily: 22 51 17 * * *
+#自动抽群幸运字符cron
+luckywordcron: 16 4 15 * * *
+#自动节日推送cron
+festivalpush: 54 1 8 * * *
+#自动弹幕的一言API，只支持响应text
+yiyan: http://113.44.131.92:3333/text?wb=yy&type=text
+#统计信息API
+totalApi: http://113.44.131.92:2536/bili
+#报时API
+baoshiapi: http://113.44.131.92:3333/bs/zdbs
+#是否启动解析
+Switchjx: true
+#默认解析CK
+SESSDATA: 这里可以填写默认解析ck(仅SESSDATA字段即可)，用于解析视频(没有哔站登录的用户，已登录的用户使用自己的)，下面的配置是最大视频发送大小/MB
+#最大支持发送视频大小
+maxVideoSizeMB: "15"
+#幸运字符机器人QQ号
+isluckywordBots: []
+#幸运字符VIP机器人QQ号(抽3次每群)
+isviplists: []
+#幸运字符白名单群
+luckywordwhites: []
+#幸运字符黑名单群
+luckywordblacks: []
+#未知参数
+totalbody: []
+#节日推送群聊
+festivalgroup: []
+#QQBot的监听QQ
+jiantingQQ: []
+#报时群聊
+baoshigroup: []
+#QQBot是否能发送ARK消息，可以自动转换(仅野收)
+ark: false
+#QQBot是否能发送button消息，true为自动过滤否则不过滤(仅野收)
+button: false
+#花瓣网cookie，用户转换获取ark消息图片链接
+ck: 花瓣网cookie，如果ark为true请填写，否则可忽略
+#官方QQBot的QQ号
+QQBot: 自行填写官方机器人QQ号
+#官方QQBot的开放平台APPID
+appid: 自行填写官方机器人appid
+#娶群友的冷却时间(主人除外)
+whoisMyWifecdTime: 300
+#娶群友的群友信息缓存时间
+whoisMyWifecacheTime: 3600
+#娶群友时随机选择的群友数(影响成功率)
+whoisMyWifemaxMembers: 5
