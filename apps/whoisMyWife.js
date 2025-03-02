@@ -26,6 +26,7 @@ export class Biliwife extends plugin {
         if (!regRet) return false
 
         const keyword = regRet[1]
+        if(['QQBot'].includes(e.adapter_name))  return this.replyNoWife(e, keyword)
         const currentTime = moment()
         const masterList = cfg.masterQQ
 
