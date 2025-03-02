@@ -71,6 +71,7 @@ export class Bilitask extends plugin {
     }
 
     async autocheck() {
+        await Bili.fetchlist()
         await Bili.Bilicheck()
     }
 

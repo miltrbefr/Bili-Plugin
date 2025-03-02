@@ -32,8 +32,10 @@ class Bili {
         this.config = this.loadConfig()
     }
 
+
+    // 获取UP最新信息
     async SubscribeUP(mid) {
-        const UPUrl = `${this.signApi}/space?mid=${mid}&key=${this.key}`;
+        const UPUrl = `${this.signApi}/space?mid=${mid}`;
         const response = await fetch(UPUrl);
         const data = await response.json();
         const live = data.data.live;
@@ -51,7 +53,9 @@ class Bili {
             title: archive.title,
             cover: archive.cover,
             param: archive.param,
+            duration: archive.duration,
             bvid: archive.bvid,
+            ctime: archive.ctime,
             author: archive.author
         }
         const result = {
@@ -60,7 +64,7 @@ class Bili {
         };
         return JSON.stringify(result);
     }
-    
+
     async relationup(userCookies, mid, act) {
         const actionMap = {
             1: '关注',

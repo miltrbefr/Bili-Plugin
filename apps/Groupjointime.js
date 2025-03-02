@@ -8,7 +8,7 @@ export class Bilijointime extends plugin {
             event: "message.group",
             priority: 1677,
             rule: [{
-                reg: /^#?(我|它|她|他|he|she|it|i)?进群多久了$/mi,
+                reg: /^#?(我|它|她|他|he|she|it|i)?进群多久了$/i,
                 fnc: "jointime"
             }]
         })
