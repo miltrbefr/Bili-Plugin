@@ -44,7 +44,7 @@ export class Biliwife extends plugin {
                 return e.reply(tips)
             }
         }
-
+        await redis.set(`BILI:whois-my-wife-cd:${e.user_id}`, currentTime.format(), {EX: cdTime})
         try {
             const memberMap = await e.group.getMemberMap()
             const memberIds = Array.from(memberMap.keys())
@@ -84,7 +84,6 @@ export class Biliwife extends plugin {
                 `\n最后发言：${lastSent.fromNow()}`,
               //  `\n群头衔：「${memberInfo.title}」`
             ]
-            await redis.set(`BILI:whois-my-wife-cd:${e.user_id}`, currentTime.format(), {EX: cdTime})
             return e.reply(msg)
         } catch (err) {
             return this.replyNoWife(e, keyword)
