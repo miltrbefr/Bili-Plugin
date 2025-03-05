@@ -91,6 +91,11 @@ export class Help extends plugin {
                         icon: 39,
                         title: '我(老婆/老公)呢',
                         desc: '娶群友小功能'
+                    },
+                    {
+                        icon: 56,
+                        title: '(全部)功能统计',
+                        desc: '统计所有插件使用情况'
                     }
                 ]
             }
@@ -358,7 +363,7 @@ export class Help extends plugin {
                     },
                     {
                         icon: 40,
-                        title: '(添加|删除)弹幕(黑名单|白名单)<房间号>',
+                        title: '(添加|删除)弹幕(黑/白)名单<房间号>',
                         desc: '自动弹幕黑白名单'
                     },
                     {

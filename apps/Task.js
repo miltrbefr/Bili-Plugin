@@ -83,7 +83,7 @@ export class Bilitask extends plugin {
             try {
                 await fs.promises.access(configDir);
             } catch (error) {
-                logger.info('[BILIPLUGIN配置路径不存在，跳过自动获取事件ID...]');
+                logger.debug('[BILIPLUGIN配置路径不存在，跳过自动获取事件ID...]');
                 return false;
             }
             const configData = await fs.promises.readFile(configPath, 'utf-8');
