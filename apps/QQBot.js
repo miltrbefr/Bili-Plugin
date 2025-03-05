@@ -19,7 +19,7 @@ export class Bilipoke extends plugin {
             name: "[Bili-Plugin]",
             desc: "野收官发",
             event: "notice.group.poke",
-            priority: Infinity,
+            priority: Number.MIN_SAFE_INTEGER,
         })
     }
 
@@ -71,8 +71,8 @@ export class BiliNB extends plugin {
         super({
             name: "[Bili-Plugin]",
             desc: "野收官发",
-            event: "message.group",
-            priority: Infinity,
+            event: "message.group.normal",
+            priority: Number.MIN_SAFE_INTEGER,
         })
     }
 

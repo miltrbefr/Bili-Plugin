@@ -138,12 +138,13 @@ class QQBot {
 
     async replaceReply(event) {
         const groupId = event.group_id;
-        await this.ensureDataDir()
+        this.ensureDataDir()
         const filePath = path.join(this.dataDir, `${groupId}.json`);
         const defaultOptions = {
             at: false,
             recallMsg: 0
           }
+        const Reply = event.reply ? event.reply.bind(event) : fallbackReply
         event.reply = async (msgs, quote = false, data = defaultOptions) => {
             if (!msgs) return false;
             if (!Array.isArray(msgs)) msgs = [msgs]
@@ -199,11 +200,10 @@ class QQBot {
                 }
                 return null;
             };
-
             const eventData = await fetchValidEventData();
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
-                return false;
+                return Reply(msgs, quote, data)
             }
             try {
                 const group = Bot[config.QQBot].pickGroup(eventData.openid);
@@ -211,9 +211,9 @@ class QQBot {
                     type: "reply",
                     id: "event_" + eventData.event_id
                 };
+                let firstResponse
                 const sendBatch = async (messages) => {
                     const response = await group.sendMsg([...messages, replySegment]);
-
                     if (data?.recallMsg > 0 && response?.message_id) {
                         const recallDelay = Math.min(Math.max(data.recallMsg, 5), 300) * 1000;
                         setTimeout(() => {
@@ -222,23 +222,30 @@ class QQBot {
                         }, recallDelay);
                     }
                     return response
-                };
-
-                const normalMsgs = msgs.filter(msg => msg.type !== 'raw');
-                const rawMsgs = msgs.filter(msg => msg.type === 'raw');
-                if (normalMsgs.length > 0 && !(await sendBatch(normalMsgs))) {
-                    return false;
                 }
-                for (const rawMsg of rawMsgs) {
-                    if (!(await sendBatch([rawMsg]))) {
-                        return false;
+                const normalMsgs = msgs.filter(msg => msg.type !== 'raw');
+                const rawMsgs = msgs.filter(msg => msg.type === 'raw')
+                if (normalMsgs.length > 0) {
+                    firstResponse = await sendBatch(normalMsgs);
+                    if (!firstResponse) {
+                        logger.error('[Bili-Plugin]普通消息发送失败, 直接野生发送...')
+                        return Reply(msgs, quote, data);
                     }
                 }
-
-                return true;
+                for (const rawMsg of rawMsgs) {
+                    const rawResponse = await sendBatch([rawMsg]);
+                    if (!rawResponse) {
+                        logger.error('[Bili-Plugin]ARK消息发送失败');
+                        return Reply(msgs, quote, data);
+                    }
+                    if (firstResponse === undefined) {
+                        firstResponse = rawResponse
+                    }
+                }
+                return firstResponse || true
             } catch (error) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 消息发送失败:`, error);
-                return false;
+                return false
             }
         };
     }
