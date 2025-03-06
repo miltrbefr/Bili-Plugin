@@ -1,0 +1,117 @@
+@font-face {
+    font-family: "Guruwords";
+    src: url("../../font/萝莉体.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    font-family: "Guruwords";
+}
+
+#body {
+    transform-origin: top left;
+    width: 1000px;
+    min-height: 800px;
+    background: url('../../imgs/main.png') top left repeat;
+    padding: 40px 50px;
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow: 0 0 20px rgba(0, 169, 255, 0.3);
+}
+
+.header {
+    border-bottom: 2px solid #00a9ff;
+    padding-bottom: 20px;
+    margin-bottom: 25px;
+}
+
+.title {
+    color: #00a9ff;
+    font-size: 42px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    color: #fff;
+    font-size: 28px;
+}
+
+.stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stats-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.stats-item:hover {
+    background: rgba(0, 169, 255, 0.2);
+    transform: translateX(10px);
+}
+
+.top-rank {
+    background: linear-gradient(90deg, rgba(0, 169, 255, 0.3), transparent);
+}
+
+.rank {
+    width: 40px;
+    color: #00a9ff;
+    font-size: 28px;
+    font-weight: bold;
+    margin-right: 20px;
+    text-align: right;
+}
+
+.name {
+    flex: 1;
+    color: white;
+    font-size: 26px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.count {
+    color: #00ff88;
+    font-size: 24px;
+    min-width: 120px;
+    text-align: right;
+}
+
+.footer {
+    margin-top: 30px;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    font-size: 24px;
+}
+
+#copyright {
+    margin-top: 15px;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#copyright .version {
+    color: #00a9ff;
+    padding: 0 5px;
+}

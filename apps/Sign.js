@@ -18,7 +18,7 @@ export class Bilisign extends plugin {
     }
 
     async signBilibili(e) {
-        const cookiesFilePath = path.join('./data/bili', `${e.user_id}.json`);
+        const cookiesFilePath = path.join('./data/bili', `${String(e.user_id).replace(/:/g, '_').trim()}.json`);
         if (!fs.existsSync(cookiesFilePath)) {
             e.reply("未绑定ck，请发送哔站登录进行绑定", true);
             return;

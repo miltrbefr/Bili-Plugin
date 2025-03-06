@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import PluginLoader from '../../../lib/plugins/loader.js'
+import moment from 'moment';
 const _path = process.cwd().replace(/\\/g, '/')
 
 const pluginName = path.basename(path.join(import.meta.url, '../../'))
@@ -22,7 +23,7 @@ PluginLoader.filtPermission = new Proxy(PluginLoader.filtPermission, {
       }
       if (match) {
           const funcName = match[1].replace('34m[', '')
-          const date = new Date().toISOString().split('T')[0];
+          const date = moment().format('YYYY-MM-DD');
           const dirPath = './data/bili/Pluginstats';
           const filePath = path.join(dirPath, `${date}.json`);
           if (!fs.existsSync(dirPath)) {
