@@ -1,4 +1,3 @@
-
 @font-face {
     font-family: "LolitaFont";
     src: url("../../font/萝莉体.ttf") format("truetype");
@@ -184,23 +183,44 @@ body {
 }
 
 .exp-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 15px 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.exp-box {
     background: #f3f9ff;
     border-radius: 10px;
     padding: 15px;
-    margin: 15px 0;
     border: 1px solid #e1f0ff;
+    transition: transform 0.3s ease;
+}
+
+.exp-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 2px 8px rgba(0, 161, 214, 0.1);
 }
 
 .exp-item {
     display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-    color: #333;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
     font-size: 15px;
+}
+
+.exp-item span:first-child {
+    color: #666;
+    margin-bottom: 8px;
 }
 
 .exp-value {
     color: #00a1d6;
+    font-size: 20px;
     font-weight: bold;
 }
 
@@ -256,7 +276,6 @@ body {
     border-top: 1px solid #eee;
 }
 
-/* 悬停效果 */
 .status-item:hover,
 .task-item:hover {
     transform: translateX(5px);
