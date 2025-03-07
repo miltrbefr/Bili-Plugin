@@ -1,3 +1,4 @@
+/* info.css */
 @font-face {
     font-family: "LolitaFont";
     src: url("../../font/萝莉体.ttf") format("truetype");
@@ -11,16 +12,18 @@
     box-sizing: border-box;
     font-family: "LolitaFont", sans-serif;
     user-select: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 body {
     width: 650px;
-    backdrop-filter: blur(3px);
     padding: 18px;
-    transform: scale(1);
+    transform: scale(2);
     transform-origin: 0 0;
+    backface-visibility: hidden;
 }
-
 
 .container {
     background: rgba(255, 255, 255, 0.65);
@@ -32,7 +35,6 @@ body {
     overflow: hidden;
     backdrop-filter: blur(5px);
 }
-
 
 .avatar-combo {
     position: relative;
@@ -84,6 +86,24 @@ body {
     font-size: 24px;
     color: #333;
     margin-bottom: 5px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    max-width: 300px;
+    line-height: 1.3;
+}
+
+.user-sign {
+    color: #888;
+    font-size: 14px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    max-width: 400px;
+    margin-right: 15px;
 }
 
 .user-uid {
@@ -92,19 +112,12 @@ body {
     margin-bottom: 8px;
 }
 
-.user-sign {
-    color: #888;
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-
 .vip-box {
     position: relative;
     padding: 8px 12px;
     border-radius: 10px;
     border: 2px solid #ccc;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.4);
     text-align: center;
     font-size: 12px;
     display: flex;
@@ -127,7 +140,6 @@ body {
     color: #666;
 }
 
-
 .pendant-name {
     position: absolute;
     bottom: -32px;
@@ -144,7 +156,6 @@ body {
     width: max-content;
 }
 
-
 .data-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -153,7 +164,7 @@ body {
 }
 
 .data-item {
-    background: rgba(248, 249, 250, 0.7);
+    background: rgba(248, 249, 250, 0.4);
     padding: 15px;
     border-radius: 10px;
     text-align: center;
@@ -177,7 +188,6 @@ body {
     font-size: 14px;
 }
 
-
 .status-container {
     display: flex;
     gap: 12px;
@@ -195,20 +205,19 @@ body {
 }
 
 .status-item.success {
-    background: rgba(232, 245, 233, 0.7);
+    background: rgba(232, 245, 233, 0.4);
     color: #4caf50;
 }
 
 .status-item.normal {
-    background: rgba(227, 242, 253, 0.7);
+    background: rgba(227, 242, 253, 0.4);
     color: #2196f3;
 }
 
 .status-item.danger {
-    background: rgba(255, 235, 238, 0.7);
+    background: rgba(255, 235, 238, 0.4);
     color: #f44336;
 }
-
 
 .exp-info {
     display: grid;
@@ -218,10 +227,10 @@ body {
 }
 
 .exp-box {
-    background: rgba(243, 249, 255, 0.6);
+    background: rgba(243, 249, 255, 0.4);
     border-radius: 10px;
     padding: 15px;
-    border: 1px solid rgba(225, 240, 255, 0.4);
+    border: 1px solid rgba(225, 240, 255, 0.2);
     transition: transform 0.3s ease;
     backdrop-filter: blur(3px);
 }
@@ -249,7 +258,6 @@ body {
     font-size: 20px;
 }
 
-
 .task-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -268,47 +276,49 @@ body {
 }
 
 .task-done {
-    background: rgba(232, 245, 233, 0.7);
+    background: rgba(232, 245, 233, 0.4);
     color: #4caf50;
-    border: 1px solid rgba(200, 230, 201, 0.3);
+    border: 1px solid rgba(200, 230, 201, 0.2);
 }
 
 .task-undone {
-    background: rgba(255, 235, 238, 0.7);
+    background: rgba(255, 235, 238, 0.4);
     color: #f44336;
-    border: 1px solid rgba(255, 205, 210, 0.3);
+    border: 1px solid rgba(255, 205, 210, 0.2);
 }
 
-
 .footer-info {
-    margin-top: 20px;
+    margin-top: 15px;
     color: #666;
     font-size: 14px;
     display: flex;
     justify-content: space-between;
-    padding: 15px 0;
-    border-top: 1px solid rgba(238, 238, 238, 0.3);
+    padding: 12px 0;
+    border-top: 1px solid rgba(200, 200, 200, 0.1);
+    border-bottom: 1px solid rgba(200, 200, 200, 0.1);
+    margin-bottom: 15px;
 }
 
 .copyright {
     text-align: center;
-    color: #999;
+    color: #666;
     font-size: 12px;
-    margin-top: 25px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(238, 238, 238, 0.3);
+    margin-top: 15px;
+    padding-top: 12px;
+    font-weight: 500;
+    opacity: 0.9;
+    border-top: 1px solid rgba(238, 238, 238, 0.4);
 }
-
 
 @media (prefers-color-scheme: dark) {
     .container {
         background: rgba(30, 30, 30, 0.65);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     .data-item,
     .exp-box {
-        background: rgba(50, 50, 50, 0.6);
+        background: rgba(50, 50, 50, 0.5);
     }
 
     .user-name {
@@ -321,7 +331,7 @@ body {
     }
 
     .pendant-img {
-        filter: drop-shadow(0 0 8px rgba(255, 75, 75, 0.5));
+        filter: drop-shadow(0 0 8px rgba(255, 75, 75, 0.4));
     }
 
     .data-value {
@@ -333,20 +343,22 @@ body {
     }
 
     .task-done {
-        background: rgba(232, 245, 233, 0.7);
+        background: rgba(232, 245, 233, 0.4);
         color: #4caf50;
     }
 
     .task-undone {
-        background: rgba(255, 235, 238, 0.7);
+        background: rgba(255, 235, 238, 0.4);
         color: #f44336;
     }
 
     .footer-info {
-        color: #666;
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #aaa;
     }
 
     .copyright {
-        color: #999;
+        color: #888;
+        border-top-color: rgba(255, 255, 255, 0.1);
     }
 }

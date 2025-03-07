@@ -6,19 +6,22 @@
     <style>
         body {
             background: 
-                url('{{bgcover}}') top left/cover no-repeat,
-                linear-gradient(135deg, rgba(240, 244, 255, 0.9), rgba(230, 240, 255, 0.9)) !important;
+                linear-gradient(135deg, rgba(240, 244, 255, 0.9), rgba(230, 240, 255, 1)),
+                url('{{bgcover}}') center center/cover no-repeat fixed !important;
+            background-blend-mode: multiply;
+            backdrop-filter: blur(3px);
         }
         @media (prefers-color-scheme: dark) {
             body {
                 background: 
-                    url('{{bgcover}}') top left/cover no-repeat,
-                    linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(40, 40, 40, 0.9)) !important;
+                    linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(40, 40, 40, 1)),
+                    url('{{bgcover}}') center center/cover no-repeat fixed !important;
+                background-blend-mode: soft-light;
             }
         }
     </style>
 </head>
-<body {{sys.scale}}>
+<body style="transform: scale(2.8); transform-origin: 0 0;">
     <div class="container">
         <div class="user-header">
             <div class="avatar-combo">
