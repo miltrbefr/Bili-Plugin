@@ -15,9 +15,10 @@
 
 #body {
     transform-origin: top left;
-    width: 1000px;
+    width: 1250px;
+    overflow: auto;
     min-height: 800px;
-    background: url('../../imgs/main.png') top left repeat;
+    background: url('../../imgs/main.png') top left/auto auto repeat;
     padding: 40px 50px;
 }
 
