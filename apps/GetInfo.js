@@ -2,6 +2,9 @@ import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
 import Render from '../model/renders.js';
+import {
+    pluginResources
+} from '../model/constant.js';
 
 export class Biliinfo extends plugin {
     constructor() {
@@ -45,12 +48,15 @@ export class Biliinfo extends plugin {
             try {
                 const userCookies = cookiesData[userId];
                 const infoData = await Bili.getInfo(userCookies)
+                const num = Math.floor(Math.random() * infoData.collectionTop.length)
                 const params = {
                     isSelf: userCookies.DedeUserID,
                     avatarUrl: infoData.face,
                     replace_face: infoData.face,
                     name: infoData.name,
                     uid: infoData.uid,
+                    pendantname: infoData.pendant?.name,
+                    guajian: infoData.pendant?.image,
                     fans: infoData.fans,
                     attention: infoData.attention,
                     coins: infoData.coins,
@@ -69,9 +75,13 @@ export class Biliinfo extends plugin {
                     liveStatus: infoData.liveStatus ? '开启' : '关闭',
                     birthday: infoData.birthday,
                     expireTime: infoData.expireTime,
-                    expTasks: infoData.expTasks
+                    expTasks: infoData.expTasks,
                 };
-
+                if (infoData.collectionTop[num]?.cover) {
+                    params.bgcover = infoData.collectionTop[num].cover;
+                } else {
+                    params.bgcover = `${pluginResources}/imgs/main.png`
+                }
                 const image = await Render.render('Template/Info/info', params, {
                     e,
                     retType: 'base64'

@@ -3,21 +3,44 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="{{pluginResources}}/Template/Info/info.css">
+    <style>
+        body {
+            background: 
+                url('{{bgcover}}') top left/cover no-repeat,
+                linear-gradient(135deg, rgba(240, 244, 255, 0.9), rgba(230, 240, 255, 0.9)) !important;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: 
+                    url('{{bgcover}}') top left/cover no-repeat,
+                    linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(40, 40, 40, 0.9)) !important;
+            }
+        }
+    </style>
 </head>
 <body {{sys.scale}}>
     <div class="container">
         <div class="user-header">
-            {{if replace_face}}<img src="{{replace_face}}" class="user-avatar">{{/if}}
-            <div class="user-info">
-                <div class="user-name">{{name}}</div>
-                <div class="user-uid">UID: {{uid}}</div>
-                <div class="user-sign">{{sign}}</div>
-            </div>
-            <div class="vip-info {{vipClass}}">
-                <span class="vip-icon"></span>
-                {{vipText}} {{vipDue}}
+            <div class="avatar-combo">
+                {{if replace_face}}
+                <div class="avatar-container">
+                    <img src="{{replace_face}}" class="user-avatar {{guajian ? 'no-border' : ''}}">
+                    {{if guajian}}<img src="{{guajian}}" class="pendant-img">{{/if}}
+                    {{if pendantname}}<div class="pendant-name">{{pendantname}}</div>{{/if}}
+                </div>
+                {{/if}}
+                <div class="user-info">
+                    <div class="user-name">{{name}}</div>
+                    <div class="user-uid">UID: {{uid}}</div>
+                    <div class="user-sign">{{sign}}</div>
+                </div>
+                <div class="vip-box {{vipClass}}">
+                    <div class="vip-text">{{vipText}}</div>
+                    <div class="vip-due">{{vipDue}}</div>
+                </div>
             </div>
         </div>
+
         <div class="data-grid">
             <div class="data-item">
                 <div class="data-value">{{fans}}</div>
@@ -39,9 +62,10 @@
 
         <div class="status-container">
             <div class="status-item {{statusClass}}">账号状态：{{accountStatus}}</div>
-            <div class="status-item {{coinClass}}">硬币功能：{{coinStatus}}</div>
+            <div class="status-item {{coinClass}}">投币功能：{{coinStatus}}</div>
             <div class="status-item {{liveClass}}">弹幕功能：{{liveStatus}}</div>
         </div>
+
         <div class="exp-info">
             <div class="exp-box">
                 <div class="exp-item">
@@ -56,6 +80,7 @@
                 </div>
             </div>
         </div>
+
         <div class="task-container">
             {{each expTasks task}}
             <div class="task-item {{task.status ? 'task-done' : 'task-undone'}}">
@@ -64,10 +89,12 @@
             </div>
             {{/each}}
         </div>
+
         <div class="footer-info">
             <div class="birthday">生日：{{birthday || '未设置'}}</div>
             <div class="expire-time">Cookie有效期至：{{expireTime}}</div>
         </div>
+
         <div class="copyright">{{@copyright}}</div>
     </div>
 </body>

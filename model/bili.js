@@ -854,6 +854,8 @@ class Bili {
         }
         const card = infoRet.data.card || defaultResponse.data;
         const currentExp = card.level_info?.current_exp || 0;
+        const collectionTop = infoRet.data.images?.collection_top_simple?.top?.result || []
+        const pendant = card.pendant
         const nextExp = card.level_info?.next_exp || (card.level_info.current_level * 1000 + 2000);
         const divisor = !userCookies.coin ?
             (card.vip?.vipStatus ? 25 : 15) :
@@ -906,6 +908,8 @@ class Bili {
             fans: card.fans || 0,
             attention: card.attention || 0,
             coins: info2Ret.data?.coins || 0,
+            collectionTop,
+            pendant,
             sign: card.sign ? String(card.sign).replace(/\./g, '·').trim() : '暂无签名',
             vipStatus: !!card.vip?.vipStatus,
             vipLabel: card.vip?.label?.text || '普通用户',
