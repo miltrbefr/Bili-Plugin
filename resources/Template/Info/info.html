@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{pluginResources}}/Template/Info/info.css">
+</head>
+<body {{sys.scale}}>
+    <div class="container">
+        <div class="user-header">
+            {{if replace_face}}<img src="{{replace_face}}" class="user-avatar">{{/if}}
+            <div class="user-info">
+                <div class="user-name">{{name}}</div>
+                <div class="user-uid">UID: {{uid}}</div>
+                <div class="user-sign">{{sign}}</div>
+            </div>
+            <div class="vip-info {{vipClass}}">
+                <span class="vip-icon"></span>
+                {{vipText}} {{vipDue}}
+            </div>
+        </div>
+        <div class="data-grid">
+            <div class="data-item">
+                <div class="data-value">{{fans}}</div>
+                <div class="data-label">粉丝</div>
+            </div>
+            <div class="data-item">
+                <div class="data-value">{{attention}}</div>
+                <div class="data-label">关注</div>
+            </div>
+            <div class="data-item">
+                <div class="data-value">{{coins}}</div>
+                <div class="data-label">硬币</div>
+            </div>
+            <div class="data-item">
+                <div class="data-value">{{currentLevel}}</div>
+                <div class="data-label">当前等级</div>
+            </div>
+        </div>
+
+        <div class="status-container">
+            <div class="status-item {{statusClass}}">账号状态：{{accountStatus}}</div>
+            <div class="status-item {{coinClass}}">硬币功能：{{coinStatus}}</div>
+            <div class="status-item {{liveClass}}">弹幕功能：{{liveStatus}}</div>
+        </div>
+        <div class="exp-info">
+            <div class="exp-item">
+                <span>升级需要经验：</span>
+                <span class="exp-value">{{expNeeded}}</span>
+            </div>
+            <div class="exp-item">
+                <span>预计升级天数：</span>
+                <span class="exp-value">{{daysToLevelUp}}天</span>
+            </div>
+        </div>
+        <div class="task-container">
+            {{each expTasks task}}
+            <div class="task-item {{task.status ? 'task-done' : 'task-undone'}}">
+                <span class="task-name">{{task.name}}</span>
+                <span class="task-exp">{{task.exp}}</span>
+            </div>
+            {{/each}}
+        </div>
+        <div class="footer-info">
+            <div class="birthday">生日：{{birthday || '未设置'}}</div>
+            <div class="expire-time">Cookie有效期至：{{expireTime}}</div>
+        </div>
+        <div class="copyright">{{@copyright}}</div>
+    </div>
+</body>
+</html>

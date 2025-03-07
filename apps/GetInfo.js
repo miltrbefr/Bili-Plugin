@@ -1,6 +1,7 @@
 import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
+import Render from '../model/renders.js';
 
 export class Biliinfo extends plugin {
     constructor() {
@@ -10,10 +11,9 @@ export class Biliinfo extends plugin {
             event: "message",
             priority: 1677,
             rule: [{
-                    reg: /^#?(我的|他的|她的)(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)$/,
-                    fnc: "biliinfo"
-                }
-            ]
+                reg: /^#?(我的|他的|她的)(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)$/,
+                fnc: "biliinfo"
+            }]
         });
     }
 
@@ -23,43 +23,73 @@ export class Biliinfo extends plugin {
         let qqNumbers = []
         for (let msg of e.message) {
             if (msg.type === 'at') {
-              qqNumbers.push(msg.qq);
+                qqNumbers.push(msg.qq);
             }
-          }
-          if(qqNumbers.length > 0){
+        }
+        if (qqNumbers.length > 0) {
             userID = String(qqNumbers[0])
-          }
-        if(userID === selfID)userID =e.user_id
+        }
+        if (userID === selfID) userID = e.user_id
         const cookiesFilePath = path.join('./data/bili', `${String(userID).replace(/:/g, '_').trim()}.json`);
         if (!fs.existsSync(cookiesFilePath)) {
-            e.reply("未绑定ck，请发送哔站登录进行绑定",true);
+            e.reply("未绑定ck，请发送哔站登录进行绑定", true);
             return;
         }
-        const r = await e.reply("开始获取你的B站信息请稍等....",true)
+        const r = await e.reply("开始获取你的B站信息请稍等....", true)
         await Bili.recall(e, r, 5)
+
         const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
         let forwardNodes = [];
-        let Count = 0
+
         for (const userId in cookiesData) {
-            const userCookies = cookiesData[userId];
             try {
-                const replyMessage = await Bili.getInfo(userCookies);
+                const userCookies = cookiesData[userId];
+                const infoData = await Bili.getInfo(userCookies)
+                const params = {
+                    isSelf: userCookies.DedeUserID,
+                    avatarUrl: infoData.face,
+                    replace_face: infoData.face,
+                    name: infoData.name,
+                    uid: infoData.uid,
+                    fans: infoData.fans,
+                    attention: infoData.attention,
+                    coins: infoData.coins,
+                    sign: infoData.sign,
+                    vipClass: infoData.vipStatus ? 'active' : '',
+                    vipText: infoData.vipStatus ? infoData.vipLabel : '无会员',
+                    vipDue: infoData.vipStatus ? infoData.vipDue : '',
+                    statusClass: infoData.accountStatus === '正常' ? 'normal' : 'danger',
+                    accountStatus: infoData.accountStatus,
+                    currentLevel: 'Lv.' + infoData.currentLevel,
+                    expNeeded: infoData.expNeeded,
+                    daysToLevelUp: infoData.daysToLevelUp,
+                    coinClass: infoData.coinStatus ? 'success' : 'danger',
+                    coinStatus: infoData.coinStatus ? '开启' : '关闭',
+                    liveClass: infoData.liveStatus ? 'success' : 'danger',
+                    liveStatus: infoData.liveStatus ? '开启' : '关闭',
+                    birthday: infoData.birthday,
+                    expireTime: infoData.expireTime,
+                    expTasks: infoData.expTasks
+                };
+
+                const image = await Render.render('Template/Info/info', params, {
+                    e,
+                    retType: 'base64'
+                });
+
                 forwardNodes.push({
                     user_id: e.user_id || '1677979616',
                     nickname: e.sender.nickname || '哔站信息查询',
-                    message: replyMessage 
+                    message: image
                 });
+
             } catch (err) {
-                logger.error("[Bili-Plugin]获取用户信息失败:", err);
+                logger.error("[Bili-Plugin]获取哔站信息失败:", err);
                 forwardNodes.push({
                     user_id: e.user_id || '1677979616',
                     nickname: e.sender.nickname || '哔站信息查询',
-                    message: "获取用户信息失败"
+                    message: "图片生成失败：" + err.message
                 });
-            }
-            Count++
-            if (Count > 0) {
-                await Bot.sleep(2000)
             }
         }
 

@@ -795,95 +795,134 @@ class Bili {
         const getInfoUrl = `${this.signApi}/space?accesskey=${userCookies.access_token}&mid=${userCookies.DedeUserID}&key=${this.key}`;
         const expLogUrl = `${this.signApi}/exp_log2?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`;
         const info2 = `${this.signApi}/myinfo2?accesskey=${userCookies.access_token}&key=${this.key}`;
+        const defaultResponse = {
+            code: -1,
+            data: {
+                face: '',
+                name: '未知用户',
+                vip: {
+                    label: {
+                        text: ''
+                    }
+                },
+                level_info: {
+                    current_level: 0
+                }
+            }
+        };
         let infoRet = {
-            code: -1
-        };
-        let expRet = {
-            code: -1
-        };
-        let info2Ret = {
-            code: -1
+            ...defaultResponse
         };
         try {
             const infoResponse = await fetch(getInfoUrl);
             infoRet = await infoResponse.json();
             if (infoRet.code !== 0) {
-                throw new Error("获取用户信息失败");
+                logger.error('[Bili-Plugin]空间接口响应异常:', infoRet);
             }
         } catch (err) {
-            logger.error("[Bili-Plugin]获取用户信息失败", err);
+            logger.error('[Bili-Plugin]空间接口请求失败:', err);
         }
-        await this.sleep(1000)
+        await this.sleep(1000);
+        let info2Ret = {
+            code: -1,
+            data: {
+                coins: 0
+            }
+        };
         try {
             const info2Response = await fetch(info2);
             info2Ret = await info2Response.json();
-            if (infoRet.code !== 0) {
-                throw new Error("获取用户信息失败");
+            if (info2Ret.code !== 0) {
+                logger.error('[Bili-Plugin]详细信息接口异常:', info2Ret);
             }
         } catch (err) {
-            logger.error("[Bili-Plugin]获取用户信息失败", err);
+            logger.error('[Bili-Plugin]详细信息请求失败:', err);
         }
-        await this.sleep(1000)
+        await this.sleep(1000);
+        let expRet = {
+            code: -1,
+            data: {}
+        };
         try {
             const expResponse = await fetch(expLogUrl);
             expRet = await expResponse.json();
             if (expRet.code !== 0) {
-                throw new Error("获取经验日志失败");
+                logger.error('[Bili-Plugin]经验接口异常:', expRet);
             }
         } catch (err) {
-            logger.error("[Bili-Plugin]获取经验日志失败", err);
+            logger.error('[Bili-Plugin]经验日志请求失败:', err);
         }
-        let userInfo = [];
-        if (infoRet.code === 0) {
-            const card = infoRet.data.card;
-            const vipStatus = card.vip.vipStatus === 1;
-            const currentExp = card.level_info.current_exp;
-            const nextExp = card.level_info.next_exp;
-            let expNeeded = nextExp - currentExp;
-            const divisor = !userCookies.coin ?
-                (vipStatus ? 25 : 15) :
-                (vipStatus ? 75 : 65);
-            const daysToLevelUp = Math.ceil(expNeeded / divisor);
-
-            userInfo = [
-                segment.image(card.face),
-                `用户名：${card.name}\n`,
-                `Uid：${card.mid}\n`,
-                `粉丝：${card.fans}\n`,
-                `关注：${card.attention}\n`,
-                `硬币：${info2Ret.data.coins}\n`,
-                `签名：${String(card.sign).replace(/\./g, '·').trim()}\n`,
-                `会员：${vipStatus ? card.vip.label.text : '无会员'}\n`,
-                vipStatus ? `会员到期时间：${moment(card.vip.vipDueDate).format('YYYY-MM-DD HH:mm:ss')}\n` : null,
-                `账号状态：${card.silence === 0 ? '正常' : '封禁中'}\n`,
-                `当前等级: ${card.level_info.current_level}\n`,
-                `升级所需: ${expNeeded} 经验\n`,
-                `预计天数: ${daysToLevelUp}\n`,
-            ];
-        } else {
-            userInfo.push("获取用户信息时发生未知错误\n");
-        }
-        userInfo.push(`投币功能：${userCookies.coin ? '开启' : '关闭'}\n`);
-        userInfo.push(`弹幕功能：${userCookies.live ? '开启' : '关闭'}\n`);
-        if (info2Ret.data.set_birthday) {
-            userInfo.push(`生日：${info2Ret.data.birthday}\n`);
-        }
-        userInfo.push(`ck过期时间: ${moment(userCookies.expires_in).format('YYYY-MM-DD HH:mm:ss')}\n`);
-        if (expRet.code === 0) {
-            userInfo.push(`===========================\n`);
-            userInfo.push(`每日登录: ${expRet.data.login ? '已完成(5经验)' : '未完成(可领5经验)'}\n`);
-            userInfo.push(`每日观看: ${expRet.data.watch ? '已完成(5经验)' : '未完成(可领5经验)'}\n`);
-            userInfo.push(`每日投币: ${expRet.data.coins === 50 ? '已完成(50经验)' : `未完成(可领${50 - expRet.data.coins}经验)`}\n`);
-            userInfo.push(`每日分享: ${expRet.data.share ? '已完成(5经验)' : '未完成(可领5经验)'}\n`);
-            userInfo.push(`绑定邮箱: ${expRet.data.email ? '已完成(20经验)' : '未完成(可领20经验)'}\n`);
-            userInfo.push(`绑定手机号: ${expRet.data.tel ? '已完成(100经验)' : '未完成(可领100经验)'}\n`);
-            userInfo.push(`设置密保: ${expRet.data.safe_question ? '已完成(30经验)' : '未完成(可领30经验)'}\n`);
-            userInfo.push(`实名认证: ${expRet.data.identify_card ? '已完成(50经验)' : '未完成(可领50经验)'}`);
-        } else {
-            userInfo.push("获取经验日志时发生未知错误");
-        }
-
-        return userInfo.filter(info => info !== null);
+        const card = infoRet.data.card || defaultResponse.data;
+        const currentExp = card.level_info?.current_exp || 0;
+        const nextExp = card.level_info?.next_exp || (card.level_info.current_level * 1000 + 2000);
+        const divisor = !userCookies.coin ?
+            (card.vip?.vipStatus ? 25 : 15) :
+            (card.vip?.vipStatus ? 75 : 65);
+        const expTasks = [{
+                name: '每日登录',
+                exp: `${expRet.data?.login ? '5/5' : '0/5'}`,
+                status: expRet.data?.login || false
+            },
+            {
+                name: '每日观看',
+                exp: `${expRet.data?.watch ? '5/5' : '0/5'}`,
+                status: expRet.data?.watch || false
+            },
+            {
+                name: '每日投币',
+                exp: `${expRet.data?.coins}/50`,
+                status: (expRet.data?.coins || 0) >= 50
+            },
+            {
+                name: '每日分享',
+                exp: `${expRet.data?.share ? '5/5' : '0/5'}`,
+                status: expRet.data?.share || false
+            },
+            {
+                name: '绑定邮箱',
+                exp: `${expRet.data?.email ? '20/20' : '0/20'}`,
+                status: expRet.data?.email || false
+            },
+            {
+                name: '绑定手机',
+                exp: `${expRet.data?.tel ? '100/100' : '0/100'}`,
+                status: expRet.data?.tel || false
+            },
+            {
+                name: '设置密保',
+                exp: `${expRet.data?.safe_question ? '30/30' : '0/30'}`,
+                status: expRet.data?.safe_question || false
+            },
+            {
+                name: '实名认证',
+                exp: `${expRet.data?.identify_card ? '50/50' : '0/50'}`,
+                status: expRet.data?.identify_card || false
+            }
+        ];
+        return {
+            face: card.face,
+            name: card.name || '未知用户',
+            uid: card.mid || '0',
+            fans: card.fans || 0,
+            attention: card.attention || 0,
+            coins: info2Ret.data?.coins || 0,
+            sign: card.sign ? String(card.sign).replace(/\./g, '·').trim() : '暂无签名',
+            vipStatus: !!card.vip?.vipStatus,
+            vipLabel: card.vip?.label?.text || '普通用户',
+            vipDue: card.vip?.vipDueDate ?
+                moment(card.vip.vipDueDate).format('YYYY-MM-DD HH:mm:ss') : '未开通',
+            accountStatus: card.silence === 0 ? '正常' : '封禁中',
+            currentLevel: card.level_info?.current_level || 0,
+            expNeeded: Math.max(0, nextExp - currentExp),
+            daysToLevelUp: Math.ceil(Math.max(0, nextExp - currentExp) / divisor),
+            coinStatus: !!userCookies.coin,
+            liveStatus: !!userCookies.live,
+            birthday: info2Ret.data?.set_birthday ?
+                moment(info2Ret.data.birthday).format('YYYY-MM-DD') : null,
+            expireTime: userCookies.expires_in ?
+                moment(userCookies.expires_in).format('YYYY-MM-DD HH:mm:ss') : '已过期',
+            expTasks
+        };
     }
 
 

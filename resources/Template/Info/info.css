@@ -1,0 +1,268 @@
+
+@font-face {
+    font-family: "LolitaFont";
+    src: url("../../font/萝莉体.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "LolitaFont", "Microsoft Yahei", sans-serif;
+}
+
+.data-value,
+.exp-value,
+.task-exp,
+.vip-info,
+.status-item,
+.copyright {
+    font-family: "Microsoft Yahei", sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #f0f4ff, #e6f0ff);
+    width: 650px;
+    padding: 20px;
+    transform-origin: top left;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.user-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 20px;
+    border: 3px solid #00a1d6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+    flex-grow: 1;
+}
+
+.user-name {
+    font-size: 32px;
+    color: #181818;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.user-uid {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.user-sign {
+    color: #505050;
+    font-size: 14px;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+.vip-info {
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    background: #eee;
+    color: #666;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.vip-info.active {
+    background: linear-gradient(45deg, #fb7299, #ff3868);
+    color: white;
+    box-shadow: 0 2px 8px rgba(251, 114, 153, 0.3);
+}
+
+.vip-icon {
+    margin-right: 6px;
+    font-size: 16px;
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.data-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.data-item:hover {
+    transform: translateY(-3px);
+}
+
+.data-value {
+    font-size: 24px;
+    color: #00a1d6;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.data-label {
+    color: #666;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.status-container {
+    display: flex;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.status-item {
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.status-item::before {
+    content: '';
+    margin-right: 6px;
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+.status-item.success {
+    background: #e8f5e9;
+    color: #4caf50;
+}
+
+.status-item.success::before {
+    content: '✓';
+}
+
+.status-item.normal {
+    background: #e3f2fd;
+    color: #2196f3;
+}
+
+.status-item.normal::before {
+    content: '✔';
+}
+
+.status-item.danger {
+    background: #ffebee;
+    color: #f44336;
+}
+
+.status-item.danger::before {
+    content: '✕';
+}
+
+.exp-info {
+    background: #f3f9ff;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    border: 1px solid #e1f0ff;
+}
+
+.exp-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    color: #333;
+    font-size: 15px;
+}
+
+.exp-value {
+    color: #00a1d6;
+    font-weight: bold;
+}
+
+.task-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.task-item {
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.task-done {
+    background: #e8f5e9;
+    color: #4caf50;
+    border: 1px solid #c8e6c9;
+}
+
+.task-undone {
+    background: #ffebee;
+    color: #f44336;
+    border: 1px solid #ffcdd2;
+}
+
+.footer-info {
+    margin-top: 20px;
+    color: #666;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-top: 1px solid #eee;
+}
+
+.birthday::before,
+.expire-time::before {
+    margin-right: 6px;
+}
+
+.copyright {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+/* 悬停效果 */
+.status-item:hover,
+.task-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.vip-info:hover {
+    transform: scale(1.05);
+}
