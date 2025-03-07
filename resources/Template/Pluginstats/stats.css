@@ -18,7 +18,7 @@
     width: 1250px;
     overflow: auto;
     min-height: 800px;
-    background: url('../../imgs/main.png') top left/auto auto repeat;
+    background: url('../../imgs/main.png') top left/100% auto repeat;
     padding: 40px 50px;
 }
 

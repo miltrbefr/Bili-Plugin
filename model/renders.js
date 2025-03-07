@@ -66,6 +66,7 @@ const Render = {
                     sys: {
                         scale: getScale(cfg.scale)
                     },
+                    quality: 100,
                     saveId: getsaveId(data.saveId),
                     copyright: `Created By ${BotName}<span class="version">${Version.yunzai}</span>${pluginName} ${info}`,
                 }
