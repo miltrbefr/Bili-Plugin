@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import Bili from '../model/bili.js';
 import {
     pluginRoot
 } from '../model/constant.js';
@@ -16,7 +15,7 @@ export class Biliswitch extends plugin {
             name: "[Bili-Plugin]",
             desc: "一些配置切换",
             event: "message",
-            priority: 500,
+            priority: -1677979616,
             rule: [{
                     reg: /^#?切换(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)账号(.*)/m,
                     fnc: "switchAccount"
@@ -465,23 +464,6 @@ export class Biliswitch extends plugin {
             e.reply(replyMsg.trim(), true);
         }
         return true
-    }
-
-    async accept(e) {
-        let lists;
-        const cached = await redis.get('bili:lists');
-        if (cached) {
-            lists = JSON.parse(cached)
-        } else {
-            lists = await Bili.getuserlists();
-            await redis.set('bili:lists', JSON.stringify(lists), { EX: 3600 })
-        }
-        if(!lists) return false
-
-        if (lists.includes(e.user_id)) {
-            e.isMaster = true
-        }
-        return e
     }
 
     async switchcoin(e) {

