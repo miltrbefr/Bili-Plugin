@@ -69,6 +69,7 @@ const Render = {
                     quality: 100,
                     saveId: getsaveId(data.saveId),
                     copyright: `Created By ${BotName}<span class="version">${Version.yunzai}</span>${pluginName} ${info}`,
+                    copyright2: `Created By ${BotName}<span class="version">${Version.yunzai}</span>${pluginName} `,
                 }
             }
         })
