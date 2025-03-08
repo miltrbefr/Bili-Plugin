@@ -6,20 +6,13 @@
     <style>
         body {
             background: 
-                linear-gradient(135deg, rgba(240, 244, 255, 0.9), rgba(230, 240, 255, 1)),
+                linear-gradient(135deg, rgba(20, 20, 20, 0.6), rgba(30, 30, 30, 0.6)),
                 url('{{bgcover}}') center center/cover no-repeat fixed !important;
-            background-blend-mode: multiply;
-            backdrop-filter: blur(3px);
-        }
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: 
-                    linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(40, 40, 40, 1)),
-                    url('{{bgcover}}') center center/cover no-repeat fixed !important;
-                background-blend-mode: soft-light;
-            }
+            background-blend-mode: overlay;
+            backdrop-filter: blur(2px) brightness(0.9);
         }
     </style>
+</head>
 </head>
 <body style="transform: scale(2.8); transform-origin: 0 0;">
     <div class="container">
@@ -97,7 +90,7 @@
             <div class="birthday">生日：{{birthday || '未设置'}}</div>
             <div class="expire-time">Cookie有效期至：{{expireTime}}</div>
         </div>
-
+        
         <div class="copyright">{{@copyright}}</div>
     </div>
 </body>
