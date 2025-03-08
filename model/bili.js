@@ -910,11 +910,11 @@ class Bili {
             coins: info2Ret.data?.coins || 0,
             collectionTop,
             pendant,
-            sign: card.sign ? String(card.sign).replace(/\./g, '·').trim() : '暂无签名',
+            sign: card.sign ? card.sign : '这个人很神秘，什么都没有写',
             vipStatus: !!card.vip?.vipStatus,
             vipLabel: card.vip?.label?.text || '普通用户',
             vipDue: card.vip?.vipDueDate ?
-                moment(card.vip.vipDueDate).format('YYYY-MM-DD HH:mm:ss') : '未开通',
+                moment(card.vip.vipDueDate).format('YYYY-MM-DD') : '未开通',
             accountStatus: card.silence === 0 ? '正常' : '封禁中',
             currentLevel: card.level_info?.current_level || 0,
             expNeeded: Math.max(0, nextExp - currentExp),
@@ -924,7 +924,7 @@ class Bili {
             birthday: info2Ret.data?.set_birthday ?
                 moment(info2Ret.data.birthday).format('YYYY-MM-DD') : null,
             expireTime: userCookies.expires_in ?
-                moment(userCookies.expires_in).format('YYYY-MM-DD HH:mm:ss') : '已过期',
+                moment(userCookies.expires_in).format('YYYY-MM-DD') : '已过期',
             expTasks
         };
     }
