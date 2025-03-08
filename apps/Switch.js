@@ -16,7 +16,7 @@ export class Biliswitch extends plugin {
             name: "[Bili-Plugin]",
             desc: "一些配置切换",
             event: "message",
-            priority: -500,
+            priority: 500,
             rule: [{
                     reg: /^#?切换(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)账号(.*)/m,
                     fnc: "switchAccount"
