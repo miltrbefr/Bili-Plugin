@@ -26,7 +26,7 @@ function getsaveId(name) {
 
 const Render = {
     async render(path, params, cfg) {
-        if(!info) info = await Bili.getsha()
+        if(!info) info = await Bili.getsha() || `& Sha: 114514 & Date: 1919810`
         let { e } = cfg
         if (!e.runtime) {
             logger.mark(logger.blue('[Bili-Plugin]'), logger.red(`未找到e.runtime，请升级至最新版Yunzai`));

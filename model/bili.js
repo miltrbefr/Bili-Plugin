@@ -1216,10 +1216,10 @@ class Bili {
         try {
             const response = await fetch(expUrl);
             const json = await response.json();
-            return json.code === 0 ? "成功🌸" : `失败(${json.message || json.msg || '未知错误'})🌸`;
+            return json.code === 0 ? "成功" : `失败(${json.message || json.msg || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-Plugin]大会员经验领取失败:", err);
-            return "失败🌸";
+            return "失败";
         }
     }
 

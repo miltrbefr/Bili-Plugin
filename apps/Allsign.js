@@ -69,11 +69,11 @@ export class Biliallsign extends plugin {
             const estimatedCompletionTime = moment().add(tasklength * 120, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
             await redis.set('bili:autosign:task',
-                `请勿执行签到操作！！！\n当前正在执行哔站自动签到任务：\n开始时间：${ts} \n任务人数：${tasklength}\n预计完成时间: ${estimatedCompletionTime}`, {
+                `请勿执行签到操作！！！\n🌸当前正在执行哔站自动签到任务：\n🌸开始时间：${ts} \n🌸任务人数：${tasklength}\n🌸预计完成时间: ${estimatedCompletionTime}`, {
                     EX: tasklength * 120
                 }
             );
-            const m = `[哔站插件推送]报告主人！\n我要开始哔站签到啦~\n任务人数：${tasklength}\n任务开始时间：${ts} \n预计完成时间: ${estimatedCompletionTime}`
+            const m = `[哔站插件推送]报告主人！\n🌸我要开始哔站签到啦~\n🌸任务人数：${tasklength}\n🌸任务开始时间：${ts} \n🌸预计完成时间: ${estimatedCompletionTime}`
             if (this.e) {
                 this.e.reply(
                     m,
@@ -109,28 +109,28 @@ export class Biliallsign extends plugin {
 
                         logger.mark(`[Bili-Plugin]开始${file}的哔站签到账号${userId}执行签到`);
                         const userCookies = cookiesData[userId];
-                        let replyMessage = `账号${userId}的本次哔站签到结果\n===========================\n`;
+                        let replyMessage = `🌸账号${userId}的本次哔站签到结果\n===========================\n`;
                         const videoData = await Bili.getFeed(userCookies).catch(err => {
                             logger.error(`[Bili-Plugin]获取视频失败: ${err}`);
                             return [];
                         })
                         for (let i = 0; i < videoData.length; i++) {
                             const video = videoData[i];
-                            replyMessage += `视频${i + 1}: ${video.short_link}\n`;
+                            replyMessage += `🌸视频${i + 1}: ${video.short_link}\n`;
                         }
                         replyMessage += `===========================\n`;
                         if (userCookies.coin) {
                             const web = await Bili.getwebinfo(userCookies);
                             if (web.data.level === 6) {
-                                replyMessage += "已达6级，跳过投币任务\n";
+                                replyMessage += "🌸恭喜您已达至尊6级，跳过投币任务\n";
                                 replyMessage += `===========================\n`;
                             } else {
                                 const expRet = await Bili.gettoexplog(userCookies);
                                 const currentCoins = expRet.code === 0 ? expRet.data.coins : 0;
-                                replyMessage += `今日投币已领经验: ${currentCoins}\n`
+                                replyMessage += `🌸今日投币已领经验: ${currentCoins}\n`
                                 const remainingCoins = Math.max(50 - currentCoins, 0);
                                 const coinOperations = Math.min(Math.ceil(remainingCoins / 10), 5);
-                                replyMessage += `还需投${coinOperations}个硬币 \n`;
+                                replyMessage += `🌸还需投${coinOperations}个硬币 \n`;
                                 for (let i = 0; i < coinOperations && videoData[i]; i++) {
                                     const result = await Bili.addCoin(videoData[i].aid, userCookies);
                                     replyMessage += `${result}\n`;
@@ -139,7 +139,7 @@ export class Biliallsign extends plugin {
                                 replyMessage += `===========================\n`;
                             }
                         } else {
-                            replyMessage += "未开启投币功能，跳过投币任务\n";
+                            replyMessage += "🌸未开启投币功能，跳过投币任务\n";
                             replyMessage += `===========================\n`;
                         }
 
@@ -153,7 +153,7 @@ export class Biliallsign extends plugin {
                             await Bili.sleep(1000);
                         } catch (err) {
                             logger.error(`分享任务失败: ${err}`)
-                            replyMessage += `分享任务失败: 未知错误\n`;
+                            replyMessage += `🌸分享任务失败: 未知错误\n`;
                             replyMessage += `===========================\n`;
                         }
                         try {
@@ -166,7 +166,7 @@ export class Biliallsign extends plugin {
                             await Bili.sleep(1000);
                         } catch (err) {
                             logger.error(`观看任务失败: ${err}`);
-                            replyMessage += `观看任务失败: 未知错误\n`;
+                            replyMessage += `🌸观看任务失败: 未知错误\n`;
                             replyMessage += `===========================\n`;
                         }
 
@@ -178,16 +178,16 @@ export class Biliallsign extends plugin {
                             await Bili.sleep(1000);
                         } catch (err) {
                             logger.error(`卡券领取失败: ${err}`);
-                            replyMessage += `卡券领取失败: 未知错误\n`;
+                            replyMessage += `🌸卡券领取失败: 未知错误\n`;
                             replyMessage += `===========================\n`;
                         }
                         try {
                             const res = await Bili.getExperience(userCookies);
-                            replyMessage += `大会员经验: ${res}\n`;
+                            replyMessage += `🌸大会员经验: ${res}\n`;
                             await Bili.sleep(1000);
                         } catch (err) {
                             logger.error(`经验领取失败: ${err}`);
-                            replyMessage += `大会员经验领取失败: 未知错误\n`;
+                            replyMessage += `🌸大会员经验领取失败: 未知错误\n`;
                         }
                         try {
                             const signRes = await Bili.signManhua(userCookies)
@@ -196,7 +196,7 @@ export class Biliallsign extends plugin {
                             replyMessage += `${signRes}\n${shareRes}\n`;
                         } catch (err) {
                             logger.error(`漫画任务失败: ${err}`);
-                            replyMessage += `漫画任务失败: 未知错误\n`;
+                            replyMessage += `🌸漫画任务失败: 未知错误\n`;
                             replyMessage += `===========================\n`;
                         }
 
@@ -223,7 +223,7 @@ export class Biliallsign extends plugin {
                 if (remainingTasks > 0) {
                     const newET = moment().add(remainingTasks * 120, 'seconds').format('YYYY-MM-DD HH:mm:ss');
                     await redis.set('bili:autosign:task',
-                        `请勿执行签到操作！！！\n当前正在执行哔站自动签到任务\n任务剩余人数：${remainingTasks}\n开始时间：${ts}\n预计完成时间: ${newET}`, {
+                        `🌸请勿执行签到操作！！！\n🌸当前正在执行哔站自动签到任务\n🌸任务剩余人数：${remainingTasks}\n🌸开始时间：${ts}\n🌸预计完成时间: ${newET}`, {
                             EX: remainingTasks * 120
                         }
                     );
@@ -233,9 +233,9 @@ export class Biliallsign extends plugin {
             await redis.del('bili:autosign:task');
             const duration = moment().diff(tsstart);
             const reportMsg = `[哔站插件推送]报告主人！\n哔站自动签到完成啦~` +
-                `\n任务开始时间：${ts} \n任务人数：${tasklength}人` +
-                `\n执行签到人数:${signedCount}\n跳过账号数(已签):${signskipCount}` +
-                `\n任务耗时：${moment.duration(duration).asSeconds()} 秒`;
+                `\n🌸任务开始时间：${ts} \n🌸任务人数：${tasklength}人` +
+                `\n🌸执行签到人数:${signedCount}\n🌸跳过账号数(已签):${signskipCount}` +
+                `\n🌸任务耗时：${moment.duration(duration).asSeconds()} 秒`;
 
             if (this.e) {
                 this.e.reply(reportMsg, true);

@@ -70,12 +70,11 @@ export class Bilisign extends plugin {
                 let coinOperations = 5;
 
                 if (!userCookies.coin) {
-                    replyMessage += "您未开启投币任务,进行跳过操作\n";
-                    replyMessage += `===========================\n`;
+                    replyMessage += "🌸您未开启投币任务,进行跳过操作\n";
                 } else {
                     const web = await Bili.getwebinfo(userCookies);
                     if (web.data.level === 6) {
-                        replyMessage += "恭喜您已达至尊，6级啦~ 跳过投币任务\n";
+                        replyMessage += "🌸恭喜您已达至尊，6级啦~ 跳过投币任务\n";
                         replyMessage += `===========================\n`;
                     } else {
                         const expRet = await Bili.gettoexplog(userCookies);
@@ -85,8 +84,8 @@ export class Bilisign extends plugin {
                             let remainingCoins = Math.max(targetCoins - currentCoins, 0);
                             coinOperations = Math.ceil(remainingCoins / 10);
 
-                            replyMessage += `今日投币已领经验: ${currentCoins}\n`;
-                            replyMessage += `还需投${coinOperations}个硬币 \n`;
+                            replyMessage += `🌸今日投币已领经验: ${currentCoins}\n`;
+                            replyMessage += `🌸还需投${coinOperations}个硬币 \n`;
                         } else {
                             logger.warn("[Bili-Plugin]获取今日投币数失败，默认执行5次投币操作");
                             replyMessage += "获取今日投币数失败: 默认投5个硬币\n";
@@ -105,7 +104,7 @@ export class Bilisign extends plugin {
                 replyMessage += `===========================\n`;
             } catch (error) {
                 logger.error(`[Bili-Plugin]投币任务失败: ${error}`);
-                replyMessage += `投币任务失败: 未知错误\n===========================\n`;
+                replyMessage += `🌸投币任务失败: 未知错误\n===========================\n`;
             }
 
             try {
@@ -117,7 +116,7 @@ export class Bilisign extends plugin {
                 replyMessage += `===========================\n`;
             } catch (error) {
                 logger.error(`[Bili-Plugin]分享视频失败: ${error}`);
-                replyMessage += `分享视频失败: 未知错误\n===========================\n`;
+                replyMessage += `🌸分享视频失败: 未知错误\n===========================\n`;
             }
 
             try {
@@ -129,7 +128,7 @@ export class Bilisign extends plugin {
                 replyMessage += `===========================\n`;
             } catch (error) {
                 logger.error(`[Bili-Plugin]观看视频失败: ${error}`);
-                replyMessage += `观看视频失败: 未知错误\n===========================\n`;
+                replyMessage += `🌸观看视频失败: 未知错误\n===========================\n`;
             }
 
             try {
@@ -138,28 +137,28 @@ export class Bilisign extends plugin {
                 replyMessage += `===========================\n`;
             } catch (error) {
                 logger.error(`[Bili-Plugin]领取卡券失败: ${error}`);
-                replyMessage += `领取卡券失败: 未知错误\n===========================\n`;
+                replyMessage += `🌸领取卡券失败: 未知错误\n===========================\n`;
             }
             try {
                 const expResult = await Bili.getExperience(userCookies);
-                replyMessage += `大会员经验: ${expResult}\n`;
+                replyMessage += `🌸大会员经验: ${expResult}\n`;
             } catch (error) {
                 logger.error(`[Bili-Plugin]领取大会员经验失败: ${error}`);
-                replyMessage += `领取大会员经验失败: 未知错误\n`;
+                replyMessage += `🌸领取大会员经验失败: 未知错误\n`;
             }
             try {
                 const manhuaSignResult = await Bili.signManhua(userCookies);
                 replyMessage += `${manhuaSignResult}\n`;
             } catch (error) {
                 logger.error(`[Bili-Plugin]漫画签到失败: ${error}`);
-                replyMessage += `漫画签到失败: 未知错误\n`;
+                replyMessage += `🌸漫画签到失败: 未知错误\n`;
             }
             try {
                 const manhuaShareResult = await Bili.shareManhua(userCookies);
                 replyMessage += `${manhuaShareResult}`;
             } catch (error) {
                 logger.error(`[Bili-Plugin]漫画分享失败: ${error}`);
-                replyMessage += `漫画分享失败: 未知错误\n`;
+                replyMessage += `🌸漫画分享失败: 未知错误\n`;
             }
 
 
