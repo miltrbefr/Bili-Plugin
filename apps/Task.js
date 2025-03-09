@@ -524,7 +524,7 @@ export class Bilitask extends plugin {
 
                             const result3 = await Bili.liveclick(cookiesData[userId], roomId, room.uid, click)
 
-                            messageBuffer.push(`${formattedResult}\n${result2}\n${result3}`)
+                            messageBuffer.push(`${formattedResult}\n${result2}\n${result3}\n`)
 
                             await Bili.sleep(2000);
                             hasLiveroom = true;

@@ -130,7 +130,7 @@ export class Help extends plugin {
     async videoHelp(e) {
         const helpCfg = {
             "themeSet": false,
-            "title": "VIDEO帮助",
+            "title": "视频帮助",
             "subTitle": "BILI VIDEO HELP",
             "colWidth": 265,
             "theme": "all",
@@ -344,7 +344,7 @@ export class Help extends plugin {
                     {
                         icon: 65,
                         title: '(开启/关闭)直播间弹幕',
-                        desc: '(开启/关闭)自动弹幕功能'
+                        desc: '发弹幕/点赞/分享直播间(续牌牌)'
                     },
                     {
                         icon: 98,
@@ -363,13 +363,13 @@ export class Help extends plugin {
                     },
                     {
                         icon: 40,
-                        title: '(添加|删除)弹幕(黑/白)名单<房间号>',
+                        title: '(添加/删除)弹幕(黑/白)名单<房间号>',
                         desc: '自动弹幕黑白名单'
                     },
                     {
                         icon: 15,
                         title: 'B站视频自动解析',
-                        desc: '支持链接、小程序等（配置文件可关闭）'
+                        desc: '配置文件可关闭'
                     }
                 ]
             },
@@ -397,27 +397,27 @@ export class Help extends plugin {
                 list: [{
                         icon: 50,
                         title: '自动签到任务',
-                        desc: `您的cron为:${config.cron}`
+                        desc: `cron:${config.cron}`
                     },
                     {
                         icon: 51,
                         title: '自动弹幕任务',
-                        desc: `您的cron为:${config.livecron}`
+                        desc: `cron:${config.livecron}`
                     },
                     {
                         icon: 7,
                         title: 'QQ日签卡任务',
-                        desc: `您的cron为:${config.QQDaily}`
+                        desc: `cron:${config.QQDaily}`
                     },
                     {
                         icon: 78,
                         title: '群幸运字符任务',
-                        desc: `您的cron为:${config.luckywordcron}`
+                        desc: `cron:${config.luckywordcron}`
                     },
                     {
                         icon: 33,
                         title: '节日自动推送任务',
-                        desc: `您的cron为:${config.festivalpush}`
+                        desc: `cron:${config.festivalpush}`
                     }
                 ]
             });
