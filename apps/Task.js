@@ -447,7 +447,7 @@ export class Bilitask extends plugin {
             let hasLiveroom = false;
             const forwardNodes = [];
             let messageBuffer = [];
-            const header = `[哔站直播间自动弹幕推送]\n用户 ${fileName} 的本次自动弹幕结果：\n`;
+            const header = `[B站直播间弹幕&续牌功能推送]\n用户 ${fileName} 的弹幕功能结果\n`;
 
             for (const userId in cookiesData) {
                 if (!cookiesData[userId].live) {
@@ -476,7 +476,7 @@ export class Bilitask extends plugin {
                     }
 
                     for (const room of liveroom) {
-                        const roomId = String(room.roomid);
+                        const roomId = room.roomid
                         const redisKey = `bili:aldamu:${userId}:${roomId}`;
                         if (await redis.get(redisKey)) {
                             logger.mark(`⏳ 账号 ${userId} 4小时内已在房间 ${roomId} 发送过弹幕`)
@@ -506,7 +506,7 @@ export class Bilitask extends plugin {
                             const result = await Bili.livesenddamu(
                                 cookiesData[userId],
                                 msg,
-                                parseInt(roomId)
+                                roomId
                             );
 
                             const formattedResult = result.replace(
@@ -514,10 +514,18 @@ export class Bilitask extends plugin {
                                 `『${room.name}』的直播间`
                             );
 
-                            messageBuffer.push(`${formattedResult}\n`);
                             await redis.set(redisKey, '1', {
                                 EX: 14400
-                            });
+                            })
+
+                            const result2 = await Bili.liveshare(cookiesData[userId], roomId)
+                            // 随机直播间点赞：30~500 (点亮灯牌)
+                            const click = Math.floor(Math.random() * 471) + 30
+
+                            const result3 = await Bili.liveclick(cookiesData[userId], roomId, room.uid, click)
+
+                            messageBuffer.push(`${formattedResult}\n${result2}\n${result3}`)
+
                             await Bili.sleep(2000);
                             hasLiveroom = true;
                         } catch (err) {
@@ -529,8 +537,11 @@ export class Bilitask extends plugin {
                 }
             }
             while (messageBuffer.length > 0) {
-                const chunk = messageBuffer.splice(0, 5);
-                forwardNodes.push(createForwardNode([header, ...chunk], fileName));
+                const chunk = messageBuffer.splice(0, 5)
+                if (forwardNodes.length < 1)
+                    forwardNodes.push(createForwardNode([header, ...chunk], fileName))
+                else
+                    forwardNodes.push(createForwardNode([...chunk], fileName))
             }
             if (forwardNodes.length > 0 && hasLiveroom && hasLiveEnabled) {
                 try {
@@ -550,8 +561,6 @@ export class Bilitask extends plugin {
             await Bili.sleep(5000)
         }
     }
-
-
 
 
     async Bilidellog(e) {

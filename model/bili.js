@@ -222,6 +222,64 @@ class Bili {
         }
     }
 
+
+    async liveshare(userCookies, roomid) {
+        const jxUrl = `${this.signApi}/liveshare?accesskey=${userCookies.access_token}&key=${this.key}&roomid=${roomid}`;
+        try {
+            const response = await fetch(jxUrl);
+            const json = await response.json();
+            return json.code === 0 ? `🌸分享直播间${roomid}成功` : `🌸分享直播间${roomid}失败:${json.message || json.msg || '未知错误'}`;
+        } catch (err) {
+            logger.error("[Bili-Plugin]视频解析失败:", err);
+            return  `🌸分享直播间${roomid}失败: 未知错误`;
+        }
+    }
+
+    async liveclick(userCookies, roomid, upid, click = 10, MAX_CLICK_PER_REQUEST = 10) {
+        let successTotal = 0;
+        let failTotal = 0;
+        const errorMessages = new Set();
+        const sendClickRequest = async (batchClick) => {
+            const liveclickUrl = `${this.signApi}/livelike?accesskey=${userCookies.access_token}&key=${this.key}&roomid=${roomid}&upid=${upid}&uid=${userCookies.DedeUserID}&click=${batchClick}`;
+            try {
+                const response = await fetch(liveclickUrl);
+                const json = await response.json();
+                
+                if (json.code === 0) {
+                    return { success: batchClick, error: null };
+                } else {
+                    const msg = json.message || json.msg || '未知错误';
+                    return { success: 0, error: msg };
+                }
+            } catch (err) {
+                logger.error("[Bili-Plugin]直播间点赞请求失败:", err);
+                return { success: 0, error: "请求异常" };
+            }
+        }
+        try {
+            let remaining = click;
+            while (remaining > 0) {
+                const batchClick = Math.min(remaining, MAX_CLICK_PER_REQUEST);
+                const { success, error } = await sendClickRequest(batchClick);
+                successTotal += success;
+                failTotal += error ? batchClick : 0;
+                if (error) errorMessages.add(error);
+                remaining -= batchClick
+                await this.sleep(2000)
+            }
+        } catch (err) {
+            logger.error("[Bili-Plugin]直播间点赞流程异常:", err);
+            return `🌸直播间点赞流程异常: ${err.message}`;
+        }
+        const successInfo = `🌸成功给直播间${roomid}点赞${successTotal}下`;
+        //${Array.from(errorMessages).join('；')}
+        const failInfo = failTotal > 0 
+            ? `\n🌸其中点赞失败 ${failTotal} 次(未知错误)`
+            : '';
+        return `${successInfo}${failInfo}`
+    }
+
+    
     async likevideo(userCookies, aid, action) {
         // action：0喜欢，1不喜欢
         const likeUrl = `${this.signApi}/like?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}&like=${action}`
