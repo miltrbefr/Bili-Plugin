@@ -21,12 +21,12 @@ export class Bilisign extends plugin {
         const cookiesFilePath = path.join('./data/bili', `${String(e.user_id).replace(/:/g, '_').trim()}.json`);
         if (!fs.existsSync(cookiesFilePath)) {
             e.reply("未绑定ck，请发送哔站登录进行绑定", true);
-            return;
+            return true
         }
         if (await redis.get('bili:autosign:task')) {
             const message = await redis.get('bili:autosign:task')
             this.e.reply(message, true)
-            return
+            return true
         }
         const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
         let forwardNodes = []
@@ -35,9 +35,9 @@ export class Bilisign extends plugin {
             e.reply("开始重新执行哔站签到任务...", true)
             sign = true
         }
-        if(!sign){
-        const r = await e.reply("开始给你哔站签到啦~请稍等...",true)
-        await Bili.recall(e, r, 5)
+        if (!sign) {
+            const r = await e.reply("开始给你哔站签到啦~请稍等...", true)
+            await Bili.recall(e, r, 5)
         }
         let Count = 0
         for (const userId in cookiesData) {
@@ -47,12 +47,9 @@ export class Bilisign extends plugin {
             }
             if (await redis.get(`bili:alsign:${userId}`)) {
                 logger.warn(`[Bili-Plugin]哔站账号${userId}今日已签到`)
-                forwardNodes.push({
-                    user_id: e.user_id || '1677979616',
-                    nickname: e.sender.nickname || '哔站签到',
-                    message: `哔站账号${userId}今日已签到, 需要重新签到请发送哔站重新签到，获取签到记录发送哔站签到记录`
-                });
-                continue;
+                await this.e.reply(`哔站账号${userId}今日已签到, 需要重新签到请发送<哔站重新签到>，获取签到记录发送<哔站签到记录>`, true)
+                await Bili.sleep(2000)
+                continue
             }
             let replyMessage = `账号${userId}的本次哔站签到结果\n===========================\n`;
             let videoData
@@ -71,7 +68,7 @@ export class Bilisign extends plugin {
 
             try {
                 let coinOperations = 5;
-            
+
                 if (!userCookies.coin) {
                     replyMessage += "您未开启投币任务,进行跳过操作\n";
                     replyMessage += `===========================\n`;
@@ -87,14 +84,14 @@ export class Bilisign extends plugin {
                             const targetCoins = 50;
                             let remainingCoins = Math.max(targetCoins - currentCoins, 0);
                             coinOperations = Math.ceil(remainingCoins / 10);
-            
+
                             replyMessage += `今日投币已领经验: ${currentCoins}\n`;
                             replyMessage += `还需投${coinOperations}个硬币 \n`;
                         } else {
                             logger.warn("[Bili-Plugin]获取今日投币数失败，默认执行5次投币操作");
                             replyMessage += "获取今日投币数失败: 默认投5个硬币\n";
                         }
-            
+
                         if (coinOperations > 0) {
                             for (let i = 0; i < coinOperations && i < videoData.length; i++) {
                                 const video = videoData[i];
@@ -115,7 +112,7 @@ export class Bilisign extends plugin {
                 for (const video of videoData) {
                     const shareResult = await Bili.shareVideo(video.aid, userCookies);
                     replyMessage += `${shareResult}\n`;
-                    await Bili.sleep(5000);
+                    await Bili.sleep(1000);
                 }
                 replyMessage += `===========================\n`;
             } catch (error) {
@@ -127,7 +124,7 @@ export class Bilisign extends plugin {
                 for (const video of videoData) {
                     const watchResult = await Bili.reportWatch(video.aid, video.cid, userCookies);
                     replyMessage += `${watchResult}\n`;
-                    await Bili.sleep(5000);
+                    await Bili.sleep(2000);
                 }
                 replyMessage += `===========================\n`;
             } catch (error) {
@@ -143,7 +140,6 @@ export class Bilisign extends plugin {
                 logger.error(`[Bili-Plugin]领取卡券失败: ${error}`);
                 replyMessage += `领取卡券失败: 未知错误\n===========================\n`;
             }
-            await Bili.sleep(1000);
             try {
                 const expResult = await Bili.getExperience(userCookies);
                 replyMessage += `大会员经验: ${expResult}\n`;
@@ -151,7 +147,6 @@ export class Bilisign extends plugin {
                 logger.error(`[Bili-Plugin]领取大会员经验失败: ${error}`);
                 replyMessage += `领取大会员经验失败: 未知错误\n`;
             }
-            await Bili.sleep(1000);
             try {
                 const manhuaSignResult = await Bili.signManhua(userCookies);
                 replyMessage += `${manhuaSignResult}\n`;
@@ -159,7 +154,6 @@ export class Bilisign extends plugin {
                 logger.error(`[Bili-Plugin]漫画签到失败: ${error}`);
                 replyMessage += `漫画签到失败: 未知错误\n`;
             }
-            await Bili.sleep(1000);
             try {
                 const manhuaShareResult = await Bili.shareManhua(userCookies);
                 replyMessage += `${manhuaShareResult}`;
@@ -170,7 +164,7 @@ export class Bilisign extends plugin {
 
 
             if (['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) {
-                replyMessage = String(replyMessage).replace(/https:\/\/b23\.tv\//g, 'BV号:')
+                replyMessage = String(replyMessage).replace(/https:\/\/b23\.tv\//g, 'https://b23 .tv')
             }
             forwardNodes.push({
                 user_id: e.user_id || '1677979616',

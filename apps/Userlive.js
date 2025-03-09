@@ -96,7 +96,7 @@ export class Biliuserlive extends plugin {
                     if (['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) {
                         replyMessage = replyMessage.map(item => {
                             if (typeof item === 'string') {
-                                return item.replace(/\./g, '·');
+                                return item.replace(/\./g, ' .');
                             }
                             return item;
                         });

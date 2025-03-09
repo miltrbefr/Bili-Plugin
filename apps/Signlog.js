@@ -42,7 +42,7 @@ export class Bililog extends plugin {
             records.forEach(record => {
                 let message = String(record.message)
                 if (['QQBot'].includes(e.adapter_name) || QQBot.check(e)) {
-                    message = String(record.message).replace(/https:\/\/b23\.tv\//g, 'BV号:')
+                    message = String(record.message).replace(/https:\/\/b23\.tv\//g, 'https://b23 .tv')
                 }
                 forwardNodes.push({
                     user_id: userID,
