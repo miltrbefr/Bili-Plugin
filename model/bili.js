@@ -79,9 +79,9 @@ class Bili {
             const response = await fetch(relationUrl);
             const json = await response.json();
             if (json.code === 0) {
-                return `${actionName}成功`;
+                return `🌸${actionName}成功`;
             } else {
-                return `${actionName}失败: ${json.message || json.msg || '未知错误'}`;
+                return `🌸${actionName}失败: ${json.message || json.msg || '未知错误'}`;
             }
         } catch (err) {
             logger.error("[Bili-Plugin]用户关系操作失败:", err);
@@ -100,28 +100,32 @@ class Bili {
             return data
         } catch (err) {
             logger.error("[Bili-Plugin]获取米游社兑换码失败", err);
-            return { retcode: 0, data: [], date: null };
+            return {
+                retcode: 0,
+                data: [],
+                date: null
+            };
         }
     }
-    
+
     async getSourceMessage(e) {
         if (e.getReply) {
             return await e.getReply()
         } else if (e.source) {
             let source
             if (e.isGroup) {
-                source = (await e.group.getChatHistory(e.source ?.seq, 1)).pop()
-              }else{
-                source = (await e.friend.getChatHistory((e.source ?.time + 1), 1)).pop()
-          }
-            return source 
+                source = (await e.group.getChatHistory(e.source?.seq, 1)).pop()
+            } else {
+                source = (await e.friend.getChatHistory((e.source?.time + 1), 1)).pop()
+            }
+            return source
         }
         return null
     }
 
     async getvideourl(e) {
         const source = await this.getSourceMessage(e);
-        if(!source)return false
+        if (!source) return false
         const parsedSource = JSON.parse(JSON.stringify(source));
         const regex = /https?:\/\/(b23\.tv\/[\w\-]+|live\.bilibili\.com\/[\w\-\/]+|www\.bilibili\.com\/[\w\-\/?=&;]+|bili2233\.cn\/[\w\-\/?=&;]+)/;
         for (let item of parsedSource.message) {
@@ -150,14 +154,14 @@ class Bili {
     async getfestival(num = 5) {
         const yunshiUrl = `${this.signApi}/jieri?num=${num}`;
         let message = ["每日节日准时提醒！"];
-        
+
         try {
             const response = await fetch(yunshiUrl);
             if (!response.ok) {
                 throw new Error(`[Bili-Plugin]获取节日信息请求出错: ${response.status}`);
             }
             const data = await response.json();
-    
+
             if (data.code === "0") {
                 message.push(`\r距离周末剩余：${data.weekend.daysToWeekend}天`);
                 data.festivals.forEach(festival => {
@@ -174,39 +178,39 @@ class Bili {
                     if (festival.seconds > 0) {
                         timeParts.push(`${festival.seconds}秒`);
                     }
-                 //   const seconds = festival.seconds ?? 0;
-                 //   timeParts.push(`${seconds}秒`);
-                    message.push(`\r距离『${festival.name}』剩余${timeParts.join('')}！`);
+                    //   const seconds = festival.seconds ?? 0;
+                    //   timeParts.push(`${seconds}秒`);
+                    message.push(`\r🌸『${festival.name}』剩余${timeParts.join('')}！`);
                 });
             } else {
                 message.push("获取节日信息失败");
             }
         } catch (error) {
             logger.error('[Bili-Plugin]获取节日信息请求出错', error);
-            message.push("获取节日信息失败");
+            message.push("🌸获取节日信息失败");
         }
         return message;
     }
-    
+
     async getyunshi(uin) {
         const yunshiUrl = `${this.signApi}/yunshi?uin=${uin}`;
         const response = await fetch(yunshiUrl);
         const data = await response.json()
-        if(data.code === 0) {
-          let message = [
-            `『运势』${data.msg.fortuneSummary}`,
-            '\r『星级』' + data.msg.luckyStar,
-            '\r『点评』' + data.msg.signText,
-            '\r『解读』' + data.msg.unsignText
-          ];
-          
-          return message;
+        if (data.code === 0) {
+            let message = [
+                `『运势』${data.msg.fortuneSummary}`,
+                '\r『星级』' + data.msg.luckyStar,
+                '\r『点评』' + data.msg.signText,
+                '\r『解读』' + data.msg.unsignText
+            ];
+
+            return message;
         } else {
-          return ['获取运势信息失败。']
+            return ['获取运势信息失败。']
         }
     }
 
-    async getvideoinfo(url,cookies = config.SESSDATA) {
+    async getvideoinfo(url, cookies = config.SESSDATA) {
         const jxUrl = `${this.signApi}/jx/b_jx?msg=${url}&cookie=SESSDATA=${cookies}`
         try {
             const response = await fetch(jxUrl);
@@ -218,84 +222,89 @@ class Bili {
         }
     }
 
-    async likevideo(userCookies,aid,action) {
+    async likevideo(userCookies, aid, action) {
         // action：0喜欢，1不喜欢
         const likeUrl = `${this.signApi}/like?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}&like=${action}`
         try {
             const response = await fetch(likeUrl)
             const json = await response.json()
             const reply = action === 0 ? '点赞' : '取消点赞'
-            return json.code === 0 ? `${reply}视频成功`: `${reply}视频失败:${json.message || json.msg || '未知错误'}`;
+            return json.code === 0 ? `🌸${reply}视频成功` : `🌸${reply}视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]点赞操作失败:", err);
-            return `${reply}视频请求失败，请检查日志输出`
+            return `🌸${reply}视频请求失败，请检查日志输出`
         }
     }
 
-    async dislikevideo(userCookies,aid) {
+    async dislikevideo(userCookies, aid) {
         const dislikeUrl = `${this.signApi}/dislike?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
             const response = await fetch(dislikeUrl)
             const json = await response.json()
-            return json.code === 0 ? `点踩视频成功`: `点踩视频失败:${json.message || json.msg || '未知错误'}`;
+            return json.code === 0 ? `🌸点踩视频成功` : `🌸点踩视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]点踩操作失败:", err);
-            return `点踩视频请求失败，请检查日志输出`
+            return `🌸点踩视频请求失败，请检查日志输出`
         }
     }
 
-    async triplevideo(userCookies,aid) {
+    async triplevideo(userCookies, aid) {
         const tripleUrl = `${this.signApi}/triple?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
             const response = await fetch(tripleUrl)
             const json = await response.json()
-            return json.code === 0 ? `一键三连成功，视频已收藏至默认文件夹`: `一键三连失败:${json.message || json.msg || '未知错误'}`;
+            return json.code === 0 ? `🌸一键三连成功，视频已收藏至默认文件夹` : `🌸一键三连失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]一键三连操作失败:", err);
-            return `一键三连请求失败，请检查日志输出`
+            return `🌸一键三连请求失败，请检查日志输出`
         }
     }
 
-    async favvideo(userCookies,aid) {
+    async favvideo(userCookies, aid) {
         const favUrl = `${this.signApi}/fav?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
             const response = await fetch(favUrl)
             const json = await response.json()
-            return json.code === 0 ? `收藏视频成功，视频已收藏至默认文件夹`: `收藏视频失败:${json.message || json.msg || '未知错误'}`;
+            return json.code === 0 ? `🌸收藏视频成功，视频已收藏至默认文件夹` : `🌸收藏视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]收藏视频操作失败:", err);
-            return `收藏视频请求失败，请检查日志输出`
+            return `🌸收藏视频请求失败，请检查日志输出`
         }
     }
 
-    async unfavvideo(userCookies,aid) {
+    async unfavvideo(userCookies, aid) {
         const unfavUrl = `${this.signApi}/unfav?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
             const response = await fetch(unfavUrl)
             const json = await response.json()
-            return json.code === 0 ? `取消收藏视频成功！`: `取消收藏视频失败:${json.message || json.msg || '未知错误'}`;
+            return json.code === 0 ? `🌸取消收藏视频成功！` : `🌸取消收藏视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]取消收藏视频操作失败:", err);
-            return `取消收藏视频请求失败，请检查日志输出`
+            return `🌸取消收藏视频请求失败，请检查日志输出`
         }
     }
 
-    async replyvideo(userCookies,aid,msg) {
+    async replyvideo(userCookies, aid, msg) {
         const replyUrl = `${this.signApi}/reply?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}&msg=${msg}`
         try {
             const response = await fetch(replyUrl)
             const json = await response.json()
-            return json.code === 0 ? `评论视频成功！`: `评论视频失败:${json.message || json.msg || '未知错误'}`;
+            return json.code === 0 ? `🌸评论视频成功！` : `🌸评论视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]评论视频操作失败:", err);
-            return `评论视频请求失败，请检查日志输出`
+            return `🌸评论视频请求失败，请检查日志输出`
         }
     }
 
     async getsha() {
-        const date = await this.Update_Plugin.getTime(pluginName)
-        const sha = await this.Update_Plugin.getCommitId(pluginName)
+        let date,sha
+        try {
+        date = await this.Update_Plugin.getTime(pluginName)
+        sha = await this.Update_Plugin.getCommitId(pluginName)
         return `& Sha:${sha} & Date: ${date}`
+        } catch (error) {
+        return `& Sha: 114514 & Date: 1919810`
+        }
     }
 
     async execSync(cmd) {
@@ -536,24 +545,24 @@ class Bili {
                 } = responseJson.data.word_info.word_info;
                 return {
                     code: 0,
-                    msg: `抽中了字符:『${wording}』 寓意为:『${word_desc}』`
+                    msg: `🌸抽中了字符:『${wording}』 寓意为:『${word_desc}』`
                 };
             } else if (responseJson.retcode === 11004) {
                 return {
                     code: -1,
-                    msg: `今日已抽过字符: ${responseJson.msg}`
+                    msg: `🌸今日已抽过字符: ${responseJson.msg}`
                 };
             } else {
                 return {
                     code: 114514,
-                    msg: `抽字符时遇到错误: ${responseJson.data || responseJson.msg}`
+                    msg: `🌸抽字符时遇到错误: ${responseJson.data || responseJson.msg}`
                 };
             }
         } catch (error) {
             logger.error(error)
             return {
                 code: 114514,
-                msg: `请求过程中发生错误`
+                msg: `🌸请求过程中发生错误`
             };
         }
     }
@@ -565,7 +574,7 @@ class Bili {
         try {
             const qqdailydataFirst = await (await fetch(qqdaily)).json();
             await this.sleep(1500);
-            results.push(qqdailydataFirst.code === 0 ? `收集卡(第1张): 成功` : `收集卡(第1张): 失败(${qqdailydataFirst.message || qqdailydataFirst.msg || '未知错误'})`);
+            results.push(qqdailydataFirst.code === 0 ? `🌸收集卡(第1张): 成功` : `🌸收集卡(第1张): 失败(${qqdailydataFirst.message || qqdailydataFirst.msg || '未知错误'})`);
             const filteredFriends = Array.from(Bot[uin].fl.keys()).filter(friendId => friendId !== uin);
             const shuffledFriends = filteredFriends.sort(() => 0.5 - Math.random());
             const friendsToShareWith = shuffledFriends.slice(0, 3);
@@ -574,16 +583,16 @@ class Bili {
                 const qqshare = `${this.signApi}/qqshare?uin=${uin}&skey=${skey}&pskey=${pskey}&friend=${friend}&key=${this.key}`;
                 const qqsharedata = await (await fetch(qqshare)).json();
                 await this.sleep(1500);
-                results.push(qqsharedata.code === 0 ? `分享操作(第${i+1}次): 成功` : `分享(第${i+1}次): 失败(${qqsharedata.message || qqsharedata.msg || '未知错误'})`);
+                results.push(qqsharedata.code === 0 ? `🌸分享操作(第${i+1}次): 成功` : `🌸分享(第${i+1}次): 失败(${qqsharedata.message || qqsharedata.msg || '未知错误'})`);
                 const qqdailydataNext = await (await fetch(qqdaily)).json();
                 await this.sleep(1500);
-                results.push(qqdailydataNext.code === 0 ? `收集卡(第${i+2}张): 成功` : `收集卡(第${i+2}张): 失败(${qqdailydataNext.message || qqdailydataNext.msg || '未知错误'})`);
+                results.push(qqdailydataNext.code === 0 ? `🌸收集卡(第${i+2}张): 成功` : `🌸收集卡(第${i+2}张): 失败(${qqdailydataNext.message || qqdailydataNext.msg || '未知错误'})`);
             }
 
             return results.join("\n");
         } catch (err) {
             logger.error("[Bili-Plugin]日签分享:", err);
-            return "日签分享: 失败(未知错误)";
+            return "🌸日签分享: 失败(未知错误)";
         }
     }
 
@@ -602,14 +611,14 @@ class Bili {
             await this.sleep(1500);
             const qqdaily5data = await (await fetch(qqdaily5)).json();
             await this.sleep(1500);
-            results.push(qqdaily2data.code === 0 ? "普通日签卡: 成功" : `普通日签卡: 失败(${qqdaily2data.message || qqdaily2data.msg || '未知错误'})`);
-            results.push(qqdaily3data.code === 0 ? "晚安卡: 成功" : `晚安卡: 失败(${qqdaily3data.message || qqdaily3data.msg || '未知错误'})`);
-            results.push(qqdaily4data.code === 0 ? "每日Q崽: 成功" : `每日Q崽: 失败(${qqdaily4data.message || qqdaily4data.msg || '未知错误'})`);
-            results.push(qqdaily5data.code === 0 ? "心事罐: 成功" : `心事罐: 失败(${qqdaily5data.message || qqdaily5data.msg || '未知错误'})`);
+            results.push(qqdaily2data.code === 0 ? "🌸普通日签卡: 成功" : `🌸普通日签卡: 失败(${qqdaily2data.message || qqdaily2data.msg || '未知错误'})`);
+            results.push(qqdaily3data.code === 0 ? "🌸晚安卡: 成功" : `🌸晚安卡: 失败(${qqdaily3data.message || qqdaily3data.msg || '未知错误'})`);
+            results.push(qqdaily4data.code === 0 ? "🌸每日Q崽: 成功" : `🌸每日Q崽: 失败(${qqdaily4data.message || qqdaily4data.msg || '未知错误'})`);
+            results.push(qqdaily5data.code === 0 ? "🌸心事罐: 成功" : `🌸心事罐: 失败(${qqdaily5data.message || qqdaily5data.msg || '未知错误'})`);
             return results.join("\n");
         } catch (err) {
             logger.error("[Bili-Plugin]日签卡失败:", err);
-            return "日签卡: 失败(未知错误)";
+            return "🌸日签卡: 失败(未知错误)";
         }
     }
 
@@ -682,13 +691,13 @@ class Bili {
             const livedamuResponse = await fetch(livedamu);
             const damu = await livedamuResponse.json();
             if (damu.code === 0) {
-                return `账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』成功`;
+                return `🌸账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』成功`;
             } else {
-                return `账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』失败\n失败原因:『${damu.message || damu.msg || '未知错误'}』`;
+                return `🌸账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』失败\n失败原因:『${damu.message || damu.msg || '未知错误'}』`;
             }
         } catch (err) {
             logger.error("[Bili-Plugin]发送弹幕失败", err);
-            return `账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』失败！！\n失败原因:『请求失败』`;
+            return `🌸账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』失败！！\n失败原因:『请求失败』`;
         }
     }
 
@@ -753,7 +762,7 @@ class Bili {
         }
     }
 
-    async getupinfo(mids,userCookies) {
+    async getupinfo(mids, userCookies) {
         const getInfoUrl = `${this.signApi}/userinfo?mid=${mids}&key=${this.key}&accesskey=${userCookies.access_token}`;
         const apiResponse = await (await fetch(getInfoUrl)).json()
         const forwardNodes = [];
@@ -765,10 +774,10 @@ class Bili {
                     `用户名：${card.name}\n`,
                     `Uid：${card.mid}\n`,
                     `性别：${card.sex}\n`,
-                    `签名：${String(card.sign).replace(/\./g, '·').trim()}\n`,
+                    `签名：${String(card.sign).replace(/\./g, ' .').trim()}\n`,
                     `会员：${vipStatus ? card.vip?.label?.text : '无会员'}\n`,
-                    vipStatus && card.vip?.due_date ? 
-                        `会员到期时间：${moment(card.vip.due_date).format('YYYY-MM-DD HH:mm:ss')}\n` : null,
+                    vipStatus && card.vip?.due_date ?
+                    `会员到期时间：${moment(card.vip.due_date).format('YYYY-MM-DD HH:mm:ss')}\n` : null,
                     `账号状态：${card.silence === 0 ? '正常' : '封禁中'}\n`,
                     `当前等级：${card.level}\n`,
                     `认证信息：${card.official?.role !== 0 ? card.official?.title : '无'}\n`,
@@ -790,7 +799,7 @@ class Bili {
         return forwardNodes;
     }
 
-      
+
     async getInfo(userCookies) {
         const getInfoUrl = `${this.signApi}/space?accesskey=${userCookies.access_token}&mid=${userCookies.DedeUserID}&key=${this.key}`;
         const expLogUrl = `${this.signApi}/exp_log2?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`;
@@ -933,7 +942,9 @@ class Bili {
     async getFeed(userCookies) {
         const tempDir = './temp/bilivideo';
         if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, { recursive: true });
+            fs.mkdirSync(tempDir, {
+                recursive: true
+            });
         }
 
         const userId = userCookies.DedeUserID;
@@ -958,7 +969,7 @@ class Bili {
                 const items = json.data.items;
                 for (const item of items) {
                     if (videoData.length >= 5) break;
-                    
+
                     if (item.player_args?.type === 'av') {
                         const aid = item.player_args.aid;
                         // 检查次数
@@ -989,10 +1000,10 @@ class Bili {
         try {
             const response = await fetch(coinUrl);
             const json = await response.json();
-            return json.code === 0 ? "投币视频: 成功(10经验)" : `投币视频: 失败(${json.message || '未知错误'})`;
+            return json.code === 0 ? "🌸投币视频: 成功(10经验)" : `🌸投币视频: 失败(${json.message || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-Plugin]投币操作失败:", err);
-            return "投币视频: 失败";
+            return "🌸投币视频: 失败(请求错误)";
         }
     }
 
@@ -1142,25 +1153,32 @@ class Bili {
             if (json.data && json.data.toast) {
                 return json.data.toast;
             } else if (json.data && json.data.count > 0) {
-                return "分享视频: 成功(5经验)";
+                return "🌸分享视频: 成功(5经验)";
             } else {
-                return "分享视频: 失败(请重新登录)";
+                return "🌸分享视频: 失败(请重新登录)";
             }
         } catch (err) {
             logger.error("[Bili-Plugin]分享操作失败:", err);
-            return "分享视频: 失败(未知错误)";
+            return "🌸分享视频: 失败(未知错误)";
         }
     }
 
-    async reportWatch(aid, cid, userCookies) {
-        const reportUrl = `${this.signApi}/report?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&aid=${aid}&cid=${cid}&csrf=${userCookies.csrf}&key=${this.key}`;
+    async reportWatch(aid, cid, userCookies, time = Math.floor(Math.random() * 91) + 10) {
+        const reportUrl = `${this.signApi}/report?accesskey=${userCookies.access_token}&aid=${aid}&cid=${cid}&key=${this.key}&time=${time}`;
         try {
             const response = await fetch(reportUrl);
-            const json = await response.json();
-            return json.code === 0 ? "观看视频: 成功(5经验)" : "观看视频: 失败(请求错误)";
+            const json = await response.json()
+            if(json.code === 0){
+            return "🌸观看视频: 成功(5经验)"
+            } else {
+                const reportUrl2 = `${this.signApi}/report?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&aid=${aid}&cid=${cid}&csrf=${userCookies.csrf}&key=${this.key}&time=${time}`
+                const response2 = await fetch(reportUrl2);
+                const json2 = await response2.json()
+                return json2.code === 0 ? "🌸观看视频: 成功(5经验)" : "🌸观看视频: 失败(请求错误)";
+            }
         } catch (err) {
             logger.error("[Bili-Plugin]观看操作失败:", err);
-            return "观看视频: 失败(未知错误)";
+            return "🌸观看视频: 失败(未知错误)";
         }
     }
 
@@ -1198,10 +1216,10 @@ class Bili {
         try {
             const response = await fetch(expUrl);
             const json = await response.json();
-            return json.code === 0 ? "成功" : `失败(${json.message || json.msg || '未知错误'})`;
+            return json.code === 0 ? "成功🌸" : `失败(${json.message || json.msg || '未知错误'})🌸`;
         } catch (err) {
             logger.error("[Bili-Plugin]大会员经验领取失败:", err);
-            return "失败";
+            return "失败🌸";
         }
     }
 
@@ -1234,7 +1252,7 @@ class Bili {
         }
         let Message = `卡券领取情况:\n`
         for (const coupon of couponResults) {
-            Message += `- ${coupon.type}: ${coupon.result}\n`;
+            Message += `- 🌸${coupon.type}: ${coupon.result}\n`;
         }
         return Message
     }
@@ -1245,16 +1263,16 @@ class Bili {
             const response = await fetch(manhuaShareUrl);
             const json = await response.json();
             if (json.msg === "今日已分享") {
-                return '漫画分享: 失败(今日已分享)';
+                return '🌸漫画分享: 今日已分享';
             } else if (json.data && json.data.point !== undefined) {
                 const earnedPoints = json.data.point;
-                return `漫画分享:成功(${earnedPoints} 积分)`;
+                return `🌸漫画分享:成功(${earnedPoints} 积分)`;
             } else {
-                return `漫画分享: 失败(${json.msg || json.message || '未知错误'})`;
+                return `🌸漫画分享: 失败(${json.msg || json.message || '未知错误'})`;
             }
         } catch (err) {
             logger.error("[Bili-Plugin]漫画分享失败:", err);
-            return "漫画分享: 失败(未知错误)";
+            return "🌸漫画分享: 失败(未知错误)";
         }
     }
 
@@ -1267,10 +1285,10 @@ class Bili {
         try {
             const response = await fetch(manhuaSignUrl);
             const json = await response.json();
-            return json.code === 0 ? "漫画签到: 成功" : `漫画签到: 失败(${json.message || json.msg || '未知错误'})`;
+            return json.code === 0 ? "🌸漫画签到: 成功" : `🌸漫画签到: 失败(${json.message || json.msg || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-Plugin]漫画签到失败:", err);
-            return "漫画签到: 失败(未知错误)";
+            return "🌸漫画签到: 失败(未知错误)";
         }
     }
 }
