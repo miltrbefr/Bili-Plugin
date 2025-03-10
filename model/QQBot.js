@@ -163,7 +163,7 @@ class QQBot {
             let skipMsgType = (await Bili.getConfig("skipMsgType", configs2)) || []
 
             for (const msg of msgs) {
-                if (skipMsgType.some(i => msg.type.includes(i))) {
+                if (skipMsgType.some(i => msg.type === i)) {
                 return Reply(msgs, quote, data)
               }
             }
