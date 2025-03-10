@@ -221,7 +221,7 @@ export class Help extends plugin {
             "themeExclude": [
                 "default"
             ],
-            "colCount": 3,
+            "colCount": 4,
             "bgBlur": true
         }
         const helpList = [{
@@ -243,6 +243,11 @@ export class Help extends plugin {
                         icon: 33,
                         title: '必须手动添加配置文件！',
                         desc: 'QQBot、appid必填！记得重启'
+                    },
+                    {
+                        icon: 53,
+                        title: '支持过滤消息类型',
+                        desc: '参见skipKeywords、skipMsgType配置'
                     }
                 ],
             }

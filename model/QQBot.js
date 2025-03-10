@@ -148,6 +148,26 @@ class QQBot {
         event.reply = async (msgs, quote = false, data = defaultOptions) => {
             if (!msgs) return false;
             if (!Array.isArray(msgs)) msgs = [msgs]
+            const filePath2 = `${pluginRoot}/config/config.yaml`;
+            const configs = await Bili.loadConfig(filePath2)
+            let skipKeywords = (await Bili.getConfig("skipKeywords", configs)) || []
+            for (const message of event.message) {
+                if (message.type === "text") {
+                    if (skipKeywords.some(keyword => message.text.includes(keyword))) {
+                        return Reply(msgs, quote, data)
+                    }
+                }
+            }
+            const filePath3 = `${pluginRoot}/config/config.yaml`;
+            const configs2 = await Bili.loadConfig(filePath3)
+            let skipMsgType = (await Bili.getConfig("skipMsgType", configs2)) || []
+
+            for (const msg of msgs) {
+                if (skipMsgType.some(i => msg.type.includes(i))) {
+                return Reply(msgs, quote, data)
+              }
+            }
+
             const { at, recallMsg } = data
             const processedMsgs = []
             if (at) {
