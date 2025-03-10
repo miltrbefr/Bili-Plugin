@@ -13,7 +13,7 @@ const filePath = `${pluginRoot}/config/config.yaml`
 export class Bilitask extends plugin {
     constructor() {
         super({
-            name: "[Bili-Plugin]",
+            name: "Bili-Plugin(自动任务)",
             desc: "一些定时任务",
             event: "message",
             priority: 1677,
@@ -519,15 +519,15 @@ export class Bilitask extends plugin {
                             })
 
                             const result2 = await Bili.liveshare(cookiesData[userId], roomId)
-                            // 随机直播间点赞：30~500 (点亮灯牌)
-                            const click = Math.floor(Math.random() * 471) + 30
+                            // 随机直播间点赞：300~500 (点亮灯牌、贡献10)
+                            const click = Math.floor(Math.random() * 201) + 300;
 
                             const result3 = await Bili.liveclick(cookiesData[userId], roomId, room.uid, click)
 
-                            messageBuffer.push(`${formattedResult}\n${result2}\n${result3}\n`)
+                            messageBuffer.push(`${formattedResult}\n${result2}\n${result3}`)
 
-                            await Bili.sleep(2000);
-                            hasLiveroom = true;
+                            await Bili.sleep(2000)
+                            hasLiveroom = true
                         } catch (err) {
                             messageBuffer.push(`账号${userId}向煮波${room.name}(${roomId})发弹幕失败：${err.message}`);
                         }

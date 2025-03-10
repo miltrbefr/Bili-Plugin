@@ -7,7 +7,7 @@ import config from '../model/Config.js';
 export class Biliallsign extends plugin {
     constructor() {
         super({
-            name: "[Bili-Plugin]",
+            name: "Bili-Plugin(全部签到)",
             desc: "全部签到",
             event: "message",
             priority: 1677,

@@ -7,7 +7,7 @@ import QQBot from '../model/QQBot.js';
 export class Biliuserlive extends plugin {
     constructor() {
         super({
-            name: "[Bili-Plugin]",
+            name: "Bili-Plugin(查询UP开播情况)",
             desc: "主播去哪了",
             event: "message",
             priority: 1677,

@@ -10,7 +10,7 @@ try {
 export class Biliupdate extends plugin {
   constructor() {
     super({
-      name: "[Bili-Plugin]",
+      name: "Bili-Plugin(插件更新)",
       event: "message",
       priority: 1000,
       rule: [

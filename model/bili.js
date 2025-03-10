@@ -279,7 +279,6 @@ class Bili {
         return `${successInfo}${failInfo}`
     }
 
-    
     async likevideo(userCookies, aid, action) {
         // action：0喜欢，1不喜欢
         const likeUrl = `${this.signApi}/like?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}&like=${action}`
@@ -744,18 +743,18 @@ class Bili {
     }
 
     async livesenddamu(userCookies, msg, roomid) {
-        const livedamu = `${this.signApi}/danmu?SESSDATA=${userCookies.SESSDATA}&csrf=${userCookies.csrf}&msg=${msg}&roomid=${roomid}&key=${this.key}`;
+        const livedamu = `${this.signApi}/danmu2?accesskey=${userCookies.access_token}&msg=${msg}&roomid=${roomid}&key=${this.key}`;
         try {
             const livedamuResponse = await fetch(livedamu);
             const damu = await livedamuResponse.json();
             if (damu.code === 0) {
-                return `🌸账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』成功`;
+                return `===========================\n🌸B站账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』成功`;
             } else {
-                return `🌸账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』失败\n失败原因:『${damu.message || damu.msg || '未知错误'}』`;
+                return `===========================\n🌸B站账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』失败\n失败原因:『${damu.message || damu.msg || '未知错误'}』`;
             }
         } catch (err) {
             logger.error("[Bili-Plugin]发送弹幕失败", err);
-            return `🌸账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』失败！！\n失败原因:『请求失败』`;
+            return `===========================\n🌸B站账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』失败！！\n失败原因:『请求失败』`;
         }
     }
 

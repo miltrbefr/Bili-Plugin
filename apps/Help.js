@@ -9,7 +9,7 @@ import _ from 'lodash';
 export class Help extends plugin {
     constructor() {
         super({
-            name: "[Bili-Plugin]",
+            name: "Bili-Plugin(帮助)",
             event: "message",
             priority: -1677979616,
             rule: [{

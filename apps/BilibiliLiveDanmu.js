@@ -8,8 +8,8 @@ import path from 'path';
 export class BilibiliLiveDanmu extends plugin {
   constructor() {
     super({
-      name: 'BilibiliLiveDanmu',
-      dsc: '监听 Bilibili 直播间弹幕并发送到群聊',
+      name: 'Bili-Plugin(直播间推送)',
+      dsc: '实时监听房间',
       event: 'message',
       priority: 1,
       rule: [

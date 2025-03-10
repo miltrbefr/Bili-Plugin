@@ -10,7 +10,7 @@ const loginapi = config.loginApi
 export class Bililogin extends plugin {
     constructor() {
         super({
-            name: "[Bili-Plugin]",
+            name: "Bili-Plugin(登录)",
             desc: "登录",
             event: "message",
             priority: 1677,

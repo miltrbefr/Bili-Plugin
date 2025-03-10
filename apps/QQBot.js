@@ -16,7 +16,7 @@ function ensureDataDir() {
 export class Bilipoke extends plugin {
     constructor() {
         super({
-            name: "[Bili-Plugin]",
+            name: "Bili-Plugin(野收官发)",
             desc: "野收官发",
             event: "notice.group.poke",
             priority: Number.MIN_SAFE_INTEGER,
@@ -69,7 +69,7 @@ Bot.on("message.group.callback", async e => {
 export class BiliNB extends plugin {
     constructor() {
         super({
-            name: "[Bili-Plugin]",
+            name: "Bili-Plugin(野收官发)",
             desc: "野收官发",
             event: "message.group.normal",
             priority: Number.MIN_SAFE_INTEGER,
