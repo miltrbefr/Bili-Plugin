@@ -143,13 +143,13 @@ class QQBot {
         const defaultOptions = {
             at: false,
             recallMsg: 0
-          }
+        }
         const Reply = event.reply ? event.reply.bind(event) : fallbackReply
         event.reply = async (msgs, quote = false, data = defaultOptions) => {
             if (!msgs) return false;
             if (!Array.isArray(msgs)) msgs = [msgs]
-            if(!Array.isArray(event.message)) event.message = [event.message]
-            
+            if (!Array.isArray(event.message)) event.message = [event.message]
+
             const filePath2 = `${pluginRoot}/config/config.yaml`;
             const configs = await Bili.loadConfig(filePath2)
             let skipKeywords = (await Bili.getConfig("skipKeywords", configs)) || []
@@ -165,12 +165,17 @@ class QQBot {
             let skipMsgType = (await Bili.getConfig("skipMsgType", configs2)) || []
 
             for (const msg of msgs) {
-                if (skipMsgType.some(i => msg.type === i)) {
-                return Reply(msgs, quote, data)
-              }
+                if (msg.type) {
+                    if (skipMsgType.some(i => msg.type === i)) {
+                        return Reply(msgs, quote, data)
+                    }
+                }
             }
 
-            const { at, recallMsg } = data
+            const {
+                at,
+                recallMsg
+            } = data
             const processedMsgs = []
             if (at) {
                 let userId = at === true ? event.user_id : at;
