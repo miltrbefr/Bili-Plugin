@@ -148,6 +148,8 @@ class QQBot {
         event.reply = async (msgs, quote = false, data = defaultOptions) => {
             if (!msgs) return false;
             if (!Array.isArray(msgs)) msgs = [msgs]
+            if(!Array.isArray(event.message)) event.message = [event.message]
+            
             const filePath2 = `${pluginRoot}/config/config.yaml`;
             const configs = await Bili.loadConfig(filePath2)
             let skipKeywords = (await Bili.getConfig("skipKeywords", configs)) || []
