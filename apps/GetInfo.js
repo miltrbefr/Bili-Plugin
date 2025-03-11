@@ -9,7 +9,7 @@ import {
 export class Biliinfo extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(我的哔站)",
+            name: "Bili:我的哔站",
             desc: "信息查询",
             event: "message",
             priority: 1677,

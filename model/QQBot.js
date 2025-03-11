@@ -43,7 +43,8 @@ class QQBot {
     }
 
     async sendmsgs(msgs, groupId) {
-        await this.ensureDataDir();
+        await this.ensureDataDir()
+        let msg = msgs
         const filePath = path.join(this.dataDir, `${groupId}.json`);
         if (!msgs) return false;
         if (!Array.isArray(msgs)) msgs = [msgs];
@@ -83,7 +84,7 @@ class QQBot {
             const eventData = await fetchValidEventData();
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
-                return false;
+                return  Bot.pickGroup(groupId).sendMsg(msg)
             }
 
             const group = Bot[config.QQBot].pickGroup(eventData.openid);
@@ -95,7 +96,7 @@ class QQBot {
             return true;
         } catch (error) {
             logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error);
-            return false;
+            return Bot.pickGroup(groupId).sendMsg(msg)
         }
     }
 

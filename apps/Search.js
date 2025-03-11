@@ -5,7 +5,7 @@ import path from 'path';
 export class BiliSearch extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(查询UP)",
+            name: "Bili:查询UP",
             desc: "简单的查询",
             event: "message",
             priority: 1677,

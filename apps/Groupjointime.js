@@ -3,7 +3,7 @@ import moment from 'moment';
 export class Bilijointime extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(进群多久了)",
+            name: "Bili:进群多久了",
             desc: "进群多久了",
             event: "message.group",
             priority: 1677,

@@ -68,7 +68,7 @@ Bot.on('message.group', async (e) => {
 export class Bilirecall extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(撤回监听)",
+            name: "Bili:撤回监听",
             desc: "撤回通知",
             event: "notice.group.recall",
             priority: Infinity,

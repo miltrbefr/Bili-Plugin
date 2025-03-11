@@ -13,7 +13,7 @@ const filePath = `${pluginRoot}/config/config.yaml`
 export class Bilitask extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(自动任务)",
+            name: "Bili:自动任务",
             desc: "一些定时任务",
             event: "message",
             priority: 1677,

@@ -12,7 +12,7 @@ const configPath = path.join(storagePath, 'BILI群消息撤回通知白名单.js
 export class Biliswitch extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(配置管理)",
+            name: "Bili:配置管理",
             desc: "一些配置切换",
             event: "message",
             priority: -1677979616,

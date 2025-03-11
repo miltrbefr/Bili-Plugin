@@ -6,7 +6,7 @@ import Render from '../model/renders.js';
 export class BiliPluginstats extends plugin {
     constructor() {
         super({
-            name: 'Bili-Plugin(功能统计)',
+            name: 'Bili:功能统计',
             dsc: '功能统计',
             event: 'message',
             priority: 300,

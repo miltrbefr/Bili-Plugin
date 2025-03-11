@@ -9,7 +9,7 @@ const ANONYMOUS_USER = { user_id: '80000000', nickname: '匿名消息' };
 export class Bilijx extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(视频解析)",
+            name: "Bili:视频解析",
             desc: "B站链接解析增强版",
             event: "message",
             priority: -1677,

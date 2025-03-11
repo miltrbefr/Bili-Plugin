@@ -5,7 +5,7 @@ import Bili from '../model/bili.js';
 export class Bilidamu extends plugin {
   constructor() {
     super({
-      name: 'Bili-Plugin(发弹幕)',
+      name: 'Bili:发弹幕',
       dsc: '弹幕发送功能',
       event: 'message',
       priority: 1677,

@@ -16,7 +16,7 @@ function ensureDataDir() {
 export class Bilipoke extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(野收官发)",
+            name: "Bili:野收官发",
             desc: "野收官发",
             event: "notice.group.poke",
             priority: Number.MIN_SAFE_INTEGER,

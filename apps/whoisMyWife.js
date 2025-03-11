@@ -10,7 +10,7 @@ const expression = /^我(老婆|老公)呢$/
 export class Biliwife extends plugin {
     constructor() {
         super({
-            name: 'Bili-Plugin(娶群友)',
+            name: 'Bili:娶群友',
             dsc: '娶群友',
             event: 'message.group',
             priority: 300,

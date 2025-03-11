@@ -5,7 +5,7 @@ import Bili from '../model/bili.js';
 export class BiliAccount extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(快捷操作用户关系)",
+            name: "Bili:快捷操作用户关系",
             desc: "简单快捷用户关系操作",
             event: "message",
             priority: 1677,

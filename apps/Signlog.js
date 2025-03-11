@@ -5,7 +5,7 @@ import QQBot from '../model/QQBot.js';
 export class Bililog extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(签到记录)",
+            name: "Bili:签到记录",
             desc: "签到记录",
             event: "message",
             priority: 1677,

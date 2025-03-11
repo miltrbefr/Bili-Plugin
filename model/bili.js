@@ -25,7 +25,7 @@ try {
 class Bili {
     constructor() {
         this.signApi = config.signApi
-        this.key = configModule?.qq?.[0] || Bot.uin;
+        this.key = configModule?.qq?.[0] || Bot.uin || ['114514']
         this.clean = this.clean.bind(this)
         this.Update_Plugin = new Update()
         this.configFilePath = './config/config/other.yaml'
@@ -231,7 +231,7 @@ class Bili {
             return json.code === 0 ? `🌸分享直播间${roomid}成功` : `🌸分享直播间${roomid}失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]视频解析失败:", err);
-            return  `🌸分享直播间${roomid}失败: 未知错误`;
+            return `🌸分享直播间${roomid}失败: 未知错误`;
         }
     }
 
@@ -244,23 +244,35 @@ class Bili {
             try {
                 const response = await fetch(liveclickUrl);
                 const json = await response.json();
-                
+
                 if (json.code === 0) {
-                    return { success: batchClick, error: null };
+                    return {
+                        success: batchClick,
+                        error: null
+                    };
                 } else {
                     const msg = json.message || json.msg || '未知错误';
-                    return { success: 0, error: msg };
+                    return {
+                        success: 0,
+                        error: msg
+                    };
                 }
             } catch (err) {
                 logger.error("[Bili-Plugin]直播间点赞请求失败:", err);
-                return { success: 0, error: "请求异常" };
+                return {
+                    success: 0,
+                    error: "请求异常"
+                };
             }
         }
         try {
             let remaining = click;
             while (remaining > 0) {
                 const batchClick = Math.min(remaining, MAX_CLICK_PER_REQUEST);
-                const { success, error } = await sendClickRequest(batchClick);
+                const {
+                    success,
+                    error
+                } = await sendClickRequest(batchClick);
                 successTotal += success;
                 failTotal += error ? batchClick : 0;
                 if (error) errorMessages.add(error);
@@ -273,9 +285,9 @@ class Bili {
         }
         const successInfo = `🌸成功给直播间${roomid}点赞${successTotal}下`;
         //${Array.from(errorMessages).join('；')}
-        const failInfo = failTotal > 0 
-            ? `\n🌸其中点赞失败 ${failTotal} 次(未知错误)`
-            : '';
+        const failInfo = failTotal > 0 ?
+            `\n🌸其中点赞失败 ${failTotal} 次(未知错误)` :
+            '';
         return `${successInfo}${failInfo}`
     }
 
@@ -354,13 +366,13 @@ class Bili {
     }
 
     async getsha() {
-        let date,sha
+        let date, sha
         try {
-        date = await this.Update_Plugin.getTime(pluginName)
-        sha = await this.Update_Plugin.getCommitId(pluginName)
-        return `& Sha:${sha} & Date: ${date}`
+            date = await this.Update_Plugin.getTime(pluginName)
+            sha = await this.Update_Plugin.getCommitId(pluginName)
+            return `& Sha:${sha} & Date: ${date}`
         } catch (error) {
-        return `& Sha: 114514 & Date: 1919810`
+            return `& Sha: 114514 & Date: 1919810`
         }
     }
 
@@ -1105,8 +1117,14 @@ class Bili {
 
     async fetchlist() {
         try {
-            const cfg = (await import("../../../lib/config/config.js")).default;
-            let uins = cfg['qq']
+            let uins = []
+            let isTRSS = Array.isArray(Bot.uin)
+            if (isTRSS) {
+                const cfg = (await import("../../../lib/config/config.js")).default;
+                uins = cfg['qq'] || ['114514']
+            } else {
+                uins = [Bot.uin] || ['114514']
+            }
             const cached = await redis.get('bili:lists')
             let body
             if (cached) {
@@ -1225,8 +1243,8 @@ class Bili {
         try {
             const response = await fetch(reportUrl);
             const json = await response.json()
-            if(json.code === 0){
-            return "🌸观看视频: 成功(5经验)"
+            if (json.code === 0) {
+                return "🌸观看视频: 成功(5经验)"
             } else {
                 const reportUrl2 = `${this.signApi}/report?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&aid=${aid}&cid=${cid}&csrf=${userCookies.csrf}&key=${this.key}&time=${time}`
                 const response2 = await fetch(reportUrl2);

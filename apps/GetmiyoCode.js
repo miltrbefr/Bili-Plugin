@@ -3,7 +3,7 @@ import Bili from '../model/bili.js';
 export class Bilimiyocode extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(兑换码)",
+            name: "Bili:兑换码",
             desc: "简单的获取米游社兑换码",
             event: "message",
             priority: -Infinity,

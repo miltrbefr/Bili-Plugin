@@ -6,7 +6,7 @@ import QQBot from '../model/QQBot.js';
 export class Bilisign extends plugin {
     constructor() {
         super({
-            name: "Bili-Plugin(签到)",
+            name: "Bili:签到",
             desc: "签到",
             event: "message",
             priority: 1677,
