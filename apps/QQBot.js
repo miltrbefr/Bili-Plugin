@@ -42,6 +42,18 @@ export class Bilipoke extends plugin {
 }
 
 
+Bot.on("request.group", async event => {
+    if (!(await QQBot.check(event))) {
+        return false
+    }
+    if (event.user_id == config.QQBot) {
+        return false
+    }
+    await QQBot.replaceReply(event)
+    return false
+});
+
+
 Bot.on("message.group.callback", async e => {
     const rawEvent = e.raw;
     if (e.bot.callback[rawEvent.data?.["resolved"]?.["button_id"]]) {
