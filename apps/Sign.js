@@ -173,7 +173,7 @@ export class Bilisign extends plugin {
 
 
             if (['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) {
-                replyMessage = String(replyMessage).replace(/https:\/\/b23\.tv\//g, 'https://b23 .tv')
+                replyMessage = String(replyMessage).replace(/https:\/\/b23\.tv\//g, 'https://b23 .tv/')
             }
             forwardNodes.push({
                 user_id: e.user_id || '1677979616',
