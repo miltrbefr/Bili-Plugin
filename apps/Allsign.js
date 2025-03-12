@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
 import config from '../model/Config.js';
+import common from '../../../lib/common/common.js'
 
 export class Biliallsign extends plugin {
     constructor() {
@@ -98,7 +99,7 @@ export class Biliallsign extends plugin {
             for (const file of files) {
                 const cookiesFilePath = path.join(cookiesDirPath, file);
                 const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
-
+                let issign = false
                 let forwardNodes = [];
                 for (const userId in cookiesData) {
                     try {
@@ -208,14 +209,14 @@ export class Biliallsign extends plugin {
                             nickname: '堀',
                             message: replyMessage
                         });
-
+                        issign = true
                     } catch (err) {
                         logger.error(`[Bili-Plugin]账号${userId}签到失败: ${err}`);
                     }
                 }
 
                 const savePath = path.join(tempDirPath, file);
-                fs.writeFileSync(savePath, JSON.stringify(forwardNodes, null, 4));
+                if(issign) fs.writeFileSync(savePath, JSON.stringify(forwardNodes, null, 4));
                 const remainingTasks = files.length - signedCount
                 if (remainingTasks > 0) {
                     const newET = moment().add(remainingTasks * 70, 'seconds').format('YYYY-MM-DD HH:mm:ss');
@@ -252,7 +253,7 @@ export class Biliallsign extends plugin {
                 try {
                     const cfg = (await import("../../../lib/config/config.js")).default;
                   if (!Bot.sendMasterMsg) {
-                  Bot.sendMasterMsg = async m => { for (const i of cfg.masterQQ) await Bot.pickFriend(i).sendMsg(m) }
+                  Bot.sendMasterMsg = async m => { for (const i of cfg.masterQQ) await common.relpyPrivate(i, m) }
                   }
                   if(files.length){
                     Bot.sendMasterMsg?.(reportMsg);

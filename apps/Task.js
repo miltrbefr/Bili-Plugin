@@ -4,6 +4,7 @@ import config from '../model/Config.js';
 import Bili from '../model/bili.js';
 import QQBot from '../model/QQBot.js';
 import moment from 'moment';
+import common from '../../../lib/common/common.js'
 import {
     pluginRoot
 } from '../model/constant.js';
@@ -353,7 +354,7 @@ export class Bilitask extends plugin {
                     if (!Bot.sendMasterMsg) {
                         Bot.sendMasterMsg = async m => {
                             for (const masterQQ of cfg.masterQQ) {
-                                await Bot.pickFriend(masterQQ).sendMsg(m);
+                                await common.relpyPrivate(masterQQ, m)
                             }
                         };
                     }
@@ -439,7 +440,7 @@ export class Bilitask extends plugin {
                 const cfg = (await import("../../../lib/config/config.js")).default;
                 if (!Bot.sendMasterMsg) {
                     Bot.sendMasterMsg = async m => {
-                        for (const i of cfg.masterQQ) await Bot.pickFriend(i).sendMsg(m)
+                        for (const i of cfg.masterQQ) await common.relpyPrivate(i, m)
                     }
                 }
                 if (forwardNodes.length) {

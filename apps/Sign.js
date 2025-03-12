@@ -49,6 +49,7 @@ export class Bilisign extends plugin {
             await Bili.recall(e, r, 5)
         }
         let Count = 0
+        let issign = false
         for (const userId in cookiesData) {
             const userCookies = cookiesData[userId];
             if (e.msg.includes('重新')) {
@@ -187,8 +188,8 @@ export class Bilisign extends plugin {
             if (Count > 0) {
                 await Bot.sleep(2000)
             }
+            issign = true
         }
-
         const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
         e.reply(forwardMessage, false);
         const tempDirPath = path.join('./data/bilisign');
@@ -198,7 +199,7 @@ export class Bilisign extends plugin {
             });
         }
         const savePath = path.join(tempDirPath, `${e.user_id}.json`)
-        fs.writeFileSync(savePath, JSON.stringify(forwardNodes, null, 4), {
+        if(issign) fs.writeFileSync(savePath, JSON.stringify(forwardNodes, null, 4), {
             flag: 'w'
         });
     }
