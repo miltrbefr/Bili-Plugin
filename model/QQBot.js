@@ -155,7 +155,7 @@ class QQBot {
             const configs = await Bili.loadConfig(filePath2)
             let skipKeywords = (await Bili.getConfig("skipKeywords", configs)) || []
             for (const message of event.message) {
-                if (message.type === "text") {
+                if (message && message.type === "text") {
                     if (skipKeywords.some(keyword => message.text.includes(keyword))) {
                         return Reply(msgs, quote, data)
                     }
