@@ -324,13 +324,24 @@ export class Bilitask extends plugin {
             }));
 
             const tsfinish = moment();
-            const duration = tsfinish.diff(tsstart);
-            const time = moment.duration(duration).asSeconds();
+            const duration = tsfinish.diff(tsstart)
+            const durationObj = moment.duration(duration)
+            let durationStr = ''
+            const hours = durationObj.hours()
+            const minutes = durationObj.minutes()
+            const seconds = durationObj.seconds()
+            if (hours > 0) {
+                durationStr += `${hours}小时`
+            }
+            if (minutes > 0) {
+                durationStr += `${minutes}分钟`
+            }
+            durationStr += `${seconds}秒`
 
             forwardNodes.push({
                 user_id: '80000000',
                 nickname: '匿名消息',
-                message: `任务耗时：${time} 秒\n总共执行账号：${Count}\n总执行群数：${Count2}`
+                message: `任务耗时：${durationStr}\n总共执行账号：${Count}\n总执行群数：${Count2}`
             });
 
             try {
@@ -403,11 +414,22 @@ export class Bilitask extends plugin {
         }
         const tsfinish = moment()
         const duration = tsfinish.diff(tsstart)
-        const time = moment.duration(duration).asSeconds()
+        const durationObj = moment.duration(duration)
+        let durationStr = ''
+        const hours = durationObj.hours()
+        const minutes = durationObj.minutes()
+        const seconds = durationObj.seconds()
+        if (hours > 0) {
+            durationStr += `${hours}小时`
+        }
+        if (minutes > 0) {
+            durationStr += `${minutes}分钟`
+        }
+        durationStr += `${seconds}秒`
         forwardNodes.push({
             user_id: '80000000',
             nickname: '匿名消息',
-            message: `任务耗时：${time} 秒\n总共执行账号：${Count}`
+            message: `任务耗时：${durationStr}\n总共执行账号：${Count}`
         })
         const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
         if (this.e) {

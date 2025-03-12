@@ -31,6 +31,15 @@ export class Bilisign extends plugin {
         const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
         let forwardNodes = []
         let sign = false
+        if (await redis.get(`bili:sign:task:${e.user_id}`)) {
+            const message = await redis.get(`bili:sign:task:${e.user_id}`)
+            this.e.reply(message, true)
+            return true
+        } else {
+            await redis.set(`bili:sign:task:${e.user_id}`, '正在给你签到啦，请勿重复签到....', {
+                EX: 260
+            })
+        }
         if (e.msg.includes('重新')) {
             e.reply("开始重新执行哔站签到任务...", true)
             sign = true
@@ -96,7 +105,7 @@ export class Bilisign extends plugin {
                                 const video = videoData[i];
                                 const result = await Bili.addCoin(video.aid, userCookies);
                                 replyMessage += `${result}\n`;
-                                await Bili.sleep(5000);
+                                await Bili.sleep(4000);
                             }
                         }
                     }

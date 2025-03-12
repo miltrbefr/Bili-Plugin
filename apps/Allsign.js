@@ -53,10 +53,11 @@ export class Biliallsign extends plugin {
                     recursive: true
                 });
             }
+            /*
             const existingFiles = fs.existsSync(tempDirPath) ?
                 fs.readdirSync(tempDirPath).filter(file => path.extname(file) === '.json') : [];
             files = files.filter(file => !existingFiles.includes(file));
-
+            */
             if (files.length === 0) {
                 logger.mark("[Bili-Plugin]全部哔站账号已完成签到");
                 if (this.e) this.e.reply("所有用户已完成签到啦~", true);
@@ -66,11 +67,11 @@ export class Biliallsign extends plugin {
             const ts = moment().format('YYYY-MM-DD HH:mm:ss');
             const tsstart = moment();
             const tasklength = files.length;
-            const estimatedCompletionTime = moment().add(tasklength * 120, 'seconds').format('YYYY-MM-DD HH:mm:ss');
+            const estimatedCompletionTime = moment().add(tasklength * 70, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
             await redis.set('bili:autosign:task',
                 `请勿执行签到操作！！！\n🌸当前正在执行哔站自动签到任务：\n🌸开始时间：${ts} \n🌸任务人数：${tasklength}\n🌸预计完成时间: ${estimatedCompletionTime}`, {
-                    EX: tasklength * 120
+                    EX: tasklength * 70
                 }
             );
             const m = `[哔站插件推送]报告主人！\n🌸我要开始哔站签到啦~\n🌸任务人数：${tasklength}\n🌸任务开始时间：${ts} \n🌸预计完成时间: ${estimatedCompletionTime}`
@@ -147,10 +148,9 @@ export class Biliallsign extends plugin {
                             for (const video of videoData) {
                                 const res = await Bili.shareVideo(video.aid, userCookies);
                                 replyMessage += `${res}\n`;
-                                await Bili.sleep(3000);
+                                await Bili.sleep(1000);
                             }
                             replyMessage += `===========================\n`;
-                            await Bili.sleep(1000);
                         } catch (err) {
                             logger.error(`分享任务失败: ${err}`)
                             replyMessage += `🌸分享任务失败: 未知错误\n`;
@@ -160,10 +160,9 @@ export class Biliallsign extends plugin {
                             for (const video of videoData) {
                                 const res = await Bili.reportWatch(video.aid, video.cid, userCookies);
                                 replyMessage += `${res}\n`;
-                                await Bili.sleep(2000);
+                                await Bili.sleep(1000);
                             }
                             replyMessage += `===========================\n`;
-                            await Bili.sleep(1000);
                         } catch (err) {
                             logger.error(`观看任务失败: ${err}`);
                             replyMessage += `🌸观看任务失败: 未知错误\n`;
@@ -175,7 +174,6 @@ export class Biliallsign extends plugin {
                             const res = await Bili.getCoupons(userCookies);
                             replyMessage += `${res}`;
                             replyMessage += `===========================\n`;
-                            await Bili.sleep(1000);
                         } catch (err) {
                             logger.error(`卡券领取失败: ${err}`);
                             replyMessage += `🌸卡券领取失败: 未知错误\n`;
@@ -184,14 +182,13 @@ export class Biliallsign extends plugin {
                         try {
                             const res = await Bili.getExperience(userCookies);
                             replyMessage += `🌸大会员经验: ${res}\n`;
-                            await Bili.sleep(1000);
                         } catch (err) {
                             logger.error(`经验领取失败: ${err}`);
                             replyMessage += `🌸大会员经验领取失败: 未知错误\n`;
                         }
                         try {
                             const signRes = await Bili.signManhua(userCookies)
-                            await Bili.sleep(3000);
+                            await Bili.sleep(1000);
                             const shareRes = await Bili.shareManhua(userCookies)
                             replyMessage += `${signRes}\n${shareRes}\n`;
                         } catch (err) {
@@ -221,21 +218,33 @@ export class Biliallsign extends plugin {
                 fs.writeFileSync(savePath, JSON.stringify(forwardNodes, null, 4));
                 const remainingTasks = files.length - signedCount
                 if (remainingTasks > 0) {
-                    const newET = moment().add(remainingTasks * 120, 'seconds').format('YYYY-MM-DD HH:mm:ss');
+                    const newET = moment().add(remainingTasks * 70, 'seconds').format('YYYY-MM-DD HH:mm:ss');
                     await redis.set('bili:autosign:task',
                         `🌸请勿执行签到操作！！！\n🌸当前正在执行哔站自动签到任务\n🌸任务剩余人数：${remainingTasks}\n🌸开始时间：${ts}\n🌸预计完成时间: ${newET}`, {
-                            EX: remainingTasks * 120
+                            EX: remainingTasks * 70
                         }
                     );
                 }
             }
 
             await redis.del('bili:autosign:task');
-            const duration = moment().diff(tsstart);
+            const duration = moment().diff(tsstart)
+            const durationObj = moment.duration(duration)
+            let durationStr = ''
+            const hours = durationObj.hours()
+            const minutes = durationObj.minutes()
+            const seconds = durationObj.seconds()
+            if (hours > 0) {
+                durationStr += `${hours}小时`
+            }
+            if (minutes > 0) {
+                durationStr += `${minutes}分钟`
+            }
+            durationStr += `${seconds}秒`
             const reportMsg = `[哔站插件推送]报告主人！\n哔站自动签到完成啦~` +
                 `\n🌸任务开始时间：${ts} \n🌸任务人数：${tasklength}人` +
                 `\n🌸执行签到人数:${signedCount}\n🌸跳过账号数(已签):${signskipCount}` +
-                `\n🌸任务耗时：${moment.duration(duration).asSeconds()} 秒`;
+                `\n🌸任务耗时：${durationStr}`;
 
             if (this.e) {
                 this.e.reply(reportMsg, true);
