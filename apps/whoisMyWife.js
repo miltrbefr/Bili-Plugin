@@ -5,7 +5,7 @@ import config from '../model/Config.js';
 const cdTime = config.whoisMyWifecdTime // 5分钟冷却(主人除外)
 const cacheTime = config.whoisMyWifecacheTime // 60分钟缓存(群友信息)
 const maxMembers = config.whoisMyWifemaxMembers // 选择5个群友(影响每次成功率)
-const expression = /^我(老婆|老公)呢$/
+const expression = /^(我(老婆|老公)呢|今日(老婆|老公))$/
 
 export class Biliwife extends plugin {
     constructor() {
@@ -15,7 +15,7 @@ export class Biliwife extends plugin {
             event: 'message.group',
             priority: 300,
             rule: [{
-                reg: "^我(老婆|老公)呢$",
+                reg: "^(我(老婆|老公)呢|今日(老婆|老公))$",
                 fnc: 'whoisMyWife'
             }]
         })
