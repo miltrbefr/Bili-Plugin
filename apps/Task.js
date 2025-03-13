@@ -574,7 +574,12 @@ export class Bilitask extends plugin {
                         if (await QQBot.isQQBotcheck(groupKey)) {
                             await QQBot.sendmsgs(forwardMessage, groupKey)
                         } else {
+                            const isTRSS = Array.isArray(Bot.uin)
+                            if (isTRSS) {
                             Bot.pickGroup(groupKey).sendMsg(forwardMessage)
+                            } else {
+                            Bot[Bot.uin].pickGroup(groupKey).sendMsg(forwardMessage)
+                            }
                         }
                     }
                 } catch (err) {
