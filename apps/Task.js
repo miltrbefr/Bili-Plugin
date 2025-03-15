@@ -509,7 +509,7 @@ export class Bilitask extends plugin {
                         let reason = '';
 
                         if (whitelists.length > 0) {
-                            if (!whitelists.includes(roomId)) {
+                            if (!whitelists.includes(String(roomId))) {
                                 reason = `账号${userId}的煮波${room.name}(${roomId})不在白名单中，已跳过发送弹幕`;
                                 allowSend = false;
                             }
@@ -520,7 +520,7 @@ export class Bilitask extends plugin {
 
                         if (!allowSend) {
                             messageBuffer.push(reason);
-                            logger.mark(`[Bili-Plugin] ${reason}`);
+                            logger.info(`[Bili-Plugin] ${reason}`);
                             continue;
                         }
                         try {
