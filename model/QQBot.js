@@ -40,6 +40,9 @@ class QQBot {
         const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
         const r = await res.json()
         logger.debug(r)
+        if (r.code !== 0) {
+         logger.error(r)
+        }
     }
 
     async sendmsgs(msgs, groupId) {
