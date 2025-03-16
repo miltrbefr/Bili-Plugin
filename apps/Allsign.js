@@ -69,7 +69,7 @@ export class Biliallsign extends plugin {
             const tsstart = moment();
             const tasklength = files.length;
             const estimatedCompletionTime = moment().add(tasklength * 70, 'seconds').format('YYYY-MM-DD HH:mm:ss');
-
+            let needMsg = false
             await redis.set('bili:autosign:task',
                 `请勿执行签到操作！！！\n🌸当前正在执行哔站自动签到任务：\n🌸开始时间：${ts} \n🌸任务人数：${tasklength}\n🌸预计完成时间: ${estimatedCompletionTime}`, {
                     EX: tasklength * 70
@@ -96,6 +96,7 @@ export class Biliallsign extends plugin {
             }
             let signedCount = 0,
                 signskipCount = 0;
+            
             for (const file of files) {
                 const cookiesFilePath = path.join(cookiesDirPath, file);
                 const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
@@ -210,6 +211,7 @@ export class Biliallsign extends plugin {
                             message: replyMessage
                         });
                         issign = true
+                        needMsg = true
                     } catch (err) {
                         logger.error(`[Bili-Plugin]账号${userId}签到失败: ${err}`);
                     }
@@ -255,7 +257,7 @@ export class Biliallsign extends plugin {
                   if (!Bot.sendMasterMsg) {
                   Bot.sendMasterMsg = async m => { for (const i of cfg.masterQQ) await common.relpyPrivate(i, m) }
                   }
-                  if(files.length){
+                  if(files.length && needMsg ){
                     Bot.sendMasterMsg?.(reportMsg);
                   }
                 } catch (error) {

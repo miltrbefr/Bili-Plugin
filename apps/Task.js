@@ -513,7 +513,7 @@ export class Bilitask extends plugin {
                                 reason = `账号${userId}的煮波${room.name}(${roomId})不在白名单中，已跳过发送弹幕`;
                                 allowSend = false;
                             }
-                        } else if (blacklists.includes(roomId)) {
+                        } else if (blacklists.includes(String(roomId))) {
                             reason = `账号${userId}的煮波${room.name}(${roomId})被你拉黑惹，已跳过发送弹幕`;
                             allowSend = false;
                         }
