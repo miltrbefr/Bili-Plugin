@@ -41,7 +41,7 @@ class QQBot {
         const r = await res.json()
         logger.debug(r)
         if (r.code !== 0) {
-         logger.error(r)
+            logger.error(r)
         }
     }
 
@@ -87,7 +87,7 @@ class QQBot {
             const eventData = await fetchValidEventData();
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
-                return  Bot.pickGroup(groupId).sendMsg(msg)
+                return Bot.pickGroup(groupId).sendMsg(msg)
             }
 
             const group = Bot[config.QQBot].pickGroup(eventData.openid);
@@ -311,12 +311,33 @@ class QQBot {
                     } = await this.getImageSize(buffer);
 
                     if (height > 3450) {
-                        logger.warn(`图片高度${height}超过限制，跳过Ark处理`);
+                        logger.warn(`图片高度${height}超过限制，跳过Ark处理`)
                         newmsgs.push(msg);
                         continue;
                     }
+                    let imageUrl = null
 
-                    const imageUrl = await this.img_hb(buffer);
+                    try {
+                        const image = await Bot.uploadImage(await Bot.fileToUrl(buffer))
+                        imageUrl = image.url.replace('https', 'http')
+                        logger.mark(`腾讯图床URL： ${imageUrl}`)
+                    } catch (error) {
+                        logger.warn('没有ICQQ在线尝试调用作业图床...')
+                    }
+
+                    if (!imageUrl) {
+                        try {
+                            const base64String = buffer.toString('base64')
+                            imageUrl = await this.getTencentImageUrl(base64String)
+                            imageUrl = imageUrl.replace('https', 'http')
+                            logger.mark(`作业图床URL： ${imageUrl}`)
+                        } catch (error) {
+                            logger.warn('作业图床获取失败,尝试使用花瓣图床...')
+                        }
+                    }
+
+                    if (!imageUrl) imageUrl = await this.img_hb(buffer)
+
                     if (!imageUrl) {
                         newmsgs.push(msg);
                         continue;
@@ -344,6 +365,79 @@ class QQBot {
         }
 
         return newmsgs;
+    }
+
+
+    async getTencentImageUrl(base64Image) {
+        try {
+            const filePath = `${pluginRoot}/config/config.yaml`
+            const configs = await Bili.loadConfig(filePath)
+            const jiantingQQ = (await Bili.getConfig("jiantingQQ", configs)) || []
+            let uin
+            if (jiantingQQ.length > 0) {
+                const num = Math.floor(Math.random() * jiantingQQ.length)
+                uin = jiantingQQ[num]
+            } else {
+                uin = Bot.uin
+            }
+            const cookies = await Bili.getQQck(uin, 'qun.qq.com');
+            const result = await this.uploadImageToTencent(base64Image, cookies)
+            if (result.code === 200) {
+                return result.url
+            } else {
+                logger.error(result.msg)
+                return null
+            }
+        } catch (error) {
+            logger.error(error);
+            return null
+        }
+    }
+
+    async uploadImageToTencent(base64Image, parsedCookies) {
+        const bkn = await Bili.GTK(parsedCookies.skey)
+        const qun_c = `uin=${parsedCookies.uin}; skey=${parsedCookies.skey}; p_skey=${parsedCookies.p_skey}; p_uin=${parsedCookies.uin}`
+        try {
+            const formData = new URLSearchParams()
+            formData.append('pic', base64Image)
+            formData.append('client_type', '1')
+            formData.append('bkn', bkn)
+
+            const response = await fetch('https://qun.qq.com/cgi-bin/hw/util/image', {
+                method: 'POST',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) QQ/9.7.1.28934 Chrome/43.0.2357.134 Safari/537.36 QBCore/3.43.1298.400 QQBrowser/9.0.2524.400',
+                    'Origin': 'https://qun.qq.com',
+                    'Referer': 'https://qun.qq.com/homework/p/features/index.html',
+                    'Cookie': qun_c,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString(),
+                redirect: 'follow'
+            });
+
+            const data = await response.json();
+
+            if (data.retcode !== 0) {
+                return {
+                    code: data.retcode,
+                    msg: data.msg
+                };
+            }
+            const purl = data.data.url.origin;
+            const finalUrl = purl.replace("p.qpic.cn", "p.qlogo.cn");
+
+            return {
+                code: 200,
+                url: finalUrl
+            };
+        } catch (error) {
+            logger.error(error);
+            return {
+                code: -1,
+                msg: error.message
+            };
+        }
     }
 
     async arktext(textMessage) {
