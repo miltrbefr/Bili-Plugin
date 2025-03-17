@@ -396,7 +396,7 @@ class QQBot {
 
     async uploadImageToTencent(base64Image, parsedCookies) {
         const bkn = await Bili.GTK(parsedCookies.skey)
-        const qun_c = `uin=${parsedCookies.uin}; skey=${parsedCookies.skey}; p_skey=${parsedCookies.p_skey}; p_uin=${parsedCookies.uin}`
+        const qun_c = `uin=${parsedCookies.uin}; skey=${parsedCookies.skey}; p_skey=${parsedCookies.pskey}; p_uin=${parsedCookies.uin}`
         try {
             const formData = new URLSearchParams()
             formData.append('pic', base64Image)
