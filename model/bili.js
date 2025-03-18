@@ -873,6 +873,7 @@ class Bili {
         const getInfoUrl = `${this.signApi}/space?accesskey=${userCookies.access_token}&mid=${userCookies.DedeUserID}&key=${this.key}`;
         const expLogUrl = `${this.signApi}/exp_log2?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`;
         const info2 = `${this.signApi}/myinfo2?accesskey=${userCookies.access_token}&key=${this.key}`;
+        const joinUrl = `https://member.bilibili.com/x2/creative/h5/calendar/event?ts=0&access_key=${userCookies.access_token}`;
         const defaultResponse = {
             code: -1,
             data: {
@@ -930,6 +931,8 @@ class Bili {
         } catch (err) {
             logger.error('[Bili-Plugin]经验日志请求失败:', err);
         }
+        let joindata = await (await fetch(joinUrl)).json()
+        const join = joindata.data?.pfs.profile.jointime || 0
         const card = infoRet.data.card || defaultResponse.data;
         const currentExp = card.level_info?.current_exp || 0;
         const collectionTop = infoRet.data.images?.collection_top_simple?.top?.result || []
@@ -998,6 +1001,7 @@ class Bili {
             expNeeded: Math.max(0, nextExp - currentExp),
             daysToLevelUp: Math.ceil(Math.max(0, nextExp - currentExp) / divisor),
             coinStatus: !!userCookies.coin,
+            joinTime: join ? moment.unix(join).format('YYYY-MM-DD') : '未知',
             liveStatus: !!userCookies.live,
             birthday: info2Ret.data?.set_birthday ?
                 moment(info2Ret.data.birthday).format('YYYY-MM-DD') : null,

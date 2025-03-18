@@ -61,6 +61,7 @@ export class Biliinfo extends plugin {
                     attention: infoData.attention,
                     coins: infoData.coins,
                     sign: infoData.sign,
+                    joinTime: infoData.joinTime,
                     vipClass: infoData.vipStatus ? 'active' : '',
                     vipText: infoData.vipStatus ? infoData.vipLabel : '无会员',
                     vipDue: infoData.vipStatus ? infoData.vipDue : '',
