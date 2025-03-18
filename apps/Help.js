@@ -231,8 +231,8 @@ export class Help extends plugin {
                 group: '必须使用<xiaoye12123/Yunzai-QQBot-Plugin>的适配器',
                 list: [{
                         icon: 75,
-                        title: '(添加/删除)野收群聊<真实群号>',
-                        desc: '必须艾特官鸡'
+                        title: '(添加/删除)野收群聊<可选群号>',
+                        desc: '不需要艾特官鸡,可以不输入群号,对应群发送指令就行'
                     },
                     {
                         icon: 63,

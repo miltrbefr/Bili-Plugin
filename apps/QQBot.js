@@ -56,15 +56,17 @@ Bot.on("request.group", async event => {
 
 Bot.on("message.group.callback", async e => {
     const rawEvent = e.raw;
+
     if (e.bot.callback[rawEvent.data?.["resolved"]?.["button_id"]]) {
         return false;
     }
-
+    
+    const buttonId = rawEvent.data?.["resolved"]?.["button_id"]
     const groupId = `${e.self_id}:${rawEvent.group_id}`;
     const configDir = path.join('./data/bili/QQBotGroupMap');
     const configPath = path.join(configDir, 'Groupconfig.json');
     const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    const groupid2 = config[groupId]
+    const groupid2 = buttonId || config[groupId]
     if (!groupid2) return false
     ensureDataDir()
     const eventId = rawEvent.event_id;

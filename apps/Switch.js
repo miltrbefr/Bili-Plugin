@@ -174,10 +174,12 @@ export class Biliswitch extends plugin {
     }
 
     async switchgroup(e) {
+        /*
         if (e.adapter_name !== 'QQBot') {
             await e.reply("请艾特官鸡~", true)
             return;
         }
+            */
         const actionMatch = e.msg.match(/添加|删除/);
         if (!actionMatch) {
             await e.reply("指令格式错误，请重新尝试~")
@@ -185,14 +187,16 @@ export class Biliswitch extends plugin {
         }
         const action = actionMatch[0];
         
-        const group = e.msg.replace(/#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?(添加|删除)野收群聊/gi, '')
+        let group = e.msg.replace(/#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?(添加|删除)野收群聊/gi, '')
                            .replace(/[^0-9]/g, '')
                            .trim();
-        if (!group) {
-            await e.reply("请提供有效的群号");
-            return;
+        if (!group && e.adapter_name !== 'QQBot') {
+          group = e.group_id
         }
-        const group2 = e.group_id;
+        if (!group) {
+            e.reply('请在指令后键入群号或在群内直接发送原指令(不需要艾特官鸡)',true)
+        }
+        const group2 = e.group_id
         const configDir = path.join('./data/bili/QQBotGroupMap');
         const configPath = path.join(configDir, 'Groupconfig.json');
     
