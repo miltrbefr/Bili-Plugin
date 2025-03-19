@@ -221,7 +221,7 @@ export class Help extends plugin {
             "themeExclude": [
                 "default"
             ],
-            "colCount": 4,
+            "colCount": 3,
             "bgBlur": true
         }
         const helpList = [{
@@ -248,6 +248,11 @@ export class Help extends plugin {
                         icon: 53,
                         title: '支持过滤消息类型',
                         desc: '参见skipKeywords、skipMsgType配置'
+                    },
+                    {
+                        icon: 85,
+                        title: '开始推送<123456>',
+                        desc: '在任意群聊触发官鸡向指定群实时转发你的消息'
                     }
                 ],
             }
