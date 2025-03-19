@@ -11,6 +11,8 @@ import {
 
 const filePath = `${pluginRoot}/config/config.yaml`
 
+let autoGetEventFlag = false
+
 export class Bilitask extends plugin {
     constructor() {
         super({
@@ -77,46 +79,48 @@ export class Bilitask extends plugin {
     }
 
     async autogetevent() {
+        if (autoGetEventFlag) {
+            return logger.debug('[BILIPLUGIN]当前正在执行获取事件ID,本次跳过获取...');
+        }
+        autoGetEventFlag = true
         const configDir = path.join('./data/bili/QQBotGroupMap');
         const configPath = path.join(configDir, 'Groupconfig.json');
-
         try {
             try {
                 await fs.promises.access(configDir);
             } catch (error) {
-                logger.debug('[BILIPLUGIN配置路径不存在，跳过自动获取事件ID...]');
+                logger.debug('[BILIPLUGIN]配置路径不存在，跳过自动获取事件ID...');
                 return false;
             }
             const configData = await fs.promises.readFile(configPath, 'utf-8');
             const groupConfig = JSON.parse(configData);
             const channelIds = Object.values(groupConfig);
-            if (!channelIds) return logger.info('[BILIPLUGIN未配置野收官发跳过自动获取事件ID...]');
-
+            if (!channelIds) return logger.debug('[BILIPLUGIN]未配置野收官发跳过自动获取事件ID...');
             for (const channelId of channelIds) {
                 const eventFilePath = path.join('./data/bili/QQBotenvent', `${channelId}.json`);
-                let needRefresh = false;
+                let needRefresh = false
                 try {
                     await fs.promises.access(eventFilePath);
                     const eventData = await fs.promises.readFile(eventFilePath, 'utf-8');
                     const eventInfo = JSON.parse(eventData);
-                    const timeDiff = (Date.now() - eventInfo.time) / 1000;
+                    const timeDiff = (Date.now() - eventInfo.time) / 1000
                     if (timeDiff > 260) {
-                        needRefresh = true;
+                        needRefresh = true
                     }
                 } catch (error) {
-                    needRefresh = true;
+                    needRefresh = true
                 }
                 if (needRefresh) {
                     try {
                         await QQBot.getevent(channelId);
-                    } catch (err) {
-                        logger.error(`[BILIPLUGIN获取${channelId}事件失败]`, err);
-                    }
+                    } catch (err) {}
                 }
             }
         } catch (error) {
-            logger.error('[BILIPLUGIN获取事件ID错误]', error);
-            return false;
+            logger.error('[BILIPLUGIN]自动获取事件ID错误', error)
+            return false
+        } finally {
+            autoGetEventFlag = false
         }
     }
 
@@ -576,9 +580,9 @@ export class Bilitask extends plugin {
                         } else {
                             const isTRSS = Array.isArray(Bot.uin)
                             if (isTRSS) {
-                            Bot.pickGroup(groupKey).sendMsg(forwardMessage)
+                                Bot.pickGroup(groupKey).sendMsg(forwardMessage)
                             } else {
-                            Bot[Bot.uin].pickGroup(groupKey).sendMsg(forwardMessage)
+                                Bot[Bot.uin].pickGroup(groupKey).sendMsg(forwardMessage)
                             }
                         }
                     }
