@@ -23,6 +23,7 @@ export class BiliPush extends plugin {
 
     async startPush(e) {
         if (!e.isMaster) return;
+        if(!e.isGroup) return e.reply('请在群聊中使用本功能', true)
         const groupId = this.extractGroupId(e);
         if (!groupId) {
             return  e.reply('错误指令')
