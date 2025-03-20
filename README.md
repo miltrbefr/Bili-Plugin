@@ -24,7 +24,7 @@
 - 全面适配 [TRSS Yunzai v3.1.3](https://github.com/TimeRainStarSky/Yunzai)
 - 兼容 [Miao-Yunzai v3.1.3](https://github.com/yoimiya-kokomi/Miao-Yunzai)
 - 支持B站账号管理/签到/直播监听/QQBot等30+功能
-- 如有问题请前往[群聊](https://qm.qq.com/q/G3LKGY2Gsu)反馈
+- 如有问题请前往[群聊](https://qm.qq.com/q/h5g1zIyWTS)反馈
 
 ---
 
@@ -49,8 +49,9 @@ git clone --depth=1 https://gitee.com/nennen-cn/Bili-Plugin.git ./plugins/Bili-P
 
  - 安装依赖
 ``` bash 
-pnpm i
+pnpm install --filter=Bili-plugin
 ```
+---
 
 ## 📖 使用说明
 
@@ -75,7 +76,7 @@ pnpm i
 
 ## 联系方式
 1. QQ: 1514664085
-2. QQ群: 218277938
+2. QQ群: 470225982
 
 ## [爱发电](https://afdian.com/a/ziyibots)
 
