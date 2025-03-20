@@ -44,47 +44,53 @@ class QQBot {
             logger.error(r)
         }
     }
+ 
+
+    async fetchValidEventData(groupId) {
+        let attempts = 0;
+        const maxAttempts = 10
+        const retryInterval = 100;
+        const filePath = path.join(this.dataDir, `${groupId}.json`);
+        while (attempts < maxAttempts) {
+            try {
+                const rawData = await fs.promises.readFile(filePath, 'utf8');
+                const eventData = JSON.parse(rawData);
+
+                if (Date.now() - eventData.time <= 280 * 1000) {
+                    return eventData;
+                }
+            } catch (error) {
+                if (error.code === 'ENOENT') {
+                    await fs.promises.writeFile(filePath, JSON.stringify({
+                        time: 1740480612310,
+                        event_id: 'default',
+                        openid: groupId
+                    }));
+                }
+            }
+            const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
+            const r = await res.json()
+            logger.info(r)
+            await new Promise(resolve => setTimeout(resolve, retryInterval));
+            attempts++;
+        }
+        return null;
+    };
+
+    async recall(message_id, groupId) {
+        const eventData = await this.fetchValidEventData(groupId);
+        const group = Bot[config.QQBot].pickGroup(eventData.openid)
+        return group.recallMsg(message_id).catch(() => {});
+    }
 
     async sendmsgs(msgs, groupId) {
         await this.ensureDataDir()
         let msg = msgs
-        const filePath = path.join(this.dataDir, `${groupId}.json`);
         if (!msgs) return false;
         if (!Array.isArray(msgs)) msgs = [msgs];
 
-        const fetchValidEventData = async () => {
-            let attempts = 0;
-            const maxAttempts = 10
-            const retryInterval = 100;
-
-            while (attempts < maxAttempts) {
-                try {
-                    const rawData = await fs.promises.readFile(filePath, 'utf8');
-                    const eventData = JSON.parse(rawData);
-
-                    if (Date.now() - eventData.time <= 280 * 1000) {
-                        return eventData;
-                    }
-                } catch (error) {
-                    if (error.code === 'ENOENT') {
-                        await fs.promises.writeFile(filePath, JSON.stringify({
-                            time: 1740480612310,
-                            event_id: 'default',
-                            openid: groupId
-                        }));
-                    }
-                }
-                const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
-                const r = await res.json()
-                logger.info(r)
-                await new Promise(resolve => setTimeout(resolve, retryInterval));
-                attempts++;
-            }
-            return null;
-        };
-
         try {
-            const eventData = await fetchValidEventData();
+            const eventData = await this.fetchValidEventData(groupId);
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
                 return Bot.pickGroup(groupId).sendMsg(msg)
@@ -95,8 +101,8 @@ class QQBot {
                 type: "reply",
                 id: "event_" + eventData.event_id
             });
-            await group.sendMsg(msgs);
-            return true;
+
+            return await group.sendMsg(msgs);
         } catch (error) {
             logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error);
             return Bot.pickGroup(groupId).sendMsg(msg)

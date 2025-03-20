@@ -10,14 +10,16 @@ Bot.on("notice.group.poke", async event => {
     if (!(await QQBot.check(event))) {
         return false;
     }
-    if (event.target_id == config.QQBot) {
-        const updatedBot = {
-            ...event.bot,
-            nickname: Bot[config.QQBot].nickname,
-        };
-        event.bot = updatedBot
-        event.target_id = event.self_id;
-    }
+    try {
+        if (event.target_id == config.QQBot) {
+            const updatedBot = {
+                ...event.bot,
+                nickname: Bot[config.QQBot].nickname,
+            };
+            event.bot = updatedBot
+            event.target_id = event.self_id;
+        }
+    } catch (error) {}
     await QQBot.replaceReply(event)
     return false
 })
@@ -95,6 +97,4 @@ logger.mark(logger.cyan("🎀 欢迎使用哔站插件🎀"))
 await Bili.fetchlist()
 await Bili.Bilicheck()
 await redis.del('bili:autosign:task')
-export {
-    apps
-}
+export { apps }
