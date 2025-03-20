@@ -47,7 +47,7 @@ export class BiliPush extends plugin {
     }
 
     async recall(e) {
-        if (e.msg && e.msg.includes(RECALL_PUSH_COMMAND)) {
+        if (e.msg && e.msg.includes(RECALL_PUSH_COMMAND) && e.msg.includes('ROBOT1.0')) {
             try {
                 let message_id = e.msg.replace(RECALL_PUSH_COMMAND, "").trim()
                 const r = await QQBot.recall(message_id, Number(pushGroupId))
