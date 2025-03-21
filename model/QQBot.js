@@ -43,8 +43,9 @@ class QQBot {
         if (r.code !== 0) {
             logger.error(r)
         }
+        return r
     }
- 
+
 
     async fetchValidEventData(groupId) {
         let attempts = 0;
@@ -68,9 +69,8 @@ class QQBot {
                     }));
                 }
             }
-            const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
-            const r = await res.json()
-            logger.info(r)
+            const r = await this.getevent(groupId)
+            logger.mark(r)
             await new Promise(resolve => setTimeout(resolve, retryInterval));
             attempts++;
         }
@@ -80,7 +80,7 @@ class QQBot {
     async recall(message_id, groupId) {
         const eventData = await this.fetchValidEventData(groupId);
         const group = Bot[config.QQBot].pickGroup(eventData.openid)
-        return group.recallMsg(message_id).catch(() => {});
+        return await group.recallMsg(message_id).catch(() => {});
     }
 
     async sendmsgs(msgs, groupId) {
@@ -149,7 +149,6 @@ class QQBot {
     async replaceReply(event) {
         const groupId = event.group_id;
         this.ensureDataDir()
-        const filePath = path.join(this.dataDir, `${groupId}.json`);
         const defaultOptions = {
             at: false,
             recallMsg: 0
@@ -207,37 +206,7 @@ class QQBot {
             msgs = processedMsgs
             if (!this.button) msgs = msgs.filter(msg => msg.type !== 'button');
             if (this.ark) msgs = await this.makeark(msgs);
-            const fetchValidEventData = async () => {
-                let attempts = 0;
-                const maxAttempts = 10
-                const retryInterval = 100;
-
-                while (attempts < maxAttempts) {
-                    try {
-                        const rawData = await fs.promises.readFile(filePath, 'utf8');
-                        const eventData = JSON.parse(rawData);
-
-                        if (Date.now() - eventData.time <= 280 * 1000) {
-                            return eventData;
-                        }
-                    } catch (error) {
-                        if (error.code === 'ENOENT') {
-                            await fs.promises.writeFile(filePath, JSON.stringify({
-                                time: 1740480612310,
-                                event_id: 'default',
-                                openid: groupId
-                            }));
-                        }
-                    }
-                    const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
-                    const r = await res.json()
-                    logger.info(r)
-                    await new Promise(resolve => setTimeout(resolve, retryInterval));
-                    attempts++;
-                }
-                return null;
-            };
-            const eventData = await fetchValidEventData();
+            const eventData = await this.fetchValidEventData(groupId);
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
                 return Reply(msgs, quote, data)
@@ -282,7 +251,7 @@ class QQBot {
                 return firstResponse || true
             } catch (error) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 消息发送失败:`, error);
-                return false
+                return Reply(msgs, quote, data)
             }
         };
     }
