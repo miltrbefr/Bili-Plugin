@@ -470,6 +470,9 @@ export class Bilitask extends plugin {
             const fileName = path.basename(file, '.json');
             const cookiesFilePath = path.join(cookiesDirPath, file);
             const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
+            if (Object.keys(cookiesData).length === 0) {
+               continue
+            }
             let hasLiveEnabled = false;
             let hasLiveroom = false;
             const forwardNodes = [];

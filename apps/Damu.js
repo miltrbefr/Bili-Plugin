@@ -27,7 +27,7 @@ export class Bilidamu extends plugin {
       const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
       const userIds = Object.keys(cookiesData);
       if (userIds.length === 0) {
-        return await e.reply("账号数据异常，请先发送【哔站登录】进行绑定", true);
+        return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
       }
       let currentUserId = await redis.get(`bili:userset:${String(e.user_id).replace(/:/g, '_').trim()}`);
       if (!userIds.includes(currentUserId)) {

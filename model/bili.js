@@ -831,6 +831,36 @@ class Bili {
         }
     }
 
+    async checkcookies(userCookies) {
+        try {
+            const getInfoUrl = `https://member.bilibili.com/x2/creative/h5/calendar/event?ts=0&access_key=${userCookies.access_token}`
+            const response = await fetch(getInfoUrl)
+            const apiResponse = await response.json()
+            if (apiResponse.code !== 0) {
+                return {
+                    code: 0,
+                    msg: '请求异常,跳过检查'
+                }
+            }
+            if (apiResponse.data?.pfs?.profile?.jointime) {
+                return {
+                    code: 0,
+                    msg: '账号cookie有效'
+                }
+            }
+            return {
+                code: -1,
+                msg: '账号cookie已过期'
+            }
+        } catch (error) {
+            return {
+                code: 0,
+                msg: '请求异常,跳过检查'
+            }
+        }
+    }
+
+    
     async getupinfo(mids, userCookies) {
         const getInfoUrl = `${this.signApi}/userinfo?mid=${mids}&key=${this.key}&accesskey=${userCookies.access_token}`;
         const apiResponse = await (await fetch(getInfoUrl)).json()

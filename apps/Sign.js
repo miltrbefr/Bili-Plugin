@@ -20,15 +20,21 @@ export class Bilisign extends plugin {
     async signBilibili(e) {
         const cookiesFilePath = path.join('./data/bili', `${String(e.user_id).replace(/:/g, '_').trim()}.json`);
         if (!fs.existsSync(cookiesFilePath)) {
-            e.reply("未绑定ck，请发送哔站登录进行绑定", true);
+            e.reply("未绑定ck，请发送【哔站登录】进行绑定", true);
             return true
         }
+
+        const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
+        if (Object.keys(cookiesData).length === 0) {
+            return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+        }
+
         if (await redis.get('bili:autosign:task')) {
             const message = await redis.get('bili:autosign:task')
             this.e.reply(message, true)
             return true
         }
-        const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
+
         let forwardNodes = []
         let sign = false
         if (await redis.get(`bili:sign:task:${e.user_id}`)) {
@@ -61,7 +67,16 @@ export class Bilisign extends plugin {
                 await Bili.sleep(2000)
                 continue
             }
+
             let replyMessage = `账号${userId}的本次哔站签到结果\n===========================\n`;
+            const r = await Bili.checkcookies(userCookies)
+            if (r.code !== 0) {
+                delete cookiesData[userId];
+                fs.writeFileSync(cookiesFilePath, JSON.stringify(cookiesData, null, 2))
+                logger.warn(`[Bili-PLUGIN(已成功删除过期文件)]B站签到QQ(${fileName})的账号${userId}的Cookie已过期...`)
+                await this.e.reply(`B站账号${userId}的Cookie已过期, 请发送【哔站登录】重新进行绑定...`, true)
+                continue
+            }
             let videoData
 
             try {
@@ -199,7 +214,7 @@ export class Bilisign extends plugin {
             });
         }
         const savePath = path.join(tempDirPath, `${e.user_id}.json`)
-        if(issign) fs.writeFileSync(savePath, JSON.stringify(forwardNodes, null, 4), {
+        if (issign) fs.writeFileSync(savePath, JSON.stringify(forwardNodes, null, 4), {
             flag: 'w'
         });
     }

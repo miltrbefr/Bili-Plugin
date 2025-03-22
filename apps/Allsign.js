@@ -95,11 +95,15 @@ export class Biliallsign extends plugin {
                 }
             }
             let signedCount = 0,
-                signskipCount = 0;
-            
+                signskipCount = 0,
+                overdueCount = 0;
             for (const file of files) {
                 const cookiesFilePath = path.join(cookiesDirPath, file);
-                const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
+                const fileName = path.basename(file, '.json')
+                const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'))
+                if (Object.keys(cookiesData).length === 0) {
+                    continue
+                }
                 let issign = false
                 let forwardNodes = [];
                 for (const userId in cookiesData) {
@@ -110,9 +114,18 @@ export class Biliallsign extends plugin {
                             continue;
                         }
 
-                        logger.mark(`[Bili-Plugin]开始${file}的哔站签到账号${userId}执行签到`);
+                        logger.mark(`[Bili-Plugin]开始${fileName}的哔站签到账号${userId}执行签到`);
                         const userCookies = cookiesData[userId];
                         let replyMessage = `🌸账号${userId}的本次哔站签到结果\n===========================\n`;
+                        const r = await Bili.checkcookies(userCookies)
+                        if(r.code !== 0) {
+                           delete cookiesData[userId];
+                           fs.writeFileSync(cookiesFilePath, JSON.stringify(cookiesData, null, 2))
+                           logger.warn(`[Bili-PLUGIN(已成功删除过期文件)]B站签到QQ(${fileName})的账号${userId}的Cookie已过期...`)
+                           overdueCount++
+                           continue
+                        }
+
                         const videoData = await Bili.getFeed(userCookies).catch(err => {
                             logger.error(`[Bili-Plugin]获取视频失败: ${err}`);
                             return [];
@@ -216,7 +229,6 @@ export class Biliallsign extends plugin {
                         logger.error(`[Bili-Plugin]账号${userId}签到失败: ${err}`);
                     }
                 }
-
                 const savePath = path.join(tempDirPath, file);
                 if(issign) fs.writeFileSync(savePath, JSON.stringify(forwardNodes, null, 4));
                 const remainingTasks = files.length - signedCount
@@ -246,7 +258,7 @@ export class Biliallsign extends plugin {
             durationStr += `${seconds}秒`
             const reportMsg = `[哔站插件推送]报告主人！\n哔站自动签到完成啦~` +
                 `\n🌸任务开始时间：${ts} \n🌸任务人数：${tasklength}人` +
-                `\n🌸执行签到人数:${signedCount}\n🌸跳过账号数(已签):${signskipCount}` +
+                `\n🌸执行签到账号数:${signedCount}\n🌸跳过账号数(已签):${signskipCount}\n 🌸Cookie过期账号数:${overdueCount}` +
                 `\n🌸任务耗时：${durationStr}`;
 
             if (this.e) {

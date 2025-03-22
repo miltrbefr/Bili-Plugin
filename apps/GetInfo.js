@@ -35,13 +35,15 @@ export class Biliinfo extends plugin {
         if (userID === selfID) userID = e.user_id
         const cookiesFilePath = path.join('./data/bili', `${String(userID).replace(/:/g, '_').trim()}.json`);
         if (!fs.existsSync(cookiesFilePath)) {
-            e.reply("未绑定ck，请发送哔站登录进行绑定", true);
+            e.reply("未绑定ck，请发送【哔站登录】进行绑定", true);
             return;
         }
-        const r = await e.reply("开始获取你的B站信息请稍等....", true)
-        await Bili.recall(e, r, 5)
-
         const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
+        if (Object.keys(cookiesData).length === 0) {
+            return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+         }
+         const r = await e.reply("开始获取你的B站信息请稍等....", true)
+         await Bili.recall(e, r, 5) 
         let forwardNodes = [];
 
         for (const userId in cookiesData) {

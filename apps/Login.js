@@ -165,10 +165,13 @@ export class Bililogin extends plugin {
         let cookies = {};
         try {
             if (!fs.existsSync(cookieFile)) throw new Error("Cookie file does not exist.");
-            cookies = JSON.parse(fs.readFileSync(cookieFile, 'utf8'));
+            cookies = JSON.parse(fs.readFileSync(cookieFile, 'utf8'))
+            if (Object.keys(cookies).length === 0) {
+                return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+            }
         } catch (err) {
-             e.reply("未绑定ck，请发送哔站登录进行绑定",true);
-            return;
+             e.reply("未绑定ck，请发送【哔站登录】进行绑定",true);
+            return
         }
     
         const refreshedAccounts = [];

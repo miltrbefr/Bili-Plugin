@@ -40,12 +40,15 @@ export class Biliuserlive extends plugin {
             e.reply('笨蛋你明明刚刚找过你主播了，过一会再试吧~',true)
             return
         }
-        const r = await e.reply("开始获取你的关注列表主播直播状态请稍等...",true)
-        await Bili.recall(e, r, 5)
         redis.set(`bili:getlivefeed:${String(userID).replace(/:/g, '_').trim()}`, '1', {
             EX: 180
         })
         const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
+        if (Object.keys(cookiesData).length === 0) {
+            return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+        }
+        const r = await e.reply("开始获取你的关注列表主播直播状态请稍等...",true)
+        await Bili.recall(e, r, 5)
         let forwardNodes = [];
         let Count = 0
         for (const userId in cookiesData) {
