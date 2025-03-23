@@ -37,11 +37,18 @@ class QQBot {
     }
 
     async getevent(groupId) {
+        if (isNaN(Number(this.appid))) {
+            logger.warn(`[Bili-PLUGIN 野收官发]请确保您的${logger.red(`APPID`)}认真填写，当前您的APPID为：${logger.red(`${this.appid}`)}`)
+            return null
+        }
         const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`)
         const r = await res.json()
         logger.debug(r)
         if (r.code !== 0) {
             logger.error(r)
+        }
+        if (r && r.code === 0 && Math.random() < 0.1) {
+            logger.mark(r)
         }
         return r
     }
