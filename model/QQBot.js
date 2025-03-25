@@ -37,6 +37,7 @@ class QQBot {
     }
 
     async getevent(groupId) {
+        if(!Bot[config.QQBot]?.adapter?.name) return logger.warn(`[BILI-PLUGIN野收官发]请确保您的QQBot：${logger.red(`${config.QQBot}`)})已经上线再使用野收官发功能！！`)
         if (isNaN(Number(this.appid))) {
             logger.warn(`[Bili-PLUGIN 野收官发]请确保您的${logger.red(`APPID`)}认真填写，当前您的APPID为：${logger.red(`${this.appid}`)}`)
             return null
