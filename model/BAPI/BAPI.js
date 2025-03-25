@@ -315,7 +315,7 @@ class BApi {
             'User-Agent': 'Mozilla/5.0 BiliDroid/8.2.0 (bbcallen@gmail.com) os/android model/24031PN0DC mobi_app/android build/8020300 channel/yingyongbao innerVer/8020300 osVer/12 network/2',
             'Host': 'api.bilibili.com',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Cookie': `SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}${userCookies.csrf ? `; bili_jct=${userCookies.csrf}` : ''}${userCookies.sid ? `; sid=${userCookies.sid}` : ''}${userCookies.DedeUserID ? `; DedeUserID=${userCookies.DedeUserID}` : ''}${userCookies.DedeUserID__ckMd5 ? `; DedeUserID__ckMd5=${userCookies.DedeUserID__ckMd5}` : ''}`,
+            'Cookie': `SESSDATA=${userCookies.SESSDATA}`,
             'Accept': '*/*',
             'Connection': 'keep-alive',
             'Referer': 'https://www.bilibili.com/',
