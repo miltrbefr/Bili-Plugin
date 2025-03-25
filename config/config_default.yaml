@@ -1,4 +1,6 @@
-#签到API
+#是否启用签到API(默认关闭,仅在你无法签到的情况下可以手动打开，部分功能暂不支持)
+Enable_SignApi: false
+#签到API(不知道是上什么不要动)
 signApi: http://113.44.131.92:2536/bili
 #登录API
 loginApi: http://113.44.131.92:3333/bili
