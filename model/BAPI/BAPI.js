@@ -49,7 +49,7 @@ const appheaders = {
     'guestid': '24145498840755'
 }
 
-class BiliApi {
+class BApi {
     constructor() {}
 
     async getupinfo(mids, userCookies) {
@@ -1017,4 +1017,4 @@ class BiliApi {
     }
 }
 
-export default new BiliApi()
+export default new BApi()
