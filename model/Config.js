@@ -71,6 +71,7 @@ class Config {
     checkAndCreateDefaultConfig() {
         if (!fs.existsSync(this.filePath)) {
             const defaultConfig = {
+                Enable_SignApi: false,
                 signApi: "http://113.44.131.92:2536/bili",
                 loginApi: "http://113.44.131.92:3333/bili",
                 cron: this.generateCronExpression(),
@@ -107,6 +108,7 @@ class Config {
         } else {
             let currentConfig = this.loadYAML(this.filePath);
             const defaultConfig = {
+                Enable_SignApi: currentConfig?.Enable_SignApi || false,
                 signApi: currentConfig?.signApi || "http://113.44.131.92:2536/bili",
                 loginApi: currentConfig?.loginApi || "http://113.44.131.92:3333/bili",
                 cron: currentConfig?.cron || this.generateCronExpression(),
@@ -162,6 +164,11 @@ class Config {
         } catch (error) {
             logger.error(`[BILI PLUGIN] 配置加载失败: ${error}`);
         }
+    }
+
+    get Enable_SignApi() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.Enable_SignApi
     }
 
     get whoisMyWifecdTime() {

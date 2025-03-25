@@ -1,18 +1,14 @@
 import fetch from "node-fetch";
 import moment from 'moment';
 import config from '../model/Config.js';
+import BApi from '../model/BApi/BAPI.js';
 import configModule from "../../../lib/config/config.js"
 import YAML from 'yaml';
 import fs from 'fs';
 import path from 'path';
 import lodash from 'lodash';
-import {
-    pluginName,
-    pluginRoot
-} from "../model/constant.js"
-import {
-    exec
-} from 'child_process'
+import {pluginName,pluginRoot} from "../model/constant.js"
+import {exec} from 'child_process'
 import net from 'net'
 let Update = null
 try {
@@ -36,8 +32,14 @@ class Bili {
     // 获取UP最新信息
     async SubscribeUP(mid) {
         const UPUrl = `${this.signApi}/space?mid=${mid}`;
-        const response = await fetch(UPUrl);
-        const data = await response.json();
+        let response
+        let data
+        if (config.Enable_SignApi) {
+            response = await fetch(UPUrl)
+            data = await response.json();
+        } else {
+            data = await BApi.space(mid)
+        }
         const live = data.data.live;
         const archive = data.data.archive.item[0]
         const liveItem = {
@@ -76,8 +78,14 @@ class Bili {
         const actionName = actionMap[act] || '未知操作';
         const relationUrl = `${this.signApi}/relation?accesskey=${userCookies.access_token}&key=${this.key}&mid=${mid}&act=${act}`;
         try {
-            const response = await fetch(relationUrl);
-            const json = await response.json();
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(relationUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.relationup(userCookies, mid, act)
+            }
             if (json.code === 0) {
                 return `🌸${actionName}成功`;
             } else {
@@ -226,8 +234,14 @@ class Bili {
     async liveshare(userCookies, roomid) {
         const jxUrl = `${this.signApi}/liveshare?accesskey=${userCookies.access_token}&key=${this.key}&roomid=${roomid}`;
         try {
-            const response = await fetch(jxUrl);
-            const json = await response.json();
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(jxUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.liveshare(userCookies, roomid)
+            }
             return json.code === 0 ? `🌸分享直播间${roomid}成功` : `🌸分享直播间${roomid}失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]视频解析失败:", err);
@@ -242,8 +256,14 @@ class Bili {
         const sendClickRequest = async (batchClick) => {
             const liveclickUrl = `${this.signApi}/livelike?accesskey=${userCookies.access_token}&key=${this.key}&roomid=${roomid}&upid=${upid}&uid=${userCookies.DedeUserID}&click=${batchClick}`;
             try {
-                const response = await fetch(liveclickUrl);
-                const json = await response.json();
+                let response
+                let json
+                if (config.Enable_SignApi) {
+                    response = await fetch(liveclickUrl);
+                    json = await response.json();
+                } else {
+                    json = await BApi.liveclick(userCookies, roomid, upid, click)
+                }
 
                 if (json.code === 0) {
                     return {
@@ -295,8 +315,14 @@ class Bili {
         // action：0喜欢，1不喜欢
         const likeUrl = `${this.signApi}/like?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}&like=${action}`
         try {
-            const response = await fetch(likeUrl)
-            const json = await response.json()
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(likeUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.likevideo(userCookies, aid, action)
+            }
             const reply = action === 0 ? '点赞' : '取消点赞'
             return json.code === 0 ? `🌸${reply}视频成功` : `🌸${reply}视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
@@ -308,8 +334,14 @@ class Bili {
     async dislikevideo(userCookies, aid) {
         const dislikeUrl = `${this.signApi}/dislike?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
-            const response = await fetch(dislikeUrl)
-            const json = await response.json()
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(dislikeUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.dislikevideo(userCookies, aid)
+            }
             return json.code === 0 ? `🌸点踩视频成功` : `🌸点踩视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]点踩操作失败:", err);
@@ -320,8 +352,14 @@ class Bili {
     async triplevideo(userCookies, aid) {
         const tripleUrl = `${this.signApi}/triple?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
-            const response = await fetch(tripleUrl)
-            const json = await response.json()
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(tripleUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.triplevideo(userCookies, aid)
+            }
             return json.code === 0 ? `🌸一键三连成功，视频已收藏至默认文件夹` : `🌸一键三连失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]一键三连操作失败:", err);
@@ -332,8 +370,14 @@ class Bili {
     async favvideo(userCookies, aid) {
         const favUrl = `${this.signApi}/fav?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
-            const response = await fetch(favUrl)
-            const json = await response.json()
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(favUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.favvideo(userCookies, aid)
+            }
             return json.code === 0 ? `🌸收藏视频成功，视频已收藏至默认文件夹` : `🌸收藏视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]收藏视频操作失败:", err);
@@ -344,8 +388,14 @@ class Bili {
     async unfavvideo(userCookies, aid) {
         const unfavUrl = `${this.signApi}/unfav?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
-            const response = await fetch(unfavUrl)
-            const json = await response.json()
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(unfavUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.unfavvideo(userCookies, aid)
+            }
             return json.code === 0 ? `🌸取消收藏视频成功！` : `🌸取消收藏视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]取消收藏视频操作失败:", err);
@@ -356,8 +406,14 @@ class Bili {
     async replyvideo(userCookies, aid, msg) {
         const replyUrl = `${this.signApi}/reply?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}&msg=${msg}`
         try {
-            const response = await fetch(replyUrl)
-            const json = await response.json()
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(replyUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.replyvideo(userCookies, aid, msg)
+            }
             return json.code === 0 ? `🌸评论视频成功！` : `🌸评论视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-Plugin]评论视频操作失败:", err);
@@ -757,8 +813,14 @@ class Bili {
     async livesenddamu(userCookies, msg, roomid) {
         const livedamu = `${this.signApi}/danmu2?accesskey=${userCookies.access_token}&msg=${msg}&roomid=${roomid}&key=${this.key}`;
         try {
-            const livedamuResponse = await fetch(livedamu);
-            const damu = await livedamuResponse.json();
+            let response
+            let damu
+            if (config.Enable_SignApi) {
+                response = await fetch(livedamu);
+                damu = await response.json();
+            } else {
+                damu = await BApi.livesenddamu(userCookies, msg, roomid)
+            }
             if (damu.code === 0) {
                 return `===========================\n🌸B站账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』成功`;
             } else {
@@ -774,12 +836,14 @@ class Bili {
     async getlivefeed(userCookies) {
         const livefeed = `${this.signApi}/livefeed?accesskey=${userCookies.access_token}&key=${this.key}`;
         try {
-            const livefeedResponse = await fetch(livefeed);
-            if (!livefeedResponse.ok) {
-                throw new Error(`HTTP ${livefeedResponse.status}`);
+            let response
+            let livejson
+            if (config.Enable_SignApi) {
+                response = await fetch(livefeed);
+                livejson = await response.json();
+            } else {
+                livejson = await BApi.livesenddamu(userCookies)
             }
-            const livejson = await livefeedResponse.json();
-
             let livedata = livejson.data?.card_list
                 ?.filter(card =>
                     card.card_type === "my_idol_v1" &&
@@ -812,8 +876,14 @@ class Bili {
     async gettoexplog(userCookies) {
         const expLogUrl = `${this.signApi}/exp_log2?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`
         try {
-            const expResponse = await fetch(expLogUrl);
-            const expRet = await expResponse.json();
+            let response
+            let expRet
+            if (config.Enable_SignApi) {
+                response = await fetch(expLogUrl);
+                expRet = await response.json();
+            } else {
+                expRet = await BApi.exp_log2(userCookies)
+            }
             return expRet
         } catch (err) {
             logger.error("[Bili-Plugin]获取经验日志失败", err);
@@ -823,8 +893,14 @@ class Bili {
     async getwebinfo(userCookies) {
         const webinfo = `${this.signApi}/myinfo?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`
         try {
-            const webinfoResponse = await fetch(webinfo);
-            const web = await webinfoResponse.json();
+            let response
+            let web
+            if (config.Enable_SignApi) {
+                response = await fetch(webinfo);
+                web = await response.json();
+            } else {
+                web = await BApi.myinfo(userCookies)
+            }
             return web
         } catch (err) {
             logger.error("[Bili-Plugin]获取用户web端信息失败", err);
@@ -834,8 +910,8 @@ class Bili {
     async checkcookies(userCookies) {
         try {
             const getInfoUrl = `https://member.bilibili.com/x2/creative/h5/calendar/event?ts=0&access_key=${userCookies.access_token}`
-            const response = await fetch(getInfoUrl)
-            const apiResponse = await response.json()
+            let response = await fetch(getInfoUrl)
+            let apiResponse = await response.json()
             if (apiResponse.code !== 0) {
                 return {
                     code: 0,
@@ -860,10 +936,14 @@ class Bili {
         }
     }
 
-    
     async getupinfo(mids, userCookies) {
         const getInfoUrl = `${this.signApi}/userinfo?mid=${mids}&key=${this.key}&accesskey=${userCookies.access_token}`;
-        const apiResponse = await (await fetch(getInfoUrl)).json()
+        let apiResponse
+        if (config.Enable_SignApi) {
+            apiResponse = await (await fetch(getInfoUrl)).json()
+        } else {
+            apiResponse = await BApi.getupinfo(mids, userCookies)
+        }
         const forwardNodes = [];
         if (apiResponse.code === 0 && apiResponse.data && apiResponse.data.length > 0) {
             for (const card of apiResponse.data) {
@@ -923,15 +1003,15 @@ class Bili {
             ...defaultResponse
         };
         try {
-            const infoResponse = await fetch(getInfoUrl);
-            infoRet = await infoResponse.json();
-            if (infoRet.code !== 0) {
-                logger.error('[Bili-Plugin]空间接口响应异常:', infoRet);
+            if (config.Enable_SignApi) {
+                infoRet = await (await fetch(getInfoUrl)).json()
+            } else {
+                infoRet = await BApi.space(userCookies.DedeUserID, userCookies)
             }
         } catch (err) {
             logger.error('[Bili-Plugin]空间接口请求失败:', err);
         }
-        await this.sleep(1000);
+        await this.sleep(250);
         let info2Ret = {
             code: -1,
             data: {
@@ -939,24 +1019,24 @@ class Bili {
             }
         };
         try {
-            const info2Response = await fetch(info2);
-            info2Ret = await info2Response.json();
-            if (info2Ret.code !== 0) {
-                logger.error('[Bili-Plugin]详细信息接口异常:', info2Ret);
+            if (config.Enable_SignApi) {
+                info2Ret = await (await fetch(info2)).json()
+            } else {
+                info2Ret = await BApi.myinfo2(userCookies)
             }
         } catch (err) {
             logger.error('[Bili-Plugin]详细信息请求失败:', err);
         }
-        await this.sleep(1000);
+        await this.sleep(250);
         let expRet = {
             code: -1,
             data: {}
         };
         try {
-            const expResponse = await fetch(expLogUrl);
-            expRet = await expResponse.json();
-            if (expRet.code !== 0) {
-                logger.error('[Bili-Plugin]经验接口异常:', expRet);
+            if (config.Enable_SignApi) {
+                expRet = await (await fetch(expLogUrl)).json()
+            } else {
+                expRet = await BApi.exp_log2(userCookies)
             }
         } catch (err) {
             logger.error('[Bili-Plugin]经验日志请求失败:', err);
@@ -1062,8 +1142,14 @@ class Bili {
         while (videoData.length < 5) {
             const feedUrl = `${this.signApi}/feed2?accesskey=${userCookies.access_token}&key=${this.key}`;
             try {
-                const response = await fetch(feedUrl);
-                const json = await response.json();
+                let response
+                let json
+                if (config.Enable_SignApi) {
+                    response = await fetch(feedUrl);
+                    json = await response.json();
+                } else {
+                    json = await BApi.getFeed(userCookies)
+                }
                 if (json.code !== 0) {
                     logger.error(`[Bili-Plugin]获取推荐视频未知错误`);
                     break;
@@ -1093,7 +1179,7 @@ class Bili {
             } catch (err) {
                 logger.error("[Bili-Plugin]获取视频数据失败:", err);
             }
-            await this.sleep(2500)
+            await this.sleep(2000)
         }
         return videoData;
     }
@@ -1101,8 +1187,14 @@ class Bili {
     async addCoin(aid, userCookies, coin = 1) {
         const coinUrl = `${this.signApi}/addcoin?accesskey=${userCookies.access_token}&aid=${aid}&coin=${coin}&like=1&key=${this.key}`;
         try {
-            const response = await fetch(coinUrl);
-            const json = await response.json();
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(coinUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.addCoin(aid, userCookies, coin)
+            }
             return json.code === 0 ? "🌸投币视频: 成功(10经验)" : `🌸投币视频: 失败(${json.message || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-Plugin]投币操作失败:", err);
@@ -1257,8 +1349,14 @@ class Bili {
     async shareVideo(aid, userCookies) {
         const shareUrl = `${this.signApi}/share?accesskey=${userCookies.access_token}&aid=${aid}&key=${this.key}`;
         try {
-            const response = await fetch(shareUrl);
-            const json = await response.json();
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(shareUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.shareVideo(aid, userCookies)
+            }
             if (json.data && json.data.toast) {
                 return json.data.toast;
             } else if (json.data && json.data.count > 0) {
@@ -1275,8 +1373,14 @@ class Bili {
     async reportWatch(aid, cid, userCookies, time = Math.floor(Math.random() * 91) + 10) {
         const reportUrl = `${this.signApi}/report?accesskey=${userCookies.access_token}&aid=${aid}&cid=${cid}&key=${this.key}&time=${time}`;
         try {
-            const response = await fetch(reportUrl);
-            const json = await response.json()
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(reportUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.reportWatch(aid, cid, userCookies, time)
+            }
             if (json.code === 0) {
                 return "🌸观看视频: 成功(5经验)"
             } else {
@@ -1323,8 +1427,14 @@ class Bili {
     async getExperience(userCookies) {
         const expUrl = `${this.signApi}/experience?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&csrf=${userCookies.csrf}&key=${this.key}`;
         try {
-            const response = await fetch(expUrl);
-            const json = await response.json();
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(expUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.getExperience(userCookies)
+            }
             return json.code === 0 ? "成功" : `失败(${json.message || json.msg || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-Plugin]大会员经验领取失败:", err);
@@ -1347,8 +1457,14 @@ class Bili {
             let result = "失败(未知错误)\n";
             try {
                 const couponUrl = `${this.signApi}/kaquan?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&csrf=${userCookies.csrf}&type=${type}&key=${this.key}`;
-                const response = await fetch(couponUrl);
-                const json = await response.json();
+                let response
+                let json
+                if (config.Enable_SignApi) {
+                    response = await fetch(couponUrl);
+                    json = await response.json();
+                } else {
+                    json = await BApi.getCoupons(userCookies, type)
+                }
                 result = json.code === 0 ? "成功" : `失败(${json.message || json.msg || '未知错误'})`;
             } catch (err) {
                 logger.error(`[Bili-Plugin] ${couponTypes[type]} 领取失败:`, err);
@@ -1369,8 +1485,14 @@ class Bili {
     async shareManhua(userCookies) {
         const manhuaShareUrl = `${this.signApi}/manhuashare?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&key=${this.key}`;
         try {
-            const response = await fetch(manhuaShareUrl);
-            const json = await response.json();
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(manhuaShareUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.shareManhua(userCookies)
+            }
             if (json.msg === "今日已分享") {
                 return '🌸漫画分享: 今日已分享';
             } else if (json.data && json.data.point !== undefined) {
@@ -1392,8 +1514,14 @@ class Bili {
     async signManhua(userCookies) {
         const manhuaSignUrl = `${this.signApi}/manhuasign?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&key=${this.key}`;
         try {
-            const response = await fetch(manhuaSignUrl);
-            const json = await response.json();
+            let response
+            let json
+            if (config.Enable_SignApi) {
+                response = await fetch(manhuaSignUrl);
+                json = await response.json();
+            } else {
+                json = await BApi.signManhua(userCookies)
+            }
             return json.code === 0 ? "🌸漫画签到: 成功" : `🌸漫画签到: 失败(${json.message || json.msg || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-Plugin]漫画签到失败:", err);
