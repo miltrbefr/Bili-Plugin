@@ -842,7 +842,7 @@ class Bili {
                 response = await fetch(livefeed);
                 livejson = await response.json();
             } else {
-                livejson = await BApi.livesenddamu(userCookies)
+                livejson = await BApi.getlivefeed(userCookies)
             }
             let livedata = livejson.data?.card_list
                 ?.filter(card =>
