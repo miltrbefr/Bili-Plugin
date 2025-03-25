@@ -13,34 +13,6 @@ function ensureDataDir() {
     }
 }
 
-export class Bilipoke extends plugin {
-    constructor() {
-        super({
-            name: "Bili:野收官发",
-            desc: "野收官发",
-            event: "notice.group.poke",
-            priority: Number.MIN_SAFE_INTEGER,
-        })
-    }
-
-    async accept(e) {
-        if (!(await QQBot.check(e))) {
-            return false;
-        }
-        // e.target_id = (e.target_id == config.QQBot) ? e.self_id : e.target_id
-        if (e.target_id == config.QQBot) {
-            const updatedBot = {
-                ...e.bot,
-                nickname: Bot[config.QQBot].nickname,
-            };
-            e.bot = updatedBot
-            e.target_id = e.self_id;
-        }
-        await QQBot.replaceReply(e)
-        return false
-    }
-}
-
 
 Bot.on("request.group", async event => {
     if (!(await QQBot.check(event))) {
