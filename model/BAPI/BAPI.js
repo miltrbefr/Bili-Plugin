@@ -102,6 +102,22 @@ class BApi {
         })
       }
 
+      async refresh(accessKey,refresh_token) {
+        const params = {
+            access_key: accessKey,
+            refresh_token: refresh_token,
+            ts: Math.floor(Date.now() / 1000),
+        }
+
+        return this._fetchRequest({
+            url: CONSTANTS.refreshUrl,
+            method: 'POST',
+            params,
+            signKey: "783bbb7264451d82",
+            signSecret: "2653583c8873dea268ab9386918b1d65"
+        })
+    }
+
     async _fetchRequest({
         url,
         method = 'GET',
