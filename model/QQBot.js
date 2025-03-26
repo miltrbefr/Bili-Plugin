@@ -4,9 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import imageSize from 'image-size'
 import configModule from "../../../lib/config/config.js"
-import {
-    pluginRoot
-} from '../model/constant.js'
+import {pluginRoot} from '../model/constant.js'
 import Bili from '../model/bili.js';
 let groupConfigCache = null;
 let groupConfigMtime = 0;
@@ -37,7 +35,7 @@ class QQBot {
     }
 
     async getevent(groupId) {
-        if(!Bot[config.QQBot]?.adapter?.name) return logger.warn(`[BILI-PLUGIN野收官发]请确保您的QQBot：${logger.red(`${config.QQBot}`)})已经上线再使用野收官发功能！！`)
+        if (!Bot[config.QQBot]?.adapter?.name) return logger.warn(`[BILI-PLUGIN野收官发]请确保您的QQBot：${logger.red(`${config.QQBot}`)})已经上线再使用野收官发功能！！`)
         if (isNaN(Number(this.appid))) {
             logger.warn(`[Bili-PLUGIN 野收官发]请确保您的${logger.red(`APPID`)}认真填写，当前您的APPID为：${logger.red(`${this.appid}`)}`)
             return null
@@ -98,6 +96,19 @@ class QQBot {
         if (!msgs) return false;
         if (!Array.isArray(msgs)) msgs = [msgs];
         msgs = msgs.filter(msg => msg.type !== 'reply');
+
+        const filePath3 = `${pluginRoot}/config/config.yaml`;
+        const configs2 = await Bili.loadConfig(filePath3)
+        let skipMsgType = (await Bili.getConfig("skipMsgType", configs2)) || []
+        for (const msg of msgs) {
+            if (msg.type) {
+                if (skipMsgType.some(i => msg.type === i)) {
+                    if (Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
+                    return Bot.pickGroup(groupId).sendMsg(originmsg)
+                }
+            }
+        }
+
         try {
             const eventData = await this.fetchValidEventData(groupId);
             if (!eventData) {
@@ -114,7 +125,7 @@ class QQBot {
             return await group.sendMsg(msgs);
         } catch (error) {
             logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error)
-            if(Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
+            if (Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
             return Bot.pickGroup(groupId).sendMsg(originmsg)
         }
     }
