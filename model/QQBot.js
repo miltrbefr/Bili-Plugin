@@ -91,12 +91,13 @@ class QQBot {
         return await group.recallMsg(message_id).catch(() => {});
     }
 
-    async sendmsgs(msgs, groupId) {
+    async sendmsgs(msgs, groupId, botid) {
         await this.ensureDataDir()
+        let originmsg = msgs
         let msg = msgs
         if (!msgs) return false;
         if (!Array.isArray(msgs)) msgs = [msgs];
-
+        msgs = msgs.filter(msg => msg.type !== 'reply');
         try {
             const eventData = await this.fetchValidEventData(groupId);
             if (!eventData) {
@@ -112,8 +113,10 @@ class QQBot {
 
             return await group.sendMsg(msgs);
         } catch (error) {
-            logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error);
-            return Bot.pickGroup(groupId).sendMsg(msg)
+            logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error)
+            let bot
+            if(Bot[botid]) return bot.pickGroup(groupId).sendMsg(originmsg)
+            return Bot.pickGroup(groupId).sendMsg(originmsg)
         }
     }
 
