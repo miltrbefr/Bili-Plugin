@@ -114,8 +114,7 @@ class QQBot {
             return await group.sendMsg(msgs);
         } catch (error) {
             logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error)
-            let bot
-            if(Bot[botid]) return bot.pickGroup(groupId).sendMsg(originmsg)
+            if(Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
             return Bot.pickGroup(groupId).sendMsg(originmsg)
         }
     }
