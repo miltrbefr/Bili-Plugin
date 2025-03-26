@@ -23,14 +23,13 @@ export class BiliPush extends plugin {
 
     async startPush(e) {
         if (!e.isMaster) return;
-        if(!e.isGroup) return e.reply('请在群聊中使用本功能', true)
         const groupId = this.extractGroupId(e);
         if (!groupId) {
-            return  e.reply('错误指令')
+            return e.reply('错误指令')
         }
         const groupNumber = Number(groupId);
         if (isNaN(groupNumber)) {
-        return  e.reply('群号键入错误,请使用指令<开始推送123456>尝试')
+            return e.reply('群号键入错误,请使用指令<开始推送123456>尝试')
         }
         try {
             await e.reply(`开始向${groupId}实时转发消息，发送<取消推送>即可取消`);
@@ -51,8 +50,17 @@ export class BiliPush extends plugin {
             try {
                 let message_id = e.msg.replace(RECALL_PUSH_COMMAND, "").trim()
                 const r = await QQBot.recall(message_id, Number(pushGroupId))
-                if(r) await QQBot.sendmsgs(`撤回成功!`, e.group_id)
-                    else  await QQBot.sendmsgs(`撤回失败!`, e.group_id)
+                if (r) {
+                    if (e.group_id && await QQBot.isQQBotcheck(e.group_id))
+                        await QQBot.sendmsgs(`撤回成功!`, e.group_id)
+                else
+                    e.reply(`撤回成功!`, true)
+                } else {
+                if (e.group_id && await QQBot.isQQBotcheck(e.group_id))
+                    await QQBot.sendmsgs(`撤回失败!`, e.group_id)
+                else
+                    e.reply(`撤回失败!`, true)
+                }
                 return true
             } catch (error) {
                 logger.error(`撤回失败: ${error.message}`);
@@ -64,17 +72,22 @@ export class BiliPush extends plugin {
 
 
     async stopPush(e) {
-
         if (e.msg && e.msg.includes(STOP_PUSH_COMMAND)) {
             try {
                 this.finish('push', e.isGroup);
                 pushGroupId = null;
                 pushUserId = null;
-                await QQBot.sendmsgs("成功取消推送", e.group_id)
+                if (e.group_id && await QQBot.isQQBotcheck(e.group_id))
+                     await QQBot.sendmsgs("成功取消推送", e.group_id)
+                    else
+                    e.reply("成功取消推送", true)
                 return true;
             } catch (error) {
                 logger.error(`停止推送失败: ${error.message}`);
-                await QQBot.sendmsgs("取消推送失败", e.group_id)
+                if (e.group_id && await QQBot.isQQBotcheck(e.group_id))
+                    await QQBot.sendmsgs("取消推送失败", e.group_id)
+                   else
+                   e.reply("取消推送失败", true)
             }
         }
         return false;
@@ -95,8 +108,11 @@ export class BiliPush extends plugin {
                 message.push(e.msg);
             }
             if (!message) return
-           const r =  await QQBot.sendmsgs(message, Number(pushGroupId))
-           await QQBot.sendmsgs(`发送成功，需要撤回请发送↓↓↓↓↓↓↓\n撤回${r.message_id}`, e.group_id)
+            const r = await QQBot.sendmsgs(message, Number(pushGroupId))
+            if (e.group_id && await QQBot.isQQBotcheck(e.group_id))
+                await QQBot.sendmsgs(`发送成功，需要撤回请发送\n↓↓↓↓↓↓↓\n撤回${r.message_id}`, e.group_id)
+            else
+                e.reply(`发送成功，需要撤回请发送\n↓↓↓↓↓↓↓\n撤回${r.message_id}`, true)
         } catch (error) {
             logger.debug(`${error.message}`);
         }
