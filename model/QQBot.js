@@ -231,6 +231,9 @@ class QQBot {
             for (const message of event.message) {
                 if (message && message.type === "text") {
                     if (skipKeywords.some(keyword => message.text.includes(keyword))) {
+                        await redis.set(`bili:skipgroup:${groupId}`, '1', {
+                            EX: 2
+                        })
                         return Reply(msgs, quote, data)
                     }
                 }
@@ -242,6 +245,9 @@ class QQBot {
             for (const msg of msgs) {
                 if (msg.type) {
                     if (skipMsgType.some(i => msg.type === i)) {
+                        await redis.set(`bili:skipgroup:${groupId}`, '1', {
+                            EX: 2
+                        })
                         return Reply(msgs, quote, data)
                     }
                 }
@@ -275,6 +281,9 @@ class QQBot {
             const eventData = await this.fetchValidEventData(groupId);
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
+                await redis.set(`bili:skipgroup:${groupId}`, '1', {
+                    EX: 2
+                })
                 return Reply(msgs, quote, data)
             }
             try {
@@ -308,6 +317,9 @@ class QQBot {
                     const rawResponse = await sendBatch([rawMsg]);
                     if (!rawResponse) {
                         logger.error('[Bili-Plugin]ARK消息发送失败');
+                        await redis.set(`bili:skipgroup:${groupId}`, '1', {
+                            EX: 2
+                        })
                         return Reply(msgs, quote, data);
                     }
                     if (firstResponse === undefined) {
@@ -317,6 +329,9 @@ class QQBot {
                 return firstResponse || true
             } catch (error) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 消息发送失败:`, error);
+                await redis.set(`bili:skipgroup:${groupId}`, '1', {
+                    EX: 2
+                })
                 return Reply(msgs, quote, data)
             }
         };
