@@ -140,7 +140,7 @@ class QQBot {
             if (msg.type) {
                 if (skipMsgType.some(i => msg.type === i)) {
                     await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                        EX: 2
+                        EX: 25
                     })
                     if (Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
                     return Bot.pickGroup(groupId).sendMsg(originmsg)
@@ -153,7 +153,7 @@ class QQBot {
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`)
                 await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                    EX: 2
+                    EX: 25
                 })
                 return Bot.pickGroup(groupId).sendMsg(msg)
             }
@@ -168,7 +168,7 @@ class QQBot {
         } catch (error) {
             logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error)
             await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                EX: 2
+                EX: 25
             })
             if (Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
             return Bot.pickGroup(groupId).sendMsg(originmsg)
@@ -232,7 +232,7 @@ class QQBot {
                 if (message && message.type === "text") {
                     if (skipKeywords.some(keyword => message.text.includes(keyword))) {
                         await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                            EX: 2
+                            EX: 25
                         })
                         return Reply(msgs, quote, data)
                     }
@@ -246,7 +246,7 @@ class QQBot {
                 if (msg.type) {
                     if (skipMsgType.some(i => msg.type === i)) {
                         await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                            EX: 2
+                            EX: 25
                         })
                         return Reply(msgs, quote, data)
                     }
@@ -282,7 +282,7 @@ class QQBot {
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
                 await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                    EX: 2
+                    EX: 25
                 })
                 return Reply(msgs, quote, data)
             }
@@ -318,7 +318,7 @@ class QQBot {
                     if (!rawResponse) {
                         logger.error('[Bili-Plugin]ARK消息发送失败');
                         await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                            EX: 2
+                            EX: 25
                         })
                         return Reply(msgs, quote, data);
                     }
@@ -330,7 +330,7 @@ class QQBot {
             } catch (error) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 消息发送失败:`, error);
                 await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                    EX: 2
+                    EX: 25
                 })
                 return Reply(msgs, quote, data)
             }
