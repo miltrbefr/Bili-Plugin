@@ -75,7 +75,7 @@ export class Biliallsign extends plugin {
                     EX: tasklength * 70
                 }
             );
-            const m = `[哔站插件推送]报告主人！\n🌸我要开始哔站签到啦~\n🌸任务人数：${tasklength}\n🌸任务开始时间：${ts} \n🌸预计完成时间: ${estimatedCompletionTime}`
+            const m = `[🌸B站插件推送🌸]报告主人！\n我要开始哔站签到啦~\n任务人数：${tasklength}\n任务开始时间：${ts} \n预计完成时间: ${estimatedCompletionTime}`
             if (this.e) {
                 this.e.reply(
                     m,
@@ -256,10 +256,10 @@ export class Biliallsign extends plugin {
                 durationStr += `${minutes}分钟`
             }
             durationStr += `${seconds}秒`
-            const reportMsg = `[哔站插件推送]报告主人！\n哔站自动签到完成啦~` +
-                `\n🌸任务开始时间：${ts} \n🌸任务人数：${tasklength}人` +
-                `\n🌸执行签到账号数:${signedCount}\n🌸跳过账号数(已签):${signskipCount}\n 🌸Cookie过期账号数:${overdueCount}` +
-                `\n🌸任务耗时：${durationStr}`;
+            const reportMsg = `[🌸B站插件推送🌸]报告主人！\n哔站自动签到完成啦~` +
+                `\n任务开始时间：${ts} \n任务人数：${tasklength}人` +
+                `\n执行签到账号数:${signedCount}\n跳过账号数(已签):${signskipCount}\nCookie过期账号数:${overdueCount}` +
+                `\n任务耗时：${durationStr}`;
 
             if (this.e) {
                 this.e.reply(reportMsg, true);

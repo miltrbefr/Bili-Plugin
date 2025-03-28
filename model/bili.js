@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import moment from 'moment';
 import config from '../model/Config.js';
 import BApi from '../model/BAPI/BAPI.js';
+import QApi from '../model/BAPI/QAPI.js';
 import configModule from "../../../lib/config/config.js"
 import YAML from 'yaml';
 import fs from 'fs';
@@ -697,7 +698,12 @@ class Bili {
         const results = [];
 
         try {
-            const qqdailydataFirst = await (await fetch(qqdaily)).json();
+            let qqdailydataFirst
+            if (config.Enable_SignApi) {
+                qqdailydataFirst = await (await fetch(qqdaily)).json();
+            } else {
+                qqdailydataFirst = await QApi.Dailyfriend(uin, skey, pskey)
+            }
             await this.sleep(1500);
             results.push(qqdailydataFirst.code === 0 ? `🌸收集卡(第1张): 成功` : `🌸收集卡(第1张): 失败(${qqdailydataFirst.message || qqdailydataFirst.msg || '未知错误'})`);
             const filteredFriends = Array.from(Bot[uin].fl.keys()).filter(friendId => friendId !== uin);
@@ -706,10 +712,20 @@ class Bili {
             for (let i = 0; i < friendsToShareWith.length; i++) {
                 const friend = friendsToShareWith[i];
                 const qqshare = `${this.signApi}/qqshare?uin=${uin}&skey=${skey}&pskey=${pskey}&friend=${friend}&key=${this.key}`;
-                const qqsharedata = await (await fetch(qqshare)).json();
+                let qqsharedata
+                if (config.Enable_SignApi) {
+                qqsharedata = await (await fetch(qqshare)).json()
+                } else {
+                qqsharedata = await QApi.Dailyfriendshare(uin, skey, pskey, friend)
+                }
                 await this.sleep(1500);
                 results.push(qqsharedata.code === 0 ? `🌸分享操作(第${i+1}次): 成功` : `🌸分享(第${i+1}次): 失败(${qqsharedata.message || qqsharedata.msg || '未知错误'})`);
-                const qqdailydataNext = await (await fetch(qqdaily)).json();
+                let qqdailydataNext
+                if (config.Enable_SignApi) {
+                qqdailydataNext = await (await fetch(qqdaily)).json();
+                } else {
+                qqdailydataNext = await QApi.Dailyfriend(uin, skey, pskey)
+                }
                 await this.sleep(1500);
                 results.push(qqdailydataNext.code === 0 ? `🌸收集卡(第${i+2}张): 成功` : `🌸收集卡(第${i+2}张): 失败(${qqdailydataNext.message || qqdailydataNext.msg || '未知错误'})`);
             }
@@ -727,15 +743,27 @@ class Bili {
         const qqdaily4 = `${this.signApi}/qqdaily4?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`;
         const qqdaily5 = `${this.signApi}/qqdaily5?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`;
         const results = [];
+        let qqdaily2data,qqdaily3data,qqdaily4data,qqdaily5data
         try {
-            const qqdaily2data = await (await fetch(qqdaily2)).json();
-            await this.sleep(1500);
-            const qqdaily3data = await (await fetch(qqdaily3)).json();
-            await this.sleep(1500);
-            const qqdaily4data = await (await fetch(qqdaily4)).json();
-            await this.sleep(1500);
-            const qqdaily5data = await (await fetch(qqdaily5)).json();
-            await this.sleep(1500);
+            if (config.Enable_SignApi) {
+                qqdaily2data = await (await fetch(qqdaily2)).json();
+                await this.sleep(1000);
+                qqdaily3data = await (await fetch(qqdaily3)).json();
+                await this.sleep(1000);
+                qqdaily4data = await (await fetch(qqdaily4)).json();
+                await this.sleep(1000);
+                qqdaily5data = await (await fetch(qqdaily5)).json();
+                await this.sleep(1000);
+            } else {
+                qqdaily2data = await QApi.DailySignCard1(uin, skey, pskey)
+                await this.sleep(1000);
+                qqdaily3data = await QApi.DailySignCard2(uin, skey, pskey)
+                await this.sleep(1000);
+                qqdaily4data = await QApi.DailySignCard3(uin, skey, pskey)
+                await this.sleep(1000);
+                qqdaily5data = await QApi.DailySignCard4(uin, skey, pskey)
+                await this.sleep(1000);
+            }
             results.push(qqdaily2data.code === 0 ? "🌸普通日签卡: 成功" : `🌸普通日签卡: 失败(${qqdaily2data.message || qqdaily2data.msg || '未知错误'})`);
             results.push(qqdaily3data.code === 0 ? "🌸晚安卡: 成功" : `🌸晚安卡: 失败(${qqdaily3data.message || qqdaily3data.msg || '未知错误'})`);
             results.push(qqdaily4data.code === 0 ? "🌸每日Q崽: 成功" : `🌸每日Q崽: 失败(${qqdaily4data.message || qqdaily4data.msg || '未知错误'})`);
