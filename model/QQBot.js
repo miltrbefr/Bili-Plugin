@@ -140,7 +140,7 @@ class QQBot {
             if (msg.type) {
                 if (skipMsgType.some(i => msg.type === i)) {
                     await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                        EX: 25
+                        EX: 2
                     })
                     if (Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
                     return Bot.pickGroup(groupId).sendMsg(originmsg)
