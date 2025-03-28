@@ -39,7 +39,7 @@ class QQApi {
                 "Origin": "https://ti.qq.com",
             });
 
-            const cookieUin = uin.startsWith('o') ? uin : `o${uin}`;
+            const cookieUin = String(uin).startsWith('o') ? String(uin) : `o${String(uin)}`;
             headers.set("Cookie", `uin=${cookieUin}; skey=${skey}; p_skey=${pskey}; p_uin=${cookieUin}`);
             const options = {
                 method: 'POST',
@@ -81,7 +81,7 @@ class QQApi {
                 "User-Agent": "Mozilla/5.0 (Linux; Android 12; AOSP Build/SQ1A.220205.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 V1_AND_SQ_9.1.31_8542_YYB_D QQ/9.1.31.22255 NetType/WIFI WebP/0.4.1 AppId/537262754 Pixel/1600 StatusBarHeight/36 SimpleUISwitch/0 QQTheme/1000 StudyMode/0 CurrentMode/0 CurrentFontScale/1.0 GlobalDensityScale/1.0 AllowLandscape/true InMagicWin/0",
             });
 
-            const signInCookieUin = uin.startsWith('o') ? uin.slice(1) : uin;
+            const signInCookieUin = String(uin).startsWith('o') ? String(uin) : `o${String(uin)}`;
             signInHeaders.set("Cookie", `uin=${signInCookieUin}; skey=${skey}; p_skey=${pskey}; p_uin=${signInCookieUin}`);
 
             const signInOptions = {
@@ -129,7 +129,7 @@ class QQApi {
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 12; AOSP Build/SQ1A.220205.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 V1_AND_SQ_9.1.31_8542_YYB_D QQ/9.1.31.22255 NetType/WIFI WebP/0.4.1 AppId/537262754 Pixel/1600 StatusBarHeight/36 SimpleUISwitch/0 QQTheme/1000 StudyMode/0 CurrentMode/0 CurrentFontScale/1.0 GlobalDensityScale/1.0 AllowLandscape/true InMagicWin/0',
             });
 
-            const signInCookieUin = uin.startsWith('o') ? uin.slice(1) : uin;
+            const signInCookieUin = String(uin).startsWith('o') ? String(uin) : `o${String(uin)}`;
             signInHeaders.set("Cookie", `uin=${signInCookieUin}; skey=${skey}; p_skey=${pskey}; p_uin=${signInCookieUin}`);
 
             const signInOptions = {
@@ -183,7 +183,7 @@ class QQApi {
                 "User-Agent": "Mozilla/5.0 (Linux; Android 12; AOSP Build/SQ1A.220205.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 V1_AND_SQ_9.1.31_8542_YYB_D QQ/9.1.31.22255 NetType/WIFI WebP/0.4.1 AppId/537262754 Pixel/1600 StatusBarHeight/36 SimpleUISwitch/0 QQTheme/1000 StudyMode/0 CurrentMode/0 CurrentFontScale/1.0 GlobalDensityScale/1.0 AllowLandscape/true InMagicWin/0",
             });
 
-            const signInCookieUin = uin.startsWith('o') ? uin.slice(1) : uin;
+            const signInCookieUin = String(uin).startsWith('o') ? String(uin) : `o${String(uin)}`;
             signInHeaders.set("Cookie", `uin=${signInCookieUin}; skey=${skey}; p_skey=${p_skey}; p_uin=${signInCookieUin}`);
 
             const signInOptions = {
@@ -237,7 +237,7 @@ class QQApi {
                 "User-Agent": "Mozilla/5.0 (Linux; Android 12; AOSP Build/SQ1A.220205.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 V1_AND_SQ_9.1.31_8542_YYB_D QQ/9.1.31.22255 NetType/WIFI WebP/0.4.1 AppId/537262754 Pixel/1600 StatusBarHeight/36 SimpleUISwitch/0 QQTheme/1000 StudyMode/0 CurrentMode/0 CurrentFontScale/1.0 GlobalDensityScale/1.0 AllowLandscape/true InMagicWin/0",
             });
 
-            const signInCookieUin = uin.startsWith('o') ? uin.slice(1) : uin;
+            const signInCookieUin = String(uin).startsWith('o') ? String(uin) : `o${String(uin)}`;
             signInHeaders.set("Cookie", `uin=${signInCookieUin}; skey=${skey}; p_skey=${p_skey}; p_uin=${signInCookieUin}`);
 
             const signInOptions = {
@@ -284,7 +284,7 @@ class QQApi {
                 "User-Agent": "Mozilla/5.0 (Linux; Android 12; AOSP Build/SQ1A.220205.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 V1_AND_SQ_9.1.31_8542_YYB_D QQ/9.1.31.22255 NetType/WIFI WebP/0.4.1 AppId/537262754 Pixel/1600 StatusBarHeight/36 SimpleUISwitch/0 QQTheme/1000 StudyMode/0 CurrentMode/0 CurrentFontScale/1.0 GlobalDensityScale/1.0 AllowLandscape/true InMagicWin/0",
             });
 
-            const signInCookieUin = uin.startsWith('o') ? uin.slice(1) : uin;
+            const signInCookieUin = String(uin).startsWith('o') ? String(uin) : `o${String(uin)}`;
             signInHeaders.set("Cookie", `uin=${signInCookieUin}; skey=${skey}; p_skey=${p_skey}; p_uin=${signInCookieUin}`);
 
             const signInOptions = {
@@ -329,7 +329,7 @@ class QQApi {
                 "User-Agent": "Mozilla/5.0 (Linux; Android 12; AOSP Build/SQ1A.220205.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36 V1_AND_SQ_9.1.31_8542_YYB_D QQ/9.1.31.22255 NetType/WIFI WebP/0.4.1 AppId/537262754 Pixel/1600 StatusBarHeight/36 SimpleUISwitch/0 QQTheme/1000 StudyMode/0 CurrentMode/0 CurrentFontScale/1.0 GlobalDensityScale/1.0 AllowLandscape/true InMagicWin/0",
             });
 
-            const signInCookieUin = uin.startsWith('o') ? uin.slice(1) : uin;
+            const signInCookieUin = String(uin).startsWith('o') ? String(uin) : `o${String(uin)}`;
             signInHeaders.set("Cookie", `uin=${signInCookieUin}; skey=${skey}; p_skey=${p_skey}; p_uin=${signInCookieUin}`);
 
             const signInOptions = {
