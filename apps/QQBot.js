@@ -2,23 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import QQBot from '../model/QQBot.js';
 import configs from '../model/Config.js';
-import makeConfig from "../../../lib/plugins/config.js"
-const { config } = await makeConfig("ICQQ", {
-    tips: "",
-    permission: "master",
+let config = {
     markdown: {
         mode: false,
         button: false,
         callback: true,
-    },
-    bot: {},
-    token: [],
-}, {
-    tips: [
-        "欢迎使用 TRSS-Yunzai ICQQ Plugin ! 作者：时雨🌌星空",
-        "参考：https://github.com/TimeRainStarSky/Yunzai-ICQQ-Plugin",
-    ],
-})
+    }
+}
 const dataDir = './data/bili/QQBotenvent'
 let attempts = 0
 const maxAttempts = 5
@@ -142,15 +132,6 @@ const checkAdapters = async () => {
 }
 checkAdapters()
 
-function ensureDataDir() {
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, {
-            recursive: true
-        });
-    }
-}
-
-
 Bot.on("request.group", async event => {
     if (!(await QQBot.check(event))) {
         return false
@@ -177,7 +158,6 @@ Bot.on("message.group.callback", async e => {
     const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     const groupid2 = buttonId || config[groupId]
     if (!groupid2) return false
-    ensureDataDir()
     const eventId = rawEvent.event_id;
     const filePath = path.join(dataDir, `${groupid2}.json`);
     const data = {

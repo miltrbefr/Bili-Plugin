@@ -100,5 +100,6 @@ logger.mark(logger.cyan("🎀 欢迎使用哔站插件🎀"))
 
 await Bili.fetchlist()
 await Bili.Bilicheck()
+await QQBot.ensureDataDir()
 await redis.del('bili:autosign:task')
 export { apps }

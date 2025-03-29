@@ -1361,14 +1361,16 @@ class Bili {
             for (let i of targetUsers) {
                 try {
                     i = Number(i)
-                    if (!NaN(i)) continue
+                    uin = Number(uin)
+                    if (isNaN(i)) continue
+                    if (isNaN(uin)) continue
                     if (await Bot[uin]?.fl?.has(i)) {
                         await Bot[uin].pickFriend(i).thumbUp(20);
                     } else {
                         await Bot[uin].pickUser(i).thumbUp(20);
                     }
                 } catch (error) {
-                    // 不知道怎么搞，烦死了
+                continue
                 }
             }
         }

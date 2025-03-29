@@ -112,7 +112,6 @@ class QQBot {
     }
 
     async sendmsgs(msgs, groupId, botid) {
-        await this.ensureDataDir()
         let originmsg = msgs
         let msg = msgs
         if (!msgs) return false;
