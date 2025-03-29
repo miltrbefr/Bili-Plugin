@@ -62,3 +62,4 @@ whoisMyWifemaxMembers: 5
 skipKeywords: []
 #野收官发需要过滤掉的消息type类型,具体查看 https://gitee.com/TimeRainStarSky/Yunzai/tree/docs 的消息段部分，例如：node、image..
 skipMsgType: []
+Authorization: '鉴权配置野收官发需要'

@@ -102,7 +102,8 @@ class Config {
                 whoisMyWifecacheTime: 3600,
                 whoisMyWifemaxMembers: 5,
                 skipKeywords: ['野收官发过滤的触发指令(用户的触发指令 例如: 赞我)'],
-                skipMsgType: ['野收官发需要过滤掉的消息type类型,具体查看 https://gitee.com/TimeRainStarSky/Yunzai/tree/docs 的消息段部分，例如：node、image..']
+                skipMsgType: ['野收官发需要过滤掉的消息type类型,具体查看 https://gitee.com/TimeRainStarSky/Yunzai/tree/docs 的消息段部分，例如：node、image..'],
+                Authorization: '鉴权配置野收官发需要'
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -139,7 +140,8 @@ class Config {
                 whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
                 skipKeywords: currentConfig?.skipKeywords || ['野收官发过滤的触发指令(用户的触发指令 例如: 赞我)'],
-                skipMsgType: currentConfig?.skipMsgType || ['野收官发需要过滤掉的消息type类型,具体查看 https://gitee.com/TimeRainStarSky/Yunzai/tree/docs 的消息段部分，例如：node、image..']
+                skipMsgType: currentConfig?.skipMsgType || ['野收官发需要过滤掉的消息type类型,具体查看 https://gitee.com/TimeRainStarSky/Yunzai/tree/docs 的消息段部分，例如：node、image..'],
+                Authorization: currentConfig?.Authorization || '鉴权配置野收官发需要'
             };
 
             let needsUpdate = false;
@@ -164,6 +166,11 @@ class Config {
         } catch (error) {
             logger.error(`[BILI PLUGIN] 配置加载失败: ${error}`);
         }
+    }
+
+    get Authorization() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.Authorization
     }
 
     get Enable_SignApi() {
