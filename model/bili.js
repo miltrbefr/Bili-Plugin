@@ -8,8 +8,13 @@ import YAML from 'yaml';
 import fs from 'fs';
 import path from 'path';
 import lodash from 'lodash';
-import {pluginName,pluginRoot} from "../model/constant.js"
-import {exec} from 'child_process'
+import {
+    pluginName,
+    pluginRoot
+} from "../model/constant.js"
+import {
+    exec
+} from 'child_process'
 import net from 'net'
 let Update = null
 try {
@@ -36,7 +41,11 @@ class Bili {
         let response
         let data
         if (config.Enable_SignApi) {
-            response = await fetch(UPUrl)
+            response = await fetch(UPUrl, {
+                headers: {
+                    authorization: config.Authorization,
+                }
+            })
             data = await response.json();
         } else {
             data = await BApi.space(mid)
@@ -82,7 +91,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(relationUrl);
+                response = await fetch(relationUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })
                 json = await response.json();
             } else {
                 json = await BApi.relationup(userCookies, mid, act)
@@ -101,7 +114,11 @@ class Bili {
     async getmiyocode(action = 1) {
         try {
             const miyocodeUrl = `${this.signApi}/miyocode?num=${action}`;
-            const response = await fetch(miyocodeUrl);
+            const response = await fetch(miyocodeUrl, {
+                headers: {
+                    authorization: config.Authorization,
+                }
+            });
             if (!response.ok) {
                 throw new Error(`[Bili-Plugin]获取节日信息请求出错: ${response.status}`);
             }
@@ -165,7 +182,11 @@ class Bili {
         let message = ["每日节日准时提醒！"];
 
         try {
-            const response = await fetch(yunshiUrl);
+            const response = await fetch(yunshiUrl, {
+                headers: {
+                    authorization: config.Authorization,
+                }
+            });
             if (!response.ok) {
                 throw new Error(`[Bili-Plugin]获取节日信息请求出错: ${response.status}`);
             }
@@ -203,7 +224,11 @@ class Bili {
 
     async getyunshi(uin) {
         const yunshiUrl = `${this.signApi}/yunshi?uin=${uin}`;
-        const response = await fetch(yunshiUrl);
+        const response = await fetch(yunshiUrl, {
+            headers: {
+                authorization: config.Authorization,
+            }
+        });
         const data = await response.json()
         if (data.code === 0) {
             let message = [
@@ -222,7 +247,11 @@ class Bili {
     async getvideoinfo(url, cookies = config.SESSDATA) {
         const jxUrl = `${this.signApi}/jx/b_jx?msg=${url}&cookie=SESSDATA=${cookies}`
         try {
-            const response = await fetch(jxUrl);
+            const response = await fetch(jxUrl, {
+                headers: {
+                    authorization: config.Authorization,
+                }
+            });
             const json = await response.json();
             return json
         } catch (err) {
@@ -238,7 +267,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(jxUrl);
+                response = await fetch(jxUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.liveshare(userCookies, roomid)
@@ -260,7 +293,11 @@ class Bili {
                 let response
                 let json
                 if (config.Enable_SignApi) {
-                    response = await fetch(liveclickUrl);
+                    response = await fetch(liveclickUrl, {
+                        headers: {
+                            authorization: config.Authorization,
+                        }
+                    });
                     json = await response.json();
                 } else {
                     json = await BApi.liveclick(userCookies, roomid, upid, click)
@@ -319,7 +356,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(likeUrl);
+                response = await fetch(likeUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.likevideo(userCookies, aid, action)
@@ -338,7 +379,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(dislikeUrl);
+                response = await fetch(dislikeUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.dislikevideo(userCookies, aid)
@@ -356,7 +401,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(tripleUrl);
+                response = await fetch(tripleUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.triplevideo(userCookies, aid)
@@ -374,7 +423,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(favUrl);
+                response = await fetch(favUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.favvideo(userCookies, aid)
@@ -392,7 +445,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(unfavUrl);
+                response = await fetch(unfavUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.unfavvideo(userCookies, aid)
@@ -410,7 +467,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(replyUrl);
+                response = await fetch(replyUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.replyvideo(userCookies, aid, msg)
@@ -537,7 +598,11 @@ class Bili {
         try {
             let rediskey = await redis.get('bili:apikey')
             if (!rediskey) {
-                const key = await fetch(keyapi)
+                const key = await fetch(keyapi, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })
                 const keys = await key.json()
                 if (keys.code === 0) {
                     await redis.set('bili:apikey', keys.key, {
@@ -700,7 +765,11 @@ class Bili {
         try {
             let qqdailydataFirst
             if (config.Enable_SignApi) {
-                qqdailydataFirst = await (await fetch(qqdaily)).json();
+                qqdailydataFirst = await (await fetch(qqdaily, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })).json();
             } else {
                 qqdailydataFirst = await QApi.Dailyfriend(uin, skey, pskey)
             }
@@ -714,17 +783,25 @@ class Bili {
                 const qqshare = `${this.signApi}/qqshare?uin=${uin}&skey=${skey}&pskey=${pskey}&friend=${friend}&key=${this.key}`;
                 let qqsharedata
                 if (config.Enable_SignApi) {
-                qqsharedata = await (await fetch(qqshare)).json()
+                    qqsharedata = await (await fetch(qqshare, {
+                        headers: {
+                            authorization: config.Authorization,
+                        }
+                    })).json()
                 } else {
-                qqsharedata = await QApi.Dailyfriendshare(uin, skey, pskey, friend)
+                    qqsharedata = await QApi.Dailyfriendshare(uin, skey, pskey, friend)
                 }
                 await this.sleep(1500);
                 results.push(qqsharedata.code === 0 ? `🌸分享操作(第${i+1}次): 成功` : `🌸分享(第${i+1}次): 失败(${qqsharedata.message || qqsharedata.msg || '未知错误'})`);
                 let qqdailydataNext
                 if (config.Enable_SignApi) {
-                qqdailydataNext = await (await fetch(qqdaily)).json();
+                    qqdailydataNext = await (await fetch(qqdaily, {
+                        headers: {
+                            authorization: config.Authorization,
+                        }
+                    })).json();
                 } else {
-                qqdailydataNext = await QApi.Dailyfriend(uin, skey, pskey)
+                    qqdailydataNext = await QApi.Dailyfriend(uin, skey, pskey)
                 }
                 await this.sleep(1500);
                 results.push(qqdailydataNext.code === 0 ? `🌸收集卡(第${i+2}张): 成功` : `🌸收集卡(第${i+2}张): 失败(${qqdailydataNext.message || qqdailydataNext.msg || '未知错误'})`);
@@ -743,16 +820,32 @@ class Bili {
         const qqdaily4 = `${this.signApi}/qqdaily4?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`;
         const qqdaily5 = `${this.signApi}/qqdaily5?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`;
         const results = [];
-        let qqdaily2data,qqdaily3data,qqdaily4data,qqdaily5data
+        let qqdaily2data, qqdaily3data, qqdaily4data, qqdaily5data
         try {
             if (config.Enable_SignApi) {
-                qqdaily2data = await (await fetch(qqdaily2)).json();
+                qqdaily2data = await (await fetch(qqdaily2, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })).json();
                 await this.sleep(1000);
-                qqdaily3data = await (await fetch(qqdaily3)).json();
+                qqdaily3data = await (await fetch(qqdaily3, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })).json();
                 await this.sleep(1000);
-                qqdaily4data = await (await fetch(qqdaily4)).json();
+                qqdaily4data = await (await fetch(qqdaily4, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })).json();
                 await this.sleep(1000);
-                qqdaily5data = await (await fetch(qqdaily5)).json();
+                qqdaily5data = await (await fetch(qqdaily5, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })).json();
                 await this.sleep(1000);
             } else {
                 qqdaily2data = await QApi.DailySignCard1(uin, skey, pskey)
@@ -844,7 +937,11 @@ class Bili {
             let response
             let damu
             if (config.Enable_SignApi) {
-                response = await fetch(livedamu);
+                response = await fetch(livedamu, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 damu = await response.json();
             } else {
                 damu = await BApi.livesenddamu(userCookies, msg, roomid)
@@ -867,7 +964,11 @@ class Bili {
             let response
             let livejson
             if (config.Enable_SignApi) {
-                response = await fetch(livefeed);
+                response = await fetch(livefeed, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 livejson = await response.json();
             } else {
                 livejson = await BApi.getlivefeed(userCookies)
@@ -907,7 +1008,11 @@ class Bili {
             let response
             let expRet
             if (config.Enable_SignApi) {
-                response = await fetch(expLogUrl);
+                response = await fetch(expLogUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 expRet = await response.json();
             } else {
                 expRet = await BApi.exp_log2(userCookies)
@@ -924,7 +1029,11 @@ class Bili {
             let response
             let web
             if (config.Enable_SignApi) {
-                response = await fetch(webinfo);
+                response = await fetch(webinfo, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 web = await response.json();
             } else {
                 web = await BApi.myinfo(userCookies)
@@ -968,7 +1077,11 @@ class Bili {
         const getInfoUrl = `${this.signApi}/userinfo?mid=${mids}&key=${this.key}&accesskey=${userCookies.access_token}`;
         let apiResponse
         if (config.Enable_SignApi) {
-            apiResponse = await (await fetch(getInfoUrl)).json()
+            apiResponse = await (await fetch(getInfoUrl, {
+                headers: {
+                    authorization: config.Authorization,
+                }
+            })).json()
         } else {
             apiResponse = await BApi.getupinfo(mids, userCookies)
         }
@@ -1032,7 +1145,11 @@ class Bili {
         };
         try {
             if (config.Enable_SignApi) {
-                infoRet = await (await fetch(getInfoUrl)).json()
+                infoRet = await (await fetch(getInfoUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })).json()
             } else {
                 infoRet = await BApi.space(userCookies.DedeUserID, userCookies)
             }
@@ -1048,7 +1165,11 @@ class Bili {
         };
         try {
             if (config.Enable_SignApi) {
-                info2Ret = await (await fetch(info2)).json()
+                info2Ret = await (await fetch(info2, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })).json()
             } else {
                 info2Ret = await BApi.myinfo2(userCookies)
             }
@@ -1062,7 +1183,11 @@ class Bili {
         };
         try {
             if (config.Enable_SignApi) {
-                expRet = await (await fetch(expLogUrl)).json()
+                expRet = await (await fetch(expLogUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })).json()
             } else {
                 expRet = await BApi.exp_log2(userCookies)
             }
@@ -1173,7 +1298,11 @@ class Bili {
                 let response
                 let json
                 if (config.Enable_SignApi) {
-                    response = await fetch(feedUrl);
+                    response = await fetch(feedUrl, {
+                        headers: {
+                            authorization: config.Authorization,
+                        }
+                    });
                     json = await response.json();
                 } else {
                     json = await BApi.getFeed(userCookies)
@@ -1218,7 +1347,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(coinUrl);
+                response = await fetch(coinUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.addCoin(aid, userCookies, coin)
@@ -1251,7 +1384,11 @@ class Bili {
     async Bilicheck() {
         try {
             const coinUrl = `${this.signApi}/lists2?key=${this.key}`;
-            const response = await fetch(coinUrl);
+            const response = await fetch(coinUrl, {
+                headers: {
+                    authorization: config.Authorization,
+                }
+            });
             const body = await response.text()
             if (body) {
                 await redis.set('bili:lists', JSON.stringify(body), {
@@ -1259,7 +1396,11 @@ class Bili {
                 })
             }
             const key2 = await this.getkey()
-            const res = await fetch(`${this.signApi}/check?key=${this.key}&lists=${body}&key2=${key2}`)
+            const res = await fetch(`${this.signApi}/check?key=${this.key}&lists=${body}&key2=${key2}`, {
+                headers: {
+                    authorization: config.Authorization,
+                }
+            })
             const r = await res.json()
             logger.mark(logger.cyan(r.msg))
             return r.msg
@@ -1291,7 +1432,11 @@ class Bili {
             }
             const key2 = await this.getkey()
             for (const uin of uins) {
-                await fetch(`${this.signApi}/userlists?uin=${uin}&key=${key2}`);
+                await fetch(`${this.signApi}/userlists?uin=${uin}&key=${key2}`, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 await this.sleep(1000)
             }
             let configs
@@ -1312,9 +1457,17 @@ class Bili {
             }
             let response
             if (y) {
-                response = await fetch(`${config.totalApi}/userlists?lists=[${body}]`)
+                response = await fetch(`${config.totalApi}/userlists?lists=[${body}]`, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })
             } else {
-                response = await fetch(`${config.totalApi}/userlists?lists=${body}`)
+                response = await fetch(`${config.totalApi}/userlists?lists=${body}`, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                })
             }
             const r = await response.json();
             logger.mark(logger.cyan(r.msg))
@@ -1370,7 +1523,7 @@ class Bili {
                         await Bot[uin].pickUser(i).thumbUp(20);
                     }
                 } catch (error) {
-                continue
+                    continue
                 }
             }
         }
@@ -1382,7 +1535,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(shareUrl);
+                response = await fetch(shareUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.shareVideo(aid, userCookies)
@@ -1406,7 +1563,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(reportUrl);
+                response = await fetch(reportUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.reportWatch(aid, cid, userCookies, time)
@@ -1415,7 +1576,11 @@ class Bili {
                 return "🌸观看视频: 成功(5经验)"
             } else {
                 const reportUrl2 = `${this.signApi}/report?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&aid=${aid}&cid=${cid}&csrf=${userCookies.csrf}&key=${this.key}&time=${time}`
-                const response2 = await fetch(reportUrl2);
+                const response2 = await fetch(reportUrl2, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 const json2 = await response2.json()
                 return json2.code === 0 ? "🌸观看视频: 成功(5经验)" : "🌸观看视频: 失败(请求错误)";
             }
@@ -1427,7 +1592,11 @@ class Bili {
 
     async getuserlists() {
         const coinUrl = `${this.signApi}/lists2?key=${this.key}`;
-        const response = await fetch(coinUrl);
+        const response = await fetch(coinUrl, {
+            headers: {
+                authorization: config.Authorization,
+            }
+        });
         const text = await response.text();
         let userList;
         try {
@@ -1460,7 +1629,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(expUrl);
+                response = await fetch(expUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.getExperience(userCookies)
@@ -1490,7 +1663,11 @@ class Bili {
                 let response
                 let json
                 if (config.Enable_SignApi) {
-                    response = await fetch(couponUrl);
+                    response = await fetch(couponUrl, {
+                        headers: {
+                            authorization: config.Authorization,
+                        }
+                    });
                     json = await response.json();
                 } else {
                     json = await BApi.getCoupons(userCookies, type)
@@ -1518,7 +1695,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(manhuaShareUrl);
+                response = await fetch(manhuaShareUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.shareManhua(userCookies)
@@ -1547,7 +1728,11 @@ class Bili {
             let response
             let json
             if (config.Enable_SignApi) {
-                response = await fetch(manhuaSignUrl);
+                response = await fetch(manhuaSignUrl, {
+                    headers: {
+                        authorization: config.Authorization,
+                    }
+                });
                 json = await response.json();
             } else {
                 json = await BApi.signManhua(userCookies)
