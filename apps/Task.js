@@ -64,12 +64,12 @@ export class Bilitask extends plugin {
                 name: '[Bili-Plugin]整点报时',
                 fnc: () => this.autobaoshi()
             },
-            {
+           /* {
                 cron: '0/30 * * * * ? ',
                 name: '[Bili-Plugin]获取事件ID',
                 fnc: () => this.autogetevent(),
                 log: false
-            }
+            }*/
         ]
     }
 

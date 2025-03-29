@@ -166,7 +166,7 @@ Bot.on("message.group.callback", async e => {
         time: Date.now()
     };
     fs.writeFileSync(filePath, JSON.stringify(data));
-    await redis.del(`bili:skipgroup:${buttonId}`)
+    await QQBot.delsikpgroup(groupId)
     return false;
 })
 

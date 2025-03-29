@@ -9,7 +9,9 @@ import Bili from '../model/bili.js';
 let groupConfigCache = null;
 let groupConfigMtime = 0;
 let groupIdsCache = new Set()
-
+let geteventing = {}
+let sikpgroup = {}
+const EXPIRATION_TIME = 25 * 1000
 class QQBot {
     constructor() {
         this.signApi = config.signApi
@@ -45,33 +47,46 @@ class QQBot {
     }
 
     async getevent(groupId) {
-        if (!Bot[config.QQBot]?.adapter?.name) return logger.warn(`[BILI-PLUGIN野收官发]请确保您的QQBot：${logger.red(`${config.QQBot}`)})已经上线再使用野收官发功能！！`)
-        if (isNaN(Number(this.appid))) {
-            logger.warn(`[Bili-PLUGIN 野收官发]请确保您的${logger.red(`APPID`)}认真填写，当前您的APPID为：${logger.red(`${this.appid}`)}`)
-            return null
+        try {
+            if (!Bot[config.QQBot]?.adapter?.name) return logger.warn(`[BILI-PLUGIN野收官发]请确保您的QQBot：${logger.red(`${config.QQBot}`)})已经上线再使用野收官发功能！！`)
+            if (isNaN(Number(this.appid))) {
+                logger.warn(`[Bili-PLUGIN 野收官发]请确保您的${logger.red(`APPID`)}认真填写，当前您的APPID为：${logger.red(`${this.appid}`)}`)
+                return null
+            }
+            if (geteventing[groupId]) {
+                logger.info('当前正在获取事件,本次自动过滤...');
+                return null
+            }
+            geteventing[groupId] = true
+            const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`, {
+                method: 'POST',
+                headers: {
+                    authorization: config.Authorization,
+                }
+            })
+            const r = await res.json()
+            logger.debug(r)
+            if (r.code !== 0) {
+                logger.error(r)
+            }
+            if (r && r.code === 0 && Math.random() < 0.1) {
+                logger.mark(r)
+            }
+            geteventing[groupId] = false
+            return r
+        } catch (error) {
+            logger.error('[BILI-PLUGIN 野收官发获取事件错误]', error)
+            geteventing[groupId] = false
+        } finally {
+            geteventing[groupId] = false
         }
-        const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`,{
-            method: 'POST',
-            headers: {
-                authorization: config.Authorization,
-              }
-        })
-        const r = await res.json()
-        logger.debug(r)
-        if (r.code !== 0) {
-            logger.error(r)
-        }
-        if (r && r.code === 0 && Math.random() < 0.1) {
-            logger.mark(r)
-        }
-        return r
     }
 
 
     async fetchValidEventData(groupId) {
         let attempts = 0;
         const maxAttempts = 10
-        const retryInterval = 100;
+        const retryInterval = 200
         const filePath = path.join(this.dataDir, `${groupId}.json`);
         while (attempts < maxAttempts) {
             try {
@@ -90,8 +105,7 @@ class QQBot {
                     }));
                 }
             }
-            const r = await this.getevent(groupId)
-            logger.mark(r)
+            this.getevent(groupId)
             await new Promise(resolve => setTimeout(resolve, retryInterval));
             attempts++;
         }
@@ -106,12 +120,23 @@ class QQBot {
 
     async getisGroup(groupId) {
         try {
-            let key = await redis.get(`bili:skipgroup:${groupId}`)
-            if (key) return false
+            if (sikpgroup[groupId]) return false
             return true
         } catch (error) {
             return false
         }
+    }
+   
+    async setsikpgroup(groupId, time = EXPIRATION_TIME ) {
+        sikpgroup[groupId] = true
+        setTimeout(() => {
+            delete sikpgroup[groupId]
+        }, time)
+    }
+
+    async delsikpgroup(groupId) {
+        sikpgroup[groupId] = false
+        delete sikpgroup[groupId]
     }
 
     async sendmsgs(msgs, groupId, botid) {
@@ -141,9 +166,7 @@ class QQBot {
             }
             if (msg.type) {
                 if (skipMsgType.some(i => msg.type === i)) {
-                    await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                        EX: 2
-                    })
+                    await this.setsikpgroup(groupId, 2)
                     if (Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
                     return Bot.pickGroup(groupId).sendMsg(originmsg)
                 }
@@ -154,9 +177,7 @@ class QQBot {
             const eventData = await this.fetchValidEventData(groupId);
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`)
-                await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                    EX: 25
-                })
+                await this.setsikpgroup(groupId)
                 return Bot.pickGroup(groupId).sendMsg(msg)
             }
 
@@ -169,9 +190,7 @@ class QQBot {
             return await group.sendMsg(msgs);
         } catch (error) {
             logger.error(`[Bili-PLUGIN 野收官发：${groupId}]发送失败 `, error)
-            await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                EX: 25
-            })
+            await this.setsikpgroup(groupId)
             if (Bot[botid]) return Bot[botid].pickGroup(groupId).sendMsg(originmsg)
             return Bot.pickGroup(groupId).sendMsg(originmsg)
         }
@@ -233,9 +252,7 @@ class QQBot {
             for (const message of event.message) {
                 if (message && message.type === "text") {
                     if (skipKeywords.some(keyword => message.text.includes(keyword))) {
-                        await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                            EX: 25
-                        })
+                        await this.setsikpgroup(groupId)
                         return Reply(msgs, quote, data)
                     }
                 }
@@ -247,9 +264,7 @@ class QQBot {
             for (const msg of msgs) {
                 if (msg.type) {
                     if (skipMsgType.some(i => msg.type === i)) {
-                        await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                            EX: 25
-                        })
+                        await this.setsikpgroup(groupId)
                         return Reply(msgs, quote, data)
                     }
                 }
@@ -283,9 +298,7 @@ class QQBot {
             const eventData = await this.fetchValidEventData(groupId);
             if (!eventData) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 事件数据获取失败`);
-                await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                    EX: 25
-                })
+                await this.setsikpgroup(groupId)
                 return Reply(msgs, quote, data)
             }
             try {
@@ -319,9 +332,7 @@ class QQBot {
                     const rawResponse = await sendBatch([rawMsg]);
                     if (!rawResponse) {
                         logger.error('[Bili-Plugin]ARK消息发送失败');
-                        await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                            EX: 25
-                        })
+                        await this.setsikpgroup(groupId)
                         return Reply(msgs, quote, data);
                     }
                     if (firstResponse === undefined) {
@@ -331,9 +342,7 @@ class QQBot {
                 return firstResponse || true
             } catch (error) {
                 logger.error(`[Bili-PLUGIN 野收官发：${groupId}] 消息发送失败:`, error);
-                await redis.set(`bili:skipgroup:${groupId}`, '1', {
-                    EX: 25
-                })
+                await this.setsikpgroup(groupId)
                 return Reply(msgs, quote, data)
             }
         };
