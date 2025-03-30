@@ -1369,7 +1369,7 @@ class Bili {
         if (cached) {
             qq = JSON.parse(cached)
         } else {
-            qq = await this.getuserlists();
+            qq = await this.getuserlists() || []
             await redis.set('bili:lists', JSON.stringify(qq), {
                 EX: 1700
             })
@@ -1383,13 +1383,7 @@ class Bili {
 
     async Bilicheck() {
         try {
-            const coinUrl = `${this.signApi}/lists2?key=${this.key}`;
-            const response = await fetch(coinUrl, {
-                headers: {
-                    authorization: config.Authorization,
-                }
-            });
-            const body = await response.text()
+            const body = await this.getuserlists() || []
             if (body) {
                 await redis.set('bili:lists', JSON.stringify(body), {
                     EX: 1700
@@ -1599,7 +1593,7 @@ class Bili {
                     authorization: config.Authorization,
                 }
             })
-            let text
+            let text = []
             try {
                 text = await response.json()
             } catch (error) {
