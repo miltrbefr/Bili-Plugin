@@ -1,4 +1,8 @@
 import {createHash} from 'node:crypto';
+import Qrcode from 'qrcode';
+import sharp from 'sharp';
+
+let pollMap = {}
 
 const CONSTANTS = {
     likeApiUrl: 'https://app.bilibili.com/x/v2/view/like',
@@ -26,7 +30,9 @@ const CONSTANTS = {
     relaApiUrl: 'https://api.bilibili.com/x/relation/modify',
     livelikeApiUrl: 'https://api.live.bilibili.com/xlive/app-ucenter/v1/like_info_v3/like/likeReportV3',
     livefeedApiUrl: 'https://api.live.bilibili.com/xlive/app-interface/v2/index/feed',
-    userinfoApiUrl: 'https://api.vc.bilibili.com/x/im/user_infos'
+    userinfoApiUrl: 'https://api.vc.bilibili.com/x/im/user_infos',
+    QrCodeURL: 'https://passport.snm0516.aisee.tv/x/passport-tv-login/qrcode/auth_code',
+    pollCodeURL: 'https://passport.snm0516.aisee.tv/x/passport-tv-login/qrcode/poll'
 };
 
 const appKey = '1d8b6e7d45233436'
@@ -45,6 +51,155 @@ const appheaders = {
 
 class BApi {
     constructor() {}
+
+
+    async getloginqrcode(key, e) {
+        try {
+            const code = await this.getQrCode();
+            const auth_code = code.data.auth_code;
+            pollMap[key] = auth_code;
+            const url = code.data.url;
+            const avatarUrl = await e.bot.pickFriend(e.user_id).getAvatarUrl();
+            function getRandomColor(baseColor = [255, 145, 164], variation = 8) {
+                const [baseR, baseG, baseB] = baseColor;
+                const r = Math.max(0, Math.min(baseR + Math.floor(Math.random() * (variation * 2 + 1)) - variation, 255))
+                    .toString(16)
+                    .padStart(2, '0');
+                const g = Math.max(0, Math.min(baseG + Math.floor(Math.random() * (variation * 2 + 1)) - variation, 255))
+                    .toString(16)
+                    .padStart(2, '0');
+                const b = Math.max(0, Math.min(baseB + Math.floor(Math.random() * (variation * 2 + 1)) - variation, 255))
+                    .toString(16)
+                    .padStart(2, '0');
+                return `#${r}${g}${b}`;
+            }
+            const qrBuffer = await Qrcode.toBuffer(url, {
+                color: {
+                    dark: '#000000',
+                    light: getRandomColor()
+                },
+                margin: 1,
+                scale: 10,
+                width: 400,
+                height: 400
+            });
+
+            let avatarImage;
+            try {
+                const response = await fetch(avatarUrl);
+                if (!response.ok) throw new Error('Failed to fetch avatar');
+                const arrayBuffer = await response.arrayBuffer();
+                avatarImage = Buffer.from(arrayBuffer);
+            } catch (error) {
+                logger.error('[BILI-PLUGIN]无法获取用户头像', error);
+                avatarImage = null;
+            }
+            const compositeImages = [{ input: qrBuffer }];
+            if (avatarImage) {
+                const processedAvatar = await sharp(avatarImage)
+                    .resize(120, 120)
+                    .toBuffer();
+                
+                compositeImages.push({
+                    input: processedAvatar,
+                    left: 140,
+                    top: 140,
+                    blend: 'over'
+                });
+            }
+            const finalImage = await sharp({
+                    create: {
+                        width: 400,
+                        height: 400,
+                        channels: 4,
+                        background: { r: 255, g: 255, b: 255, alpha: 0 }
+                    }
+                })
+                .composite(compositeImages)
+                .png()
+                .toBuffer()
+            const base64String = finalImage.toString('base64');
+    
+            return {
+                code: 0,
+                msg: "ok",
+                data: {
+                    base64: `base64://${base64String}`,
+                    auth_code: auth_code,
+                    loginurl: url
+                }
+            };
+    
+        } catch (error) {
+            logger.error('[BILI-PLUGIN] 获取登录二维码失败', error);
+            return {
+                code: -1,
+                msg: error.message || "QR code generation failed",
+                data: null
+            };
+        }
+    }
+
+    async pollQrCode(key) {
+        let auth_code = pollMap[key]
+        const params = {
+            auth_code,
+            local_id: 0,
+            ts: Math.floor(Date.now() / 1000),
+        }
+        const qrCodeStatus = await this._fetchRequest({
+            url: CONSTANTS.pollCodeURL,
+            method: 'POST',
+            params,
+            extraHeaders: {
+              'referer': 'https://www.bilibili.com/'
+            },
+            signKey: "783bbb7264451d82",
+            signSecret: "2653583c8873dea268ab9386918b1d65"
+        })
+        if (qrCodeStatus.code === 0 && qrCodeStatus.data && qrCodeStatus.data.access_token) {
+            const accessToken = qrCodeStatus.data.access_token;
+            const refreshToken = qrCodeStatus.data.refresh_token;
+            const mid = qrCodeStatus.data.token_info.mid;
+            const expiresIn = qrCodeStatus.data.token_info.expires_in;
+            const cookieNames = ['SESSDATA', 'bili_jct', 'DedeUserID', 'sid', 'DedeUserID__ckMd5'];
+            const cookieString = qrCodeStatus.data.cookie_info.cookies
+                .filter(cookie => cookieNames.includes(cookie.name))
+                .map(cookie => `${cookie.name}=${cookie.value}`)
+                .concat(`access_key=${accessToken}`)
+                .join('; ');
+            const responseData = {
+                code: 0,
+                msg: "ok",
+                data: {
+                    mid,
+                    expires_in: expiresIn,
+                    cookie: cookieString,
+                    refresh_token: refreshToken
+                }
+            }
+            return responseData
+        } else {
+            return qrCodeStatus
+        }
+    }
+
+    async getQrCode() {
+        const params = {
+            local_id: 0,
+            ts: Math.floor(Date.now() / 1000),
+        }
+        return this._fetchRequest({
+            url: CONSTANTS.QrCodeURL,
+            method: 'POST',
+            params,
+            extraHeaders: {
+              'referer': 'https://www.bilibili.com/'
+              },
+            signKey: "783bbb7264451d82",
+            signSecret: "2653583c8873dea268ab9386918b1d65"
+        })
+    }
 
     async livesenddamu(userCookies, msg, roomid) {
         const baseParams = {

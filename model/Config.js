@@ -72,6 +72,7 @@ class Config {
         if (!fs.existsSync(this.filePath)) {
             const defaultConfig = {
                 Enable_SignApi: false,
+                Enable_LoginApi: false,
                 signApi: "http://113.44.131.92:2536/bili",
                 loginApi: "http://113.44.131.92:3333/bili",
                 cron: this.generateCronExpression(),
@@ -110,6 +111,7 @@ class Config {
             let currentConfig = this.loadYAML(this.filePath);
             const defaultConfig = {
                 Enable_SignApi: currentConfig?.Enable_SignApi || false,
+                Enable_LoginApi: currentConfig?.Enable_LoginApi || false,
                 signApi: currentConfig?.signApi || "http://113.44.131.92:2536/bili",
                 loginApi: currentConfig?.loginApi || "http://113.44.131.92:3333/bili",
                 cron: currentConfig?.cron || this.generateCronExpression(),
@@ -171,6 +173,11 @@ class Config {
     get Authorization() {
         if (!this.cache) this.loadConfig();
         return this.cache?.Authorization
+    }
+
+    get Enable_LoginApi() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.Enable_LoginApi
     }
 
     get Enable_SignApi() {

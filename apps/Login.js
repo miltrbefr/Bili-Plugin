@@ -38,17 +38,29 @@ export class Bililogin extends plugin {
 
         try {
             const loginkey = `${e.user_id}:${e.self_id}`
-            const qrRes = await fetch(`${loginapi}/login?key=${loginkey}`);
-            const qrInfo = await qrRes.json();
-            this.reply(['免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.url), '请在90s内使用哔站进行扫码'], true);
+            let qrInfo
+            if (config.Enable_LoginApi) {
+                const qrRes = await fetch(`${loginapi}/login?key=${loginkey}`);
+                qrInfo = await qrRes.json();
+            } else {
+                qrInfo = await BApi.getloginqrcode(loginkey, e)
+            }
+            if (qrInfo.data.url)  this.reply(['免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.url), '请在90s内使用哔站进行扫码'], true);
+            else  this.reply(['免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.base64), '请在90s内使用哔站进行扫码'], true);
             redis.set(`login:${String(e.user_id).replace(/:/g, '_').trim()}`, "1", {
                 EX: 120
             });
 
             const pollRequest = async () => {
                 try {
-                    const pollRes = await fetch(`${loginapi}/poll?key=${loginkey}`);
-                    const result = await pollRes.json();
+                    let result
+                    if (config.Enable_LoginApi) {
+                        const pollRes = await fetch(`${loginapi}/poll?key=${loginkey}`);
+                        result = await pollRes.json();
+                    } else {
+                        result = await BApi.pollQrCode(loginkey)
+                    }
+
                     logger.info("[Bili-Plugin]二维码轮询状态:", result);
 
                     if (result.code === 0 && result.data) {

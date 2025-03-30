@@ -34,7 +34,7 @@ const checkAdapters = async () => {
             if (!Array.isArray(message_id))
                 message_id = [message_id]
             const msgs = []
-            if (QQBot && await QQBot.isQQBotcheck(data.group_id, id) && await QQBot.getisGroup(data.group_id)) {
+            if (QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
                 msgs.push(await QQBot.recall(message_id, data.group_id))
                 Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]撤回消息：${message_id}`, data.self_id)
                 return msgs

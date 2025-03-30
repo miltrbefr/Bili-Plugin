@@ -49,7 +49,7 @@ git clone --depth=1 https://gitee.com/nennen-cn/Bili-Plugin.git ./plugins/Bili-P
 
  - 安装依赖
 ``` bash 
-pnpm install --filter=Bili-plugin
+pnpm install --filter=bili-plugin
 ```
 ---
 
