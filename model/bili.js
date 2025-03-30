@@ -43,7 +43,7 @@ class Bili {
         if (config.Enable_SignApi) {
             response = await fetch(UPUrl, {
                 headers: {
-                    authorization: config.Authorization,
+                    authorization: encodeURIComponent(config.Authorization),
                 }
             })
             data = await response.json();
@@ -93,7 +93,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(relationUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })
                 json = await response.json();
@@ -116,7 +116,7 @@ class Bili {
             const miyocodeUrl = `${this.signApi}/miyocode?num=${action}`;
             const response = await fetch(miyocodeUrl, {
                 headers: {
-                    authorization: config.Authorization,
+                    authorization: encodeURIComponent(config.Authorization),
                 }
             });
             if (!response.ok) {
@@ -184,7 +184,7 @@ class Bili {
         try {
             const response = await fetch(yunshiUrl, {
                 headers: {
-                    authorization: config.Authorization,
+                    authorization: encodeURIComponent(config.Authorization),
                 }
             });
             if (!response.ok) {
@@ -226,7 +226,7 @@ class Bili {
         const yunshiUrl = `${this.signApi}/yunshi?uin=${uin}`;
         const response = await fetch(yunshiUrl, {
             headers: {
-                authorization: config.Authorization,
+                authorization: encodeURIComponent(config.Authorization),
             }
         });
         const data = await response.json()
@@ -249,7 +249,7 @@ class Bili {
         try {
             const response = await fetch(jxUrl, {
                 headers: {
-                    authorization: config.Authorization,
+                    authorization: encodeURIComponent(config.Authorization),
                 }
             });
             const json = await response.json();
@@ -269,7 +269,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(jxUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -295,7 +295,7 @@ class Bili {
                 if (config.Enable_SignApi) {
                     response = await fetch(liveclickUrl, {
                         headers: {
-                            authorization: config.Authorization,
+                            authorization: encodeURIComponent(config.Authorization),
                         }
                     });
                     json = await response.json();
@@ -358,7 +358,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(likeUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -381,7 +381,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(dislikeUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -403,7 +403,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(tripleUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -425,7 +425,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(favUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -447,7 +447,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(unfavUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -469,7 +469,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(replyUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -600,7 +600,7 @@ class Bili {
             if (!rediskey) {
                 const key = await fetch(keyapi, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })
                 const keys = await key.json()
@@ -767,7 +767,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 qqdailydataFirst = await (await fetch(qqdaily, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })).json();
             } else {
@@ -785,7 +785,7 @@ class Bili {
                 if (config.Enable_SignApi) {
                     qqsharedata = await (await fetch(qqshare, {
                         headers: {
-                            authorization: config.Authorization,
+                            authorization: encodeURIComponent(config.Authorization),
                         }
                     })).json()
                 } else {
@@ -797,7 +797,7 @@ class Bili {
                 if (config.Enable_SignApi) {
                     qqdailydataNext = await (await fetch(qqdaily, {
                         headers: {
-                            authorization: config.Authorization,
+                            authorization: encodeURIComponent(config.Authorization),
                         }
                     })).json();
                 } else {
@@ -825,25 +825,25 @@ class Bili {
             if (config.Enable_SignApi) {
                 qqdaily2data = await (await fetch(qqdaily2, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })).json();
                 await this.sleep(1000);
                 qqdaily3data = await (await fetch(qqdaily3, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })).json();
                 await this.sleep(1000);
                 qqdaily4data = await (await fetch(qqdaily4, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })).json();
                 await this.sleep(1000);
                 qqdaily5data = await (await fetch(qqdaily5, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })).json();
                 await this.sleep(1000);
@@ -939,7 +939,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(livedamu, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 damu = await response.json();
@@ -966,7 +966,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(livefeed, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 livejson = await response.json();
@@ -1010,7 +1010,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(expLogUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 expRet = await response.json();
@@ -1031,7 +1031,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(webinfo, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 web = await response.json();
@@ -1079,7 +1079,7 @@ class Bili {
         if (config.Enable_SignApi) {
             apiResponse = await (await fetch(getInfoUrl, {
                 headers: {
-                    authorization: config.Authorization,
+                    authorization: encodeURIComponent(config.Authorization),
                 }
             })).json()
         } else {
@@ -1147,7 +1147,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 infoRet = await (await fetch(getInfoUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })).json()
             } else {
@@ -1167,7 +1167,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 info2Ret = await (await fetch(info2, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })).json()
             } else {
@@ -1185,7 +1185,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 expRet = await (await fetch(expLogUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })).json()
             } else {
@@ -1300,7 +1300,7 @@ class Bili {
                 if (config.Enable_SignApi) {
                     response = await fetch(feedUrl, {
                         headers: {
-                            authorization: config.Authorization,
+                            authorization: encodeURIComponent(config.Authorization),
                         }
                     });
                     json = await response.json();
@@ -1349,7 +1349,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(coinUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -1392,7 +1392,7 @@ class Bili {
             const key2 = await this.getkey()
             const res = await fetch(`${this.signApi}/check?key=${this.key}&lists=${body}&key2=${key2}`, {
                 headers: {
-                    authorization: config.Authorization,
+                    authorization: encodeURIComponent(config.Authorization),
                 }
             })
             const r = await res.json()
@@ -1428,7 +1428,7 @@ class Bili {
             for (const uin of uins) {
                 await fetch(`${this.signApi}/userlists?uin=${uin}&key=${key2}`, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 await this.sleep(1000)
@@ -1453,13 +1453,13 @@ class Bili {
             if (y) {
                 response = await fetch(`${config.totalApi}/userlists?lists=[${body}]`, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })
             } else {
                 response = await fetch(`${config.totalApi}/userlists?lists=${body}`, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 })
             }
@@ -1508,7 +1508,7 @@ class Bili {
         let text = []
         const response = await fetch(coinUrl, {
             headers: {
-                authorization: config.Authorization,
+                authorization: encodeURIComponent(config.Authorization),
             }
         })
         text = await response.json()
@@ -1543,7 +1543,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(shareUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -1571,7 +1571,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(reportUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -1584,7 +1584,7 @@ class Bili {
                 const reportUrl2 = `${this.signApi}/report?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&aid=${aid}&cid=${cid}&csrf=${userCookies.csrf}&key=${this.key}&time=${time}`
                 const response2 = await fetch(reportUrl2, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 const json2 = await response2.json()
@@ -1603,7 +1603,7 @@ class Bili {
         try {
             const response = await fetch(coinUrl, {
                 headers: {
-                    authorization: config.Authorization,
+                    authorization: encodeURIComponent(config.Authorization),
                 }
             })
             try {
@@ -1642,7 +1642,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(expUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -1676,7 +1676,7 @@ class Bili {
                 if (config.Enable_SignApi) {
                     response = await fetch(couponUrl, {
                         headers: {
-                            authorization: config.Authorization,
+                            authorization: encodeURIComponent(config.Authorization),
                         }
                     });
                     json = await response.json();
@@ -1708,7 +1708,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(manhuaShareUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
@@ -1741,7 +1741,7 @@ class Bili {
             if (config.Enable_SignApi) {
                 response = await fetch(manhuaSignUrl, {
                     headers: {
-                        authorization: config.Authorization,
+                        authorization: encodeURIComponent(config.Authorization),
                     }
                 });
                 json = await response.json();
