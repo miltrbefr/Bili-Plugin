@@ -11,7 +11,7 @@ let config = {
 }
 const dataDir = './data/bili/QQBotenvent'
 let attempts = 0
-const maxAttempts = 5
+const maxAttempts = 20
 const delay = 100
 const checkAdapters = async () => {
     const OneBotv11 = Bot.adapter.find(adapter => adapter.name === 'OneBotv11');
@@ -167,6 +167,7 @@ Bot.on("message.group.callback", async e => {
     };
     fs.writeFileSync(filePath, JSON.stringify(data));
     await QQBot.delsikpgroup(groupId)
+    checkAdapters()
     return false;
 })
 
