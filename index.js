@@ -98,8 +98,6 @@ logger.mark(logger.cyan("⸝⸝｡･ω･｡⸝⸝"))
 logger.mark(logger.green(" づ❤⊂"))
 logger.mark(logger.cyan("🎀 欢迎使用哔站插件🎀"))
 
-Bili.fetchlist()
-Bili.Bilicheck()
 QQBot.ensureDataDir()
 redis.del('bili:autosign:task')
 export { apps }
