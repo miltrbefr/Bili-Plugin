@@ -85,7 +85,7 @@ class QQBot {
 
     async fetchValidEventData(groupId) {
         let attempts = 0;
-        const maxAttempts = 10
+        const maxAttempts = 40
         const retryInterval = 200
         const filePath = path.join(this.dataDir, `${groupId}.json`);
         while (attempts < maxAttempts) {
@@ -105,7 +105,7 @@ class QQBot {
                     }));
                 }
             }
-            this.getevent(groupId)
+            if (!geteventing[groupId]) this.getevent(groupId)
             await new Promise(resolve => setTimeout(resolve, retryInterval));
             attempts++;
         }
