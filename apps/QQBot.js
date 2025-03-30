@@ -20,7 +20,7 @@ const checkAdapters = async () => {
         adapter.sendGroupMsg = async function(data, msg) {
             return this.sendMsg(msg, async (message) => {
                 if (QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
-                    Bot.makeLog("info", `[BILI-PLUGIN 官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
+                    Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
                     return await QQBot.sendmsgs(msg, data.group_id, data.self_id)
                 }
                 Bot.makeLog("info", `发送群消息：${this.makeLog(message)}`, `${data.self_id} => ${data.group_id}`, true)
@@ -31,15 +31,16 @@ const checkAdapters = async () => {
             }, msg => this.sendGroupForwardMsg(data, msg))
         }
         adapter.recallMsg = async function(data, message_id) {
-            Bot.makeLog("info", `撤回消息：${message_id}`, data.self_id)
             if (!Array.isArray(message_id))
                 message_id = [message_id]
             const msgs = []
+            if (QQBot && await QQBot.isQQBotcheck(pick.group_id, id) && await QQBot.getisGroup(pick.group_id)) {
+                msgs.push(await QQBot.recall(message_id, pick.group_id))
+                Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]撤回消息：${message_id}`, data.self_id)
+                return msgs
+            }
+            Bot.makeLog("info", `撤回消息：${message_id}`, data.self_id)
             for (const i of message_id) {
-                if (QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
-                    msgs.push(await QQBot.recall(message_id, data.group_id))
-                    continue
-                }
                 msgs.push(await data.bot.sendApi("delete_msg", {
                     message_id: i
                 }).catch(i => i))
@@ -112,15 +113,16 @@ const checkAdapters = async () => {
             return rets
         }
         adapter.recallMsg = async function(id, pick, message_id) {
-            Bot.makeLog("info", `撤回消息：${message_id}`, id)
             if (!Array.isArray(message_id))
                 message_id = [message_id]
             const msgs = []
+            if (QQBot && await QQBot.isQQBotcheck(pick.group_id, id) && await QQBot.getisGroup(pick.group_id)) {
+                msgs.push(await QQBot.recall(message_id, pick.group_id))
+                Bot.makeLog("info", `[BILI-PLUGIN ICQQ官发拦截 RUNNING!!!]撤回消息：${message_id}`, id)
+                return msgs
+            }
+            Bot.makeLog("info", `撤回消息：${message_id}`, id)
             for (const i of message_id) {
-                if (QQBot && await QQBot.isQQBotcheck(pick.group_id, id) && await QQBot.getisGroup(pick.group_id)) {
-                    msgs.push(await QQBot.recall(message_id, pick.group_id))
-                    continue
-                }
                 msgs.push(await pick.recallMsg(i))
             }
             return msgs
