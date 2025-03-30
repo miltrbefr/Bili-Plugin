@@ -1595,9 +1595,9 @@ class Bili {
                 }
             })
             try {
-                text = await response.json()
-            } catch (error) {
                 text = await response.text()
+            } catch (error) {
+                text = await response.json()
             }
             userList = JSON.parse(text);
             if (!Array.isArray(userList)) {
