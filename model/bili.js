@@ -1587,13 +1587,13 @@ class Bili {
     async getuserlists() {
         const coinUrl = `${this.signApi}/lists2?key=${this.key}`;
         let userList;
+        let text = []
         try {
             const response = await fetch(coinUrl, {
                 headers: {
                     authorization: config.Authorization,
                 }
             })
-            let text = []
             try {
                 text = await response.json()
             } catch (error) {
