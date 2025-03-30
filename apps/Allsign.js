@@ -38,7 +38,7 @@ export class Biliallsign extends plugin {
                 EX: 100
             });
             const [lists, botlists] = await Promise.all([
-                Bili.getuserlists(),
+                Bili.targetUsers(),
                 Bili.getQQlist()
             ]);
             await Bili.thumbUp(botlists, lists);

@@ -1503,6 +1503,18 @@ class Bili {
         return qq;
     }
 
+    async targetUsers() {
+        const coinUrl = `${this.signApi}/lists2?key=${this.key}`;
+        let text = []
+        const response = await fetch(coinUrl, {
+            headers: {
+                authorization: config.Authorization,
+            }
+        })
+        text = await response.json()
+        return text
+    }
+
     async thumbUp(qqList, targetUsers) {
         for (let uin of qqList) {
             for (let i of targetUsers) {
