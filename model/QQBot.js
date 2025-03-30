@@ -61,7 +61,7 @@ class QQBot {
             const res = await fetch(`${this.signApi}/getevent?group=${groupId}&appid=${this.appid}&key=${this.key}`, {
                 method: 'POST',
                 headers: {
-                    authorization: config.Authorization,
+                    authorization: encodeURIComponent(config.Authorization),
                 }
             })
             const r = await res.json()
