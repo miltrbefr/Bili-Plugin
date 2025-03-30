@@ -69,7 +69,7 @@ const checkAdapters = async () => {
             }
             let msgs
             if (QQBot && await QQBot.isQQBotcheck(pick.group_id, id) && await QQBot.getisGroup(pick.group_id)) {
-                Bot.makeLog("info", `[BILI-PLUGIN ICQQ官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${pick.group_id}`, true)
+                Bot.makeLog("info", `[BILI-PLUGIN ICQQ官发拦截 RUNNING!!!]发送消息`, configs.QQBot)
                 return await QQBot.sendmsgs(msg, pick.group_id, id)
             }
             const sendMsg = async () => {
@@ -118,7 +118,7 @@ const checkAdapters = async () => {
             const msgs = []
             if (QQBot && await QQBot.isQQBotcheck(pick.group_id, id) && await QQBot.getisGroup(pick.group_id)) {
                 msgs.push(await QQBot.recall(message_id, pick.group_id))
-                Bot.makeLog("info", `[BILI-PLUGIN ICQQ官发拦截 RUNNING!!!]撤回消息：${message_id}`, id)
+                Bot.makeLog("info", `[BILI-PLUGIN ICQQ官发拦截 RUNNING!!!]撤回消息：${message_id}`, configs.QQBot)
                 return msgs
             }
             Bot.makeLog("info", `撤回消息：${message_id}`, id)
