@@ -19,9 +19,11 @@ const checkAdapters = async () => {
     const setupOneBotv11 = (adapter) => {
         adapter.sendGroupMsg = async function(data, msg) {
             return this.sendMsg(msg, async (message) => {
-                Bot.makeLog("info", `发送群消息：${this.makeLog(message)}`, `${data.self_id} => ${data.group_id}`, true)
-                if (QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id))
+                if (QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
+                    Bot.makeLog("info", `[BILI-PLUGIN 官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
                     return await QQBot.sendmsgs(msg, data.group_id, data.self_id)
+                }
+                Bot.makeLog("info", `发送群消息：${this.makeLog(message)}`, `${data.self_id} => ${data.group_id}`, true)
                 return data.bot.sendApi("send_msg", {
                     group_id: data.group_id,
                     message,
@@ -44,6 +46,17 @@ const checkAdapters = async () => {
             }
             return msgs
         }
+        adapter.sendGroupForwardMsg = async function(data, msg) {
+            if (QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
+                Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
+                return await QQBot.sendmsgs(msg, data.group_id, data.self_id)
+            }
+            Bot.makeLog("info", `发送群转发消息：${this.makeLog(msg)}`, `${data.self_id} => ${data.group_id}`, true)
+            return data.bot.sendApi("send_group_forward_msg", {
+              group_id: data.group_id,
+              messages: await this.makeForwardMsg(msg),
+            })
+        }
     }
 
     const setupICQQ = (adapter) => {
@@ -55,6 +68,7 @@ const checkAdapters = async () => {
             }
             let msgs
             if (QQBot && await QQBot.isQQBotcheck(pick.group_id, id) && await QQBot.getisGroup(pick.group_id)) {
+                Bot.makeLog("info", `[BILI-PLUGIN ICQQ官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${pick.group_id}`, true)
                 return await QQBot.sendmsgs(msg, pick.group_id, id)
             }
             const sendMsg = async () => {
