@@ -2,7 +2,6 @@ import fs from 'node:fs'
 import {
     pluginApplications
 } from "./model/constant.js"
-import Bili from './model/bili.js';
 import QQBot from './model/QQBot.js';
 import config from './model/Config.js';
 const files = fs.readdirSync(pluginApplications).filter(file => file.endsWith('.js'))
@@ -12,18 +11,14 @@ Bot.on("notice.group.poke", async event => {
     }
     try {
         if (event.target_id == config.QQBot) {
-            const updatedBot = {
-                ...event.bot,
-                nickname: Bot[config.QQBot].nickname,
-            };
-            event.bot = updatedBot
-            event.target_id = event.self_id
+            if (event.adapter.name === 'OneBotv11') {
+                event.target_id = event.self_id
+                event.nickname = Bot[config.QQBot].nickname
+            } else {
+                event.target_id = event.self_id
+            }
         }
-    } catch (error) {
-        if (event.target_id == config.QQBot) {
-            event.target_id = event.self_id
-        }
-    }
+    } catch (error) {}
     await QQBot.replaceReply(event)
     return false
 })

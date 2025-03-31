@@ -78,7 +78,7 @@ pnpm install --filter=bili-plugin
 | Nickname | Contribution |
 | -------- | ------------ |
 | [Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai) | 喵喵的 Miao-Yunzai |
-| [TRSS Yunzai](https://github.com/TimeRainStarSky/Yunzai) | 食欲的 Miao-Yunzai |
+| [TRSS Yunzai](https://github.com/TimeRainStarSky/Yunzai) | 食欲的 TRSS Yunzai |
 | [哔哩哔哩 - API 收集整理](https://github.com/SocialSisterYi/bilibili-API-collect) | 哔哩哔哩 - API 收集整理 |
 
 
