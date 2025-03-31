@@ -2,13 +2,20 @@ import fs from 'fs';
 import path from 'path';
 import QQBot from '../model/QQBot.js';
 import configs from '../model/Config.js';
-let config = {
-    markdown: {
-        mode: false,
-        button: false,
-        callback: true,
-    }
+
+let QQBotconfig = null
+let ICQQconfig = null
+try {
+   QQBotconfig =  (await import('../../../plugins/Yunzai-QQBot-Plugin/Model/index.js').catch(e => null))
+} catch (e) {
+  logger.error(`[plugins/Yunzai-QQBot-Plugin/Model/index.js]路径未获取到小叶姐姐QQBot配置文件 ${logger.yellow("直接发链接功能")} 将无法使用`)
 }
+try {
+   ICQQconfig = await import('../../../lib/plugins/config.js')
+} catch (e) {
+   logger.error(`[lib/plugins/config.js]路径不存在 ${logger.yellow("请及时更新云崽")}`)
+}
+
 const dataDir = './data/bili/QQBotenvent'
 let attempts = 0
 const maxAttempts = 20
@@ -16,6 +23,127 @@ const delay = 100
 const checkAdapters = async () => {
     const OneBotv11 = Bot.adapter.find(adapter => adapter.name === 'OneBotv11');
     const ICQQ = Bot.adapter.find(adapter => adapter.name === 'ICQQ');
+    const QQBot1 = Bot.adapter.find(adapter => adapter.version === 'qq-group-bot v11.45.14');
+    const setupQQBot = (adapter) => {
+        adapter.makeMsg = async function(data, msg) {
+            const sendType = ['audio', 'image', 'video', 'file']
+            const messages = []
+            const button = []
+            let message = []
+            let reply
+            const {
+              Runtime,
+              Handler,
+              config
+            } = QQBotconfig
+            const makeConfig = ICQQconfig
+            for (let i of Array.isArray(msg) ? msg : [msg]) {
+              if (typeof i == 'object') { i = { ...i } } else { i = { type: 'text', text: i } }
+        
+              switch (i.type) {
+                case 'at':
+                  // if (config.toQQUin && userIdCache[user_id]) {
+                  //   i.qq = userIdCache[user_id]
+                  // }
+                  // i.qq = i.qq?.replace?.(`${data.self_id}${this.sep}`, "")
+                  continue
+                case 'text':
+                case 'face':
+                case 'ark':
+                case 'embed':
+                  break
+                case 'record':
+                  i.type = 'audio'
+                  i.file = await this.makeRecord(i.file)
+                case 'video':
+                case 'image':
+                  if (message.some(s => sendType.includes(s.type))) {
+                    messages.push(message)
+                    message = []
+                  }
+                  break
+                case 'file':
+                  if (i.file) i.file = await Bot.fileToUrl(i.file, i, i.type)
+                  i = { type: 'text', text: `文件：${i.file}` }
+                  break
+                case 'reply':
+                  if (i.id.startsWith('event_')) {
+                    reply = { type: 'reply', event_id: i.id.replace(/^event_/, '') }
+                  } else {
+                    reply = i
+                  }
+                  continue
+                case 'markdown':
+                  if (typeof i.data == 'object') { i = { type: 'markdown', ...i.data } } else { i = { type: 'markdown', content: i.data } }
+                  break
+                case 'button':
+                  config.sendButton && button.push(...this.makeButtons(data, i.data))
+                  continue
+                case 'node':
+                  if (Handler.has('ws.tool.toImg') && config.toImg) {
+                    const e = {
+                      reply: (msg) => {
+                        i = msg
+                      },
+                      user_id: data.bot.uin,
+                      nickname: data.bot.nickname
+                    }
+                    e.runtime = new Runtime(e)
+                    await Handler.call('ws.tool.toImg', e, i.data)
+                    // i.file = await Bot.fileToUrl(i.file)
+                    if (message.some(s => sendType.includes(s.type))) {
+                      messages.push(message)
+                      message = []
+                    }
+                  } else {
+                    for (const { message } of i.data) {
+                      messages.push(...(await this.makeMsg(data, message)))
+                    }
+                  }
+                  break
+                case 'raw':
+                  if (Array.isArray(i.data)) {
+                    messages.push(i.data)
+                    continue
+                  }
+                  i = i.data
+                  break
+                default:
+                  i = { type: 'text', text: JSON.stringify(i) }
+              }
+        
+              if (i.type === 'text' && i.text) {
+                const match = i.text.match(this.toQRCodeRegExp)
+                if (match) {
+                  for (const url of match) {
+                    const modifiedUrl = url.replace(
+                        /\.(com|net|org|edu|gov|mil|co|io|ai|app|dev|me|tv|icu|cc|biz|info|name|mobi|so|shop|site|online|tech|xyz|vip|pro|blog|club|fun|red|ink|wiki|design|live|space|studio|news|group|social|email|money|bank|financial|invest|capital|exchange|market|trade|crypto|coin|network|systems|digital|cloud|host|server|web|it|software|data|tech|science|engineering|bio|health|medical|pharmacy|hospital|dental|clinic|fit|gym|yoga|fitness|sport|football|basketball|tennis|golf|cricket|hockey|baseball|soccer|volleyball|racing|auto|car|bike|motor|boats|travel|tours|vacation|hotel|flights|cruises|tickets|events|music|movie|film|video|photo|gallery|art|museum|theater|show|book|publishing|news|media|press|radio|tv|stream|play|games|gaming|esports|bet|casino|poker|win|lottery|porn|adult|sex|dating|love|baby|kids|toys|family|home|house|garden|kitchen|food|pizza|coffee|beer|wine|bar|restaurant|cafe|bakery|fish|meat|vegan|organic|farm|green|eco|energy|solar|electric|water|recycle|bio|earth|nature|pet|dog|cat|fish|bird|horse|animal|wildlife|furniture|fashion|clothing|shoes|jewelry|watches|bag|accessories|beauty|hair|salon|spa|makeup|skin|care|dentist|law|legal|attorney|lawyer|accountant|tax|insurance|security|safe|protection|guard|police|army|navy|airforce|vet|rehab|charity|church|faith|god|bible|islam|jewish|christmas|holiday|gift|cards|flowers|photo|gifts|deals|discount|coupon|free|best|top|new|now|today|future|next|world|global|international|asia|europe|africa|america|australia|china|india|japan|korea|germany|france|italy|spain|brazil|mexico|canada|us|uk|ru|ca|au|nz|in|eu)(?=[/?]|$)/gi, 
+                        (_, p1) => `.${p1.toUpperCase()}`
+                      );
+                    i.text = i.text.replace(url, modifiedUrl)
+                  }
+                }
+              }
+        
+              if (i.type !== 'node') message.push(i)
+            }
+        
+            if (message.length) { messages.push(message) }
+        
+            while (button.length) {
+              messages.push([{
+                type: 'keyboard',
+                content: { rows: button.splice(0, 5) }
+              }])
+            }
+        
+            if (reply) {
+              for (const i of messages) i.unshift(reply)
+            }
+            return messages
+        }
+    }
+
     const setupOneBotv11 = (adapter) => {
         adapter.sendGroupMsg = async function(data, msg) {
             return this.sendMsg(msg, (message) => {
@@ -71,34 +199,6 @@ const checkAdapters = async () => {
     }
 
     const setupICQQ = (adapter) => {
-        adapter.getPick = function(id, pick, target, prop, receiver) {
-            switch (prop) {
-                case "sendMsg":
-                  return this.sendMsg.bind(this, id, pick)
-                case "recallMsg":
-                  return this.recallMsg.bind(this, id, pick)
-                case "makeForwardMsg":
-                  return Bot.makeForwardMsg
-                case "sendForwardMsg":
-                  return async (msg, ...args) => this.sendMsg(id, pick, await Bot.makeForwardMsg(msg), ...args)
-                case "getInfo":
-                  return () => pick.info ||
-                    (typeof pick.renew === "function" && pick.renew()) ||
-                    (typeof pick.getSimpleInfo === "function" && pick.getSimpleInfo())
-                case "pickMember":
-                  return (...args) => {
-                    for (const i in args)
-                      args[i] = Number(args[i]) || args[i]
-                    const pickMember = pick[prop](...args)
-                    return new Proxy({}, {
-                      get: this.getPick.bind(this, id, pickMember),
-                    })
-                  }
-                case "raw":
-                  return pick
-              }
-              return target[prop] ?? pick[prop]          
-        }
         adapter.sendMsg = async function(id, pick, msg, ...args) {
             const rets = {
                 message_id: [],
@@ -110,6 +210,8 @@ const checkAdapters = async () => {
                 Bot.makeLog("info", `[BILI-PLUGIN ICQQ官发拦截 RUNNING!!!]发送消息`, configs.QQBot)
                 return await QQBot.sendmsgs(msg, pick.group_id, id)
             }
+            const makeConfig = ICQQconfig
+            const { config } = await makeConfig("ICQQ")
             const sendMsg = async () => {
                 for (const i of msgs) try {
                     Bot.makeLog("debug", ["发送消息", i], id)
@@ -169,6 +271,9 @@ const checkAdapters = async () => {
     const handleAdapters = () => {
         if (OneBotv11) setupOneBotv11(OneBotv11)
         if (ICQQ) setupICQQ(ICQQ)
+        if (configs.QQBotsendlink && QQBotconfig && ICQQconfig) {
+          if(QQBot1) setupQQBot(QQBot1)
+        }
     }
     if (OneBotv11 && ICQQ) {
         handleAdapters()

@@ -2,7 +2,7 @@ import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
 import QQBot from '../model/QQBot.js';
-
+import config from '../model/Config.js';
 export class Bilisign extends plugin {
     constructor() {
         super({
@@ -187,7 +187,7 @@ export class Bilisign extends plugin {
             }
 
 
-            if (['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) {
+            if ((['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) && !config.QQBotsendlink ) {
                 replyMessage = String(replyMessage).replace(/https:\/\/b23\.tv\//g, 'https://b23 .tv/')
             }
             forwardNodes.push({

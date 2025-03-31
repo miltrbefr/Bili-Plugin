@@ -99,6 +99,7 @@ class Config {
                 ck: '花瓣网cookie，如果ark为true请填写，否则可忽略',
                 QQBot: '自行填写官方机器人QQ号',
                 appid: '自行填写官方机器人appid',
+                QQBotsendlink: true,
                 whoisMyWifecdTime: 300,
                 whoisMyWifecacheTime: 3600,
                 whoisMyWifemaxMembers: 5,
@@ -138,6 +139,7 @@ class Config {
                 ck: currentConfig?.ck || '花瓣网cookie，如果ark为true请填写，否则可忽略',
                 QQBot: currentConfig?.QQBot || '自行填写官方机器人QQ号',
                 appid: currentConfig?.appid || '自行填写官方机器人appid',
+                QQBotsendlink: currentConfig?.QQBotsendlink || true,
                 whoisMyWifecdTime: currentConfig?.whoisMyWifecdTime || 300,
                 whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
@@ -168,6 +170,11 @@ class Config {
         } catch (error) {
             logger.error(`[BILI PLUGIN] 配置加载失败: ${error}`);
         }
+    }
+
+    get QQBotsendlink() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.QQBotsendlink
     }
 
     get Authorization() {

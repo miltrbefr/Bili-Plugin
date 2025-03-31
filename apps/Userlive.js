@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
 import QQBot from '../model/QQBot.js';
+import config from '../model/Config.js';
 
 export class Biliuserlive extends plugin {
     constructor() {
@@ -96,7 +97,7 @@ export class Biliuserlive extends plugin {
                         `『独立播放器：https://www.bilibili.com/blackboard/live/live-activity-player.html?enterTheRoom=0&cid=${roomid}』`,
                     ];
                 
-                    if (['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) {
+                    if ((['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) && !config.QQBotsendlink ) {
                         replyMessage = replyMessage.map(item => {
                             if (typeof item === 'string') {
                                 return item.replace(/\./g, ' .');
