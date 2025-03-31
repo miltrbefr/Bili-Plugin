@@ -54,6 +54,8 @@ ck: 花瓣网cookie，如果ark为true请填写，否则可忽略
 QQBot: 自行填写官方机器人QQ号
 #官方QQBot的开放平台APPID
 appid: 自行填写官方机器人appid
+#官方QQBot的是否开启发送直链，必须安装小叶姐姐的QQBot适配器，同时文件夹名字为 Yunzai-QQBot-Plugin
+QQBotsendlink: true
 #娶群友的冷却时间(主人除外)
 whoisMyWifecdTime: 300
 #娶群友的群友信息缓存时间

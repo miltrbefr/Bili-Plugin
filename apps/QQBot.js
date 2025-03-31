@@ -4,16 +4,11 @@ import QQBot from '../model/QQBot.js';
 import configs from '../model/Config.js';
 
 let QQBotconfig = null
-let ICQQconfig = null
+
 try {
    QQBotconfig =  (await import('../../../plugins/Yunzai-QQBot-Plugin/Model/index.js').catch(e => null))
 } catch (e) {
   logger.error(`[plugins/Yunzai-QQBot-Plugin/Model/index.js]路径未获取到小叶姐姐QQBot配置文件 ${logger.yellow("直接发链接功能")} 将无法使用`)
-}
-try {
-   ICQQconfig = await import('../../../lib/plugins/config.js')
-} catch (e) {
-   logger.error(`[lib/plugins/config.js]路径不存在 ${logger.yellow("请及时更新云崽")}`)
 }
 
 const dataDir = './data/bili/QQBotenvent'
@@ -36,7 +31,6 @@ const checkAdapters = async () => {
               Handler,
               config
             } = QQBotconfig
-            const makeConfig = ICQQconfig
             for (let i of Array.isArray(msg) ? msg : [msg]) {
               if (typeof i == 'object') { i = { ...i } } else { i = { type: 'text', text: i } }
         
@@ -210,7 +204,7 @@ const checkAdapters = async () => {
                 Bot.makeLog("info", `[BILI-PLUGIN ICQQ官发拦截 RUNNING!!!]发送消息`, configs.QQBot)
                 return await QQBot.sendmsgs(msg, pick.group_id, id)
             }
-            const makeConfig = ICQQconfig
+            const makeConfig = (await import('../../../lib/plugins/config.js'))?.default
             const { config } = await makeConfig("ICQQ")
             const sendMsg = async () => {
                 for (const i of msgs) try {
@@ -271,7 +265,7 @@ const checkAdapters = async () => {
     const handleAdapters = () => {
         if (OneBotv11) setupOneBotv11(OneBotv11)
         if (ICQQ) setupICQQ(ICQQ)
-        if (configs.QQBotsendlink && QQBotconfig && ICQQconfig) {
+        if (configs.QQBotsendlink && QQBotconfig) {
           if(QQBot1) setupQQBot(QQBot1)
         }
     }
