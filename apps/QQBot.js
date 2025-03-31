@@ -27,8 +27,8 @@ const checkAdapters = async () => {
             }, msg => this.sendGroupForwardMsg(data, msg), data)
         }
         adapter.sendMsg = async function(msg, send, sendForwardMsg, data) {
-            if(data && data?.group_id && QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
-                Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
+            if(data && data.group_id && QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
+                Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]发送消息: ${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
                 return await QQBot.sendmsgs(msg, data.group_id, data.self_id)
             }
             const [message, forward] = await this.makeMsg(msg)
@@ -71,6 +71,34 @@ const checkAdapters = async () => {
     }
 
     const setupICQQ = (adapter) => {
+        adapter.getPick = function(id, pick, target, prop, receiver) {
+            switch (prop) {
+                case "sendMsg":
+                  return this.sendMsg.bind(this, id, pick)
+                case "recallMsg":
+                  return this.recallMsg.bind(this, id, pick)
+                case "makeForwardMsg":
+                  return Bot.makeForwardMsg
+                case "sendForwardMsg":
+                  return async (msg, ...args) => this.sendMsg(id, pick, await Bot.makeForwardMsg(msg), ...args)
+                case "getInfo":
+                  return () => pick.info ||
+                    (typeof pick.renew === "function" && pick.renew()) ||
+                    (typeof pick.getSimpleInfo === "function" && pick.getSimpleInfo())
+                case "pickMember":
+                  return (...args) => {
+                    for (const i in args)
+                      args[i] = Number(args[i]) || args[i]
+                    const pickMember = pick[prop](...args)
+                    return new Proxy({}, {
+                      get: this.getPick.bind(this, id, pickMember),
+                    })
+                  }
+                case "raw":
+                  return pick
+              }
+              return target[prop] ?? pick[prop]          
+        }
         adapter.sendMsg = async function(id, pick, msg, ...args) {
             const rets = {
                 message_id: [],
