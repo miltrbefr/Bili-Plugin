@@ -18,17 +18,38 @@ const checkAdapters = async () => {
     const ICQQ = Bot.adapter.find(adapter => adapter.name === 'ICQQ');
     const setupOneBotv11 = (adapter) => {
         adapter.sendGroupMsg = async function(data, msg) {
-            return this.sendMsg(msg, async (message) => {
-                if (QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
-                    Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
-                    return await QQBot.sendmsgs(msg, data.group_id, data.self_id)
-                }
+            return this.sendMsg(msg, (message) => {
                 Bot.makeLog("info", `发送群消息：${this.makeLog(message)}`, `${data.self_id} => ${data.group_id}`, true)
                 return data.bot.sendApi("send_msg", {
                     group_id: data.group_id,
                     message,
                 })
-            }, msg => this.sendGroupForwardMsg(data, msg))
+            }, msg => this.sendGroupForwardMsg(data, msg), data)
+        }
+        adapter.sendMsg = async function(msg, send, sendForwardMsg, data) {
+            if(data && data?.group_id && QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
+                Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
+                return await QQBot.sendmsgs(msg, data.group_id, data.self_id)
+            }
+            const [message, forward] = await this.makeMsg(msg)
+            const ret = []
+        
+            if (forward.length) {
+              const data = await sendForwardMsg(forward)
+              if (Array.isArray(data))
+                ret.push(...data)
+              else
+                ret.push(data)
+            }
+        
+            if (message.length)
+              ret.push(await send(message))
+            if (ret.length === 1) return ret[0]
+        
+            const message_id = []
+            for (const i of ret) if (i?.message_id)
+              message_id.push(i.message_id)
+            return { data: ret, message_id }
         }
         adapter.recallMsg = async function(data, message_id) {
             if (!Array.isArray(message_id))
@@ -46,17 +67,6 @@ const checkAdapters = async () => {
                 }).catch(i => i))
             }
             return msgs
-        }
-        adapter.sendGroupForwardMsg = async function(data, msg) {
-            if (QQBot && await QQBot.isQQBotcheck(data.group_id, data.self_id) && await QQBot.getisGroup(data.group_id)) {
-                Bot.makeLog("info", `[BILI-PLUGIN ONEBOTV11官发拦截 RUNNING!!!]：${this.makeLog(msg)}`, `${configs.QQBot} => ${data.group_id}`, true)
-                return await QQBot.sendmsgs(msg, data.group_id, data.self_id)
-            }
-            Bot.makeLog("info", `发送群转发消息：${this.makeLog(msg)}`, `${data.self_id} => ${data.group_id}`, true)
-            return data.bot.sendApi("send_group_forward_msg", {
-              group_id: data.group_id,
-              messages: await this.makeForwardMsg(msg),
-            })
         }
     }
 
