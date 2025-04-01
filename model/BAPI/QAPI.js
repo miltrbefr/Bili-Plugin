@@ -342,12 +342,16 @@ class QQApi {
 
             if (signInResult.errcode === 0) {
                 return {
+                    code: 0,
+                    uin: uin,
+                    msg: `${uin} 心事罐签到成功`
+                }
+            } else {
+                return {
                     code: -1,
                     uin: uin,
                     msg: `今日已签`
                 }
-            } else {
-                return res.json(signInResult);
             }
         } catch (error) {
             logger.error('[BILI-PLUGIN]心事罐签到', error)

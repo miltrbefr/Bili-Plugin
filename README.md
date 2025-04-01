@@ -73,6 +73,8 @@ pnpm install --filter=bili-plugin
 >2. 素材均来自于网络，仅供交流学习使用，如有侵权请联系，会立即删除
 >3. 请勿将本插件内容上传至视频平台，例如: BiliBili 等
 
+---
+
 ## 致谢
 
 | Nickname | Contribution |
