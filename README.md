@@ -42,7 +42,7 @@ git clone --depth=1 https://github.com/miltrbefr/Bili-Plugin.git ./plugins/Bili-
 > ```
 > git clone --depth=1 https://gh.xiaohuanya.top/https://github.com/miltrbefr/Bili-Plugin.git ./plugins/Bili-Plugin/
 > ```
- - Gitee 源（推荐国内用户）
+ - ~~Gitee 源（推荐国内用户）(已跑路)~~ 
 ``` bash 
 git clone --depth=1 https://gitee.com/nennen-cn/Bili-Plugin.git ./plugins/Bili-Plugin/
 ```
