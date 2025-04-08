@@ -54,6 +54,7 @@ export class Biliswitch extends plugin {
                     reg: /^#?报时推送(添加|删除)群(.*)/mi,
                     fnc: "switchbaoshigroup"
                 },
+                 /*
                 {
                     reg: /^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?(添加|删除)野收群聊(.*)/mi,
                     fnc: "switchgroup",
@@ -64,6 +65,7 @@ export class Biliswitch extends plugin {
                     fnc: "switchjiantingQQ",
                     permission: 'master'
                 },
+                */
                 {
                     reg: "^(添加|删除)撤回白名单群",
                     fnc: 'recallwhile',

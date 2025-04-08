@@ -63,65 +63,13 @@ export class Bilitask extends plugin {
                 cron: '0 0 0/1 * * ?',
                 name: '[Bili-Plugin]整点报时',
                 fnc: () => this.autobaoshi()
-            },
-           /* {
-                cron: '0/30 * * * * ? ',
-                name: '[Bili-Plugin]获取事件ID',
-                fnc: () => this.autogetevent(),
-                log: false
-            }*/
+            }
         ]
     }
 
     async autocheck() {
         await Bili.fetchlist()
         await Bili.Bilicheck()
-    }
-
-    async autogetevent() {
-        if (autoGetEventFlag) {
-            return logger.debug('[BILIPLUGIN]当前正在执行获取事件ID,本次跳过获取...');
-        }
-        autoGetEventFlag = true
-        const configDir = path.join('./data/bili/QQBotGroupMap');
-        const configPath = path.join(configDir, 'Groupconfig.json');
-        try {
-            try {
-                await fs.promises.access(configDir);
-            } catch (error) {
-                logger.debug('[BILIPLUGIN]配置路径不存在，跳过自动获取事件ID...');
-                return false;
-            }
-            const configData = await fs.promises.readFile(configPath, 'utf-8');
-            const groupConfig = JSON.parse(configData);
-            const channelIds = Object.values(groupConfig);
-            if (!channelIds) return logger.debug('[BILIPLUGIN]未配置野收官发跳过自动获取事件ID...');
-            for (const channelId of channelIds) {
-                const eventFilePath = path.join('./data/bili/QQBotenvent', `${channelId}.json`);
-                let needRefresh = false
-                try {
-                    await fs.promises.access(eventFilePath);
-                    const eventData = await fs.promises.readFile(eventFilePath, 'utf-8');
-                    const eventInfo = JSON.parse(eventData);
-                    const timeDiff = (Date.now() - eventInfo.time) / 1000
-                    if (timeDiff > 260) {
-                        needRefresh = true
-                    }
-                } catch (error) {
-                    needRefresh = true
-                }
-                if (needRefresh) {
-                    try {
-                        await QQBot.getevent(channelId);
-                    } catch (err) {}
-                }
-            }
-        } catch (error) {
-            logger.error('[BILIPLUGIN]自动获取事件ID错误', error)
-            return false
-        } finally {
-            autoGetEventFlag = false
-        }
     }
 
 
@@ -135,13 +83,13 @@ export class Bilitask extends plugin {
         }
         const message = segment.record(config.baoshiapi)
         for (const g of groups) {
-            if (await QQBot.isQQBotcheck(g)) {
-                await QQBot.sendmsgs(message, g)
-                await Bili.sleep(1000)
-                continue
+            const isTRSS = Array.isArray(Bot.uin)
+            if (isTRSS) {
+                await Bot.pickGroup(g).sendMsg(message)
+                } else {
+                await Bot[Bot.uin].pickGroup(g).sendMsg(message)
             }
-            await Bot.pickGroup(g).sendMsg(message)
-            await Bili.sleep(2500)
+        await Bili.sleep(2500)
         }
     }
 
@@ -155,13 +103,13 @@ export class Bilitask extends plugin {
         }
         const message = await Bili.getfestival()
         for (const g of groups) {
-            if (await QQBot.isQQBotcheck(g)) {
-                await QQBot.sendmsgs(message, g)
-                await Bili.sleep(1000)
-                continue
+            const isTRSS = Array.isArray(Bot.uin)
+            if (isTRSS) {
+                await Bot.pickGroup(g).sendMsg(message)
+                } else {
+                await Bot[Bot.uin].pickGroup(g).sendMsg(message)
             }
-            await Bot.pickGroup(g).sendMsg(message)
-            await Bili.sleep(2500)
+        await Bili.sleep(2500)
         }
     }
 
@@ -578,16 +526,12 @@ export class Bilitask extends plugin {
                     const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
                     const groupKey = await redis.get(`bili:group:${fileName}`);
                     if (groupKey) {
-                        if (await QQBot.isQQBotcheck(groupKey)) {
-                            await QQBot.sendmsgs(forwardMessage, groupKey)
-                        } else {
                             const isTRSS = Array.isArray(Bot.uin)
                             if (isTRSS) {
                                 Bot.pickGroup(groupKey).sendMsg(forwardMessage)
                             } else {
                                 Bot[Bot.uin].pickGroup(groupKey).sendMsg(forwardMessage)
                             }
-                        }
                     }
                 } catch (err) {
                     logger.error('[Bili-Plugin] 消息发送失败：', err);

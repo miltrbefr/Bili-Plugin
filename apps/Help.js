@@ -16,11 +16,13 @@ export class Help extends plugin {
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)(功能|菜单|帮助|指令|help)$',
                     fnc: "allHelp"
                 },
+                 /*
                 {
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?野收官发(功能|菜单|帮助|指令|help)$',
                     fnc: "QQBotHelp",
                     permission: 'master'
                 },
+                */
                 {
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?视频(操作)?(功能|菜单|帮助|指令|help)$',
                     fnc: "videoHelp"
@@ -393,11 +395,11 @@ export class Help extends plugin {
                     icon: 89,
                     title: '小功能帮助',
                     desc: '看看有什么小功能吧'
-                }, {
+                }/*, {
                     icon: 79,
                     title: '野收官发帮助',
                     desc: '玩机高级功能'
-                }]
+                }*/]
             }
         ]
         if (e.isMaster) {
