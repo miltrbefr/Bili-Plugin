@@ -2,68 +2,9 @@ import fs from 'node:fs'
 import {
     pluginApplications
 } from "./model/constant.js"
-import QQBot from './model/QQBot.js';
-import config from './model/Config.js';
+
 const files = fs.readdirSync(pluginApplications).filter(file => file.endsWith('.js'))
-Bot.on("notice.group.poke", async event => {
-    if (!(await QQBot.check(event))) {
-        return false;
-    }
-    try {
-        if (event.target_id == config.QQBot) {
-            const updatedBot = {
-                ...event.bot,
-                nickname: Bot[config.QQBot].nickname,
-            }
-            event.bot = updatedBot
-            event.target_id = event.self_id
-        }
-    } catch (error) {
-         event.target_id = event.self_id
-    }
-    await QQBot.replaceReply(event)
-    return false
-})
 
-Bot.on("notice.group.sign", async event => {
-    if (!(await QQBot.check(event))) {
-        return false
-    }
-    await QQBot.replaceReply(event)
-    return false
-});
-
-Bot.on("notice.group.decrease", async event => {
-    if (!(await QQBot.check(event))) {
-        return false;
-    }
-    if (event.user_id == config.QQBot) {
-        return true
-    }
-    await QQBot.replaceReply(event)
-    return false;
-});
-
-Bot.on("notice.group.increase", async event => {
-    if (!(await QQBot.check(event))) {
-        return false;
-    }
-
-    if (event.user_id == config.QQBot) {
-        return true
-    }
-
-    await QQBot.replaceReply(event)
-    return false;
-});
-
-Bot.on("notice.group.recall", async event => {
-    if (!(await QQBot.check(event))) {
-        return false;
-    }
-    await QQBot.replaceReply(event)
-    return false;
-});
 let ret = []
 
 files.forEach((file) => {
@@ -95,6 +36,5 @@ logger.mark(logger.cyan("⸝⸝｡･ω･｡⸝⸝"))
 logger.mark(logger.green(" づ❤⊂"))
 logger.mark(logger.cyan("🎀 欢迎使用哔站插件🎀"))
 
-QQBot.ensureDataDir()
 redis.del('bili:autosign:task')
 export { apps }
