@@ -92,19 +92,10 @@ class Config {
                 luckywordblacks: [],
                 totalbody: [],
                 festivalgroup: [],
-                jiantingQQ: [],
                 baoshigroup: [],
-                ark: false,
-                button: false,
-                ck: '花瓣网cookie，如果ark为true请填写，否则可忽略',
-                QQBot: '自行填写官方机器人QQ号',
-                appid: '自行填写官方机器人appid',
-                QQBotsendlink: true,
                 whoisMyWifecdTime: 300,
                 whoisMyWifecacheTime: 3600,
                 whoisMyWifemaxMembers: 5,
-                skipKeywords: ['野收官发过滤的触发指令(用户的触发指令 例如: 赞我)'],
-                skipMsgType: ['野收官发需要过滤掉的消息type类型,具体查看 https://gitee.com/TimeRainStarSky/Yunzai/tree/docs 的消息段部分，例如：node、image..'],
                 Authorization: '鉴权配置野收官发需要'
             };
             this.saveConfig(this.filePath, defaultConfig);
@@ -132,19 +123,10 @@ class Config {
                 luckywordblacks: currentConfig?.luckywordblacks || [],
                 totalbody: currentConfig?.totalbody || [],
                 festivalgroup: currentConfig?.festivalgroup || [],
-                jiantingQQ: currentConfig?.jiantingQQ || [],
                 baoshigroup: currentConfig?.baoshigroup || [],
-                ark: currentConfig?.ark || false,
-                button: currentConfig?.button || false,
-                ck: currentConfig?.ck || '花瓣网cookie，如果ark为true请填写，否则可忽略',
-                QQBot: currentConfig?.QQBot || '自行填写官方机器人QQ号',
-                appid: currentConfig?.appid || '自行填写官方机器人appid',
-                QQBotsendlink: currentConfig?.QQBotsendlink || true,
                 whoisMyWifecdTime: currentConfig?.whoisMyWifecdTime || 300,
                 whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
-                skipKeywords: currentConfig?.skipKeywords || ['野收官发过滤的触发指令(用户的触发指令 例如: 赞我)'],
-                skipMsgType: currentConfig?.skipMsgType || ['野收官发需要过滤掉的消息type类型,具体查看 https://gitee.com/TimeRainStarSky/Yunzai/tree/docs 的消息段部分，例如：node、image..'],
                 Authorization: currentConfig?.Authorization || '鉴权配置野收官发需要'
             };
 
