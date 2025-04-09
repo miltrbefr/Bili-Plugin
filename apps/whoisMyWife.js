@@ -1,7 +1,7 @@
 import cfg from '../../../lib/config/config.js'
 import moment from "moment"
 import config from '../model/Config.js';
-
+import Button from '../model/Buttons.js';
 const cdTime = config.whoisMyWifecdTime // 5分钟冷却(主人除外)
 const cacheTime = config.whoisMyWifecacheTime // 60分钟缓存(群友信息)
 const maxMembers = config.whoisMyWifemaxMembers // 选择5个群友(影响每次成功率)
@@ -39,7 +39,8 @@ export class Biliwife extends plugin {
                 const tips = [
                     segment.at(e.user_id),
                     `\n打咩，醒醒你根本没有${keyword}！(*/ω＼*)`,
-                    `\n冷却剩余：${cdTime - diff}秒`
+                    `\n冷却剩余：${cdTime - diff}秒`,
+                    new Button().wdlp()
                 ]
                 return e.reply(tips)
             }
@@ -82,6 +83,7 @@ export class Biliwife extends plugin {
                 segment.image(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${memberInfo.user_id}`),
                 `\n【${memberInfo.card || memberInfo.nickname}】(${memberInfo.user_id}) ${sexMap[memberInfo.sex]} 哒哒哒！`,
                 `\n最后发言：${lastSent.fromNow()}`,
+                new Button().wdlp()
               //  `\n群头衔：「${memberInfo.title}」`
             ]
             return e.reply(msg)
@@ -92,7 +94,8 @@ export class Biliwife extends plugin {
     replyNoWife(e, keyword) {
         return e.reply([
             segment.at(e.user_id),
-            `\n达咩，醒醒你根本没有${keyword}！(*/ω＼*)`
+            `\n达咩，醒醒你根本没有${keyword}！(*/ω＼*)`,
+            new Button().wdlp()
         ])
     }
 }

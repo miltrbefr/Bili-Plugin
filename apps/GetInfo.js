@@ -2,9 +2,8 @@ import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
 import Render from '../model/renders.js';
-import {
-    pluginResources
-} from '../model/constant.js';
+import {pluginResources} from '../model/constant.js';
+import Button from '../model/Buttons.js';
 
 export class Biliinfo extends plugin {
     constructor() {
@@ -35,12 +34,12 @@ export class Biliinfo extends plugin {
         if (userID === selfID) userID = e.user_id
         const cookiesFilePath = path.join('./data/bili', `${String(userID).replace(/:/g, '_').trim()}.json`);
         if (!fs.existsSync(cookiesFilePath)) {
-            e.reply("未绑定ck，请发送【哔站登录】进行绑定", true);
-            return;
+            e.reply(["未绑定ck，请发送【哔站登录】进行绑定", new Button().bind()])
+            return
         }
         const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
         if (Object.keys(cookiesData).length === 0) {
-            return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+            return await e.reply(["您的登录已过期，请先发送【哔站登录】重新进行绑定", new Button().bind()])
          }
          const r = await e.reply("开始获取你的B站信息请稍等....", true)
          await Bili.recall(e, r, 5) 
@@ -107,10 +106,10 @@ export class Biliinfo extends plugin {
         }
 
         if (forwardNodes.length === 1) {
-            e.reply(forwardNodes[0].message, true);
+            e.reply([forwardNodes[0].message, new Button().info()], true)
         } else {
             const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
-            e.reply(forwardMessage, false);
+            e.reply([forwardMessage, new Button().info()], false);
         }
         return true
     }

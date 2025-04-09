@@ -6,6 +6,10 @@ Enable_LoginApi: false
 signApi: http://113.44.131.92:2536/bili
 #登录API
 loginApi: http://113.44.131.92:3333/bili
+#开启或关闭使用代理
+switchProxy: false
+#代理链接，如果代理需要认证，需要在代理地址中包含用户名密码，例如：http://user:pass@host:port
+proxyAddress: 'http://127.0.0.1:7890'
 #自动签到cron
 cron: 0 58 7,12 * * *
 #自动弹幕cron
@@ -48,4 +52,5 @@ whoisMyWifecdTime: 300
 whoisMyWifecacheTime: 3600
 #娶群友时随机选择的群友数(影响成功率)
 whoisMyWifemaxMembers: 5
-Authorization: '鉴权配置野收官发需要'
+#鉴权请求API需要
+Authorization: 'Bearer <access_token>'

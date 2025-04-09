@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import Bili from '../model/bili.js';
-
+import Button from '../model/Buttons.js'
 export class BiliAccount extends plugin {
     constructor() {
         super({
@@ -19,12 +19,12 @@ export class BiliAccount extends plugin {
         try {
             const cookiesFilePath = path.join('./data/bili', `${String(e.user_id).replace(/:/g, '_').trim()}.json`);
             if (!fs.existsSync(cookiesFilePath)) {
-              return await e.reply("未绑定哔站账号，请先发送【哔站登录】进行绑定", true);
+              return await e.reply(["未绑定ck，请发送【哔站登录】进行绑定", new Button().bind()])
             }
             const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
             const userIds = Object.keys(cookiesData);
             if (userIds.length === 0) {
-              return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+              return await e.reply(["您的登录已过期，请先发送【哔站登录】重新进行绑定", new Button().bind()])
             }
             let currentUserId = await redis.get(`bili:userset:${String(e.user_id).replace(/:/g, '_').trim()}`);
             if (!userIds.includes(currentUserId)) {
@@ -34,7 +34,7 @@ export class BiliAccount extends plugin {
           const userCookies = cookiesData[currentUserId];
           const videoUrl = await Bili.getvideourl(e);
             if (!videoUrl) {
-                return await e.reply("获取资源失败，请确保正确引用消息！！", true);
+                return await e.reply(["获取资源失败，请确保正确引用消息！！", new Button().Operate()])
             }
             const videoinfo = await Bili.getvideoinfo(videoUrl, userCookies.SESSDATA);
             let mid
@@ -48,7 +48,7 @@ export class BiliAccount extends plugin {
 
             const match = e.msg.match(/(关注|取关|拉黑|取消拉黑|踢出粉丝|取消关注)/);
             if (!match) {
-                return await e.reply("未识别到有效操作，请检查输入~", true);
+                return await e.reply(["未识别到有效操作，请检查输入~", new Button().Operate()]);
             }
             const operation = match[1];
 
@@ -62,11 +62,11 @@ export class BiliAccount extends plugin {
             };
             const act = operationMap[operation];
             if (act === undefined) {
-                return await e.reply("不支持的操作类型", true);
+                return await e.reply(["暂不支持该操作！", new Button().Operate()]);
             }
             const result = await Bili.relationup(userCookies, mid, act);
             
-            await e.reply(result, true);
+            await e.reply([result, new Button().Operate()], true);
 
         } catch (err) {
             logger.error("[Bili-Plugin]用户关系操作失败：", err);

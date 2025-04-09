@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import Bili from '../model/bili.js';
-
+import Button from '../model/Buttons.js'
 export class BiliAccount extends plugin {
     constructor() {
         super({
@@ -19,12 +19,12 @@ export class BiliAccount extends plugin {
         try {
             const cookiesFilePath = path.join('./data/bili', `${String(e.user_id).replace(/:/g, '_').trim()}.json`);
             if (!fs.existsSync(cookiesFilePath)) {
-              return await e.reply("未绑定哔站账号，请先发送【哔站登录】进行绑定", true);
+              return await e.reply(["未绑定ck，请发送【哔站登录】进行绑定", new Button().bind()])
             }
             const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
             const userIds = Object.keys(cookiesData);
             if (userIds.length === 0) {
-                return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+                return await e.reply(["您的登录已过期，请先发送【哔站登录】重新进行绑定", new Button().bind()])
               }
             let currentUserId = await redis.get(`bili:userset:${String(e.user_id).replace(/:/g, '_').trim()}`);
             if (!userIds.includes(currentUserId)) {
@@ -34,7 +34,7 @@ export class BiliAccount extends plugin {
           const userCookies = cookiesData[currentUserId];
           const videoUrl = await Bili.getvideourl(e)
           if(!videoUrl){
-            e.reply("获取视频失败，请确保正确引用视频！！",true)
+            await e.reply(["获取资源失败，请确保正确引用消息！！", new Button().Operate()])
             return
           }
         const videoinfo = await Bili.getvideoinfo(videoUrl,userCookies.SESSDATA)
@@ -57,17 +57,17 @@ export class BiliAccount extends plugin {
             };
             const match = e.msg.match(/点赞|取消点赞|点踩|不喜欢|收藏|取消收藏|一键三连|评论/);
             if (!match) {
-                return await e.reply("未识别到有效操作，请检查输入~", true);
+                return await e.reply(["未识别到有效操作，请检查输入~", new Button().Operate()]);
             }
             const operation = match[0]
             const func = operationMap[operation];
             if (!func) {
-                return await e.reply("暂不支持该操作", true);
+                return await e.reply(["暂不支持该操作！", new Button().Operate()]);
             }
             const res = await func();
-            await e.reply(res, true);
+            await e.reply([res, new Button().Operate()]);
         }else{
-            e.reply("你引用的不是视频啦~不能帮你完成操作惹TAT",true)
+            e.reply(["你引用的不是视频啦~不能帮你完成操作惹TAT", new Button().Operate()])
         }
         } catch (err) {
             logger.error("[Bili-Plugin]视频操作失败：", err)

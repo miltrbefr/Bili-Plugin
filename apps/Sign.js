@@ -1,8 +1,9 @@
 import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
-import QQBot from '../model/QQBot.js';
 import config from '../model/Config.js';
+import Button from '../model/Buttons.js';
+
 export class Bilisign extends plugin {
     constructor() {
         super({
@@ -20,13 +21,13 @@ export class Bilisign extends plugin {
     async signBilibili(e) {
         const cookiesFilePath = path.join('./data/bili', `${String(e.user_id).replace(/:/g, '_').trim()}.json`);
         if (!fs.existsSync(cookiesFilePath)) {
-            e.reply("未绑定ck，请发送【哔站登录】进行绑定", true);
+            e.reply(["未绑定ck，请发送【哔站登录】进行绑定", new Button().bind()])
             return true
         }
 
         const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
         if (Object.keys(cookiesData).length === 0) {
-            return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+            return  await e.reply(["您的登录已过期，请先发送【哔站登录】重新进行绑定", new Button().bind()])
         }
 
         if (await redis.get('bili:autosign:task')) {
@@ -51,7 +52,7 @@ export class Bilisign extends plugin {
             sign = true
         }
         if (!sign) {
-            const r = await e.reply("开始给你哔站签到啦~请稍等...", true)
+            const r = await e.reply(["开始给你哔站签到啦~请稍等...",new Button().help()], true)
             await Bili.recall(e, r, 5)
         }
         let Count = 0
@@ -63,7 +64,7 @@ export class Bilisign extends plugin {
             }
             if (await redis.get(`bili:alsign:${userId}`)) {
                 logger.warn(`[Bili-Plugin]哔站账号${userId}今日已签到`)
-                await this.e.reply(`哔站账号${userId}今日已签到, 需要重新签到请发送<哔站重新签到>，获取签到记录发送<哔站签到记录>`, true)
+                await this.e.reply([`哔站账号${userId}今日已签到, 需要重新签到请发送<哔站重新签到>，获取签到记录发送<哔站签到记录>`])
                 await Bili.sleep(2000)
                 continue
             }
@@ -74,7 +75,7 @@ export class Bilisign extends plugin {
                 delete cookiesData[userId];
                 fs.writeFileSync(cookiesFilePath, JSON.stringify(cookiesData, null, 2))
                 logger.warn(`[Bili-PLUGIN(已成功删除过期文件)]B站签到QQ(${fileName})的账号${userId}的Cookie已过期...`)
-                await this.e.reply(`B站账号${userId}的Cookie已过期, 请发送【哔站登录】重新进行绑定...`, true)
+                await this.e.reply([`B站账号${userId}的Cookie已过期, 请发送【哔站登录】重新进行绑定...`, new Button().bind()])
                 continue
             }
             let videoData
@@ -187,7 +188,7 @@ export class Bilisign extends plugin {
             }
 
 
-            if ((['QQBot'].includes(e.adapter_name) || (await QQBot.check(e))) && !config.QQBotsendlink ) {
+            if (['QQBot'].includes(e.adapter_name) && !config.QQBotsendlink ) {
                 replyMessage = String(replyMessage).replace(/https:\/\/b23\.tv\//g, 'https://b23 .tv/')
             }
             forwardNodes.push({
@@ -206,7 +207,7 @@ export class Bilisign extends plugin {
             issign = true
         }
         const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
-        e.reply(forwardMessage, false);
+        e.reply([forwardMessage, new Button().help()]);
         const tempDirPath = path.join('./data/bilisign');
         if (!fs.existsSync(tempDirPath)) {
             fs.mkdirSync(tempDirPath, {

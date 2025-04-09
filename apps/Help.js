@@ -1,10 +1,9 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import Render from '../model/renders.js';
-import {
-    style
-} from '../resources/help/imgs/config.js';
+import {style} from '../resources/help/imgs/config.js';
 import config from '../model/Config.js';
 import _ from 'lodash';
+import Button from '../model/Buttons.js'
 
 export class Help extends plugin {
     constructor() {
@@ -16,13 +15,11 @@ export class Help extends plugin {
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)(功能|菜单|帮助|指令|help)$',
                     fnc: "allHelp"
                 },
-                 /*
-                {
+                /*{
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?野收官发(功能|菜单|帮助|指令|help)$',
                     fnc: "QQBotHelp",
                     permission: 'master'
-                },
-                */
+                },*/
                 {
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?视频(操作)?(功能|菜单|帮助|指令|help)$',
                     fnc: "videoHelp"
@@ -118,15 +115,17 @@ export class Help extends plugin {
         })
 
         let themeData = await this.getThemeData(helpCfg, helpCfg)
-        return await Render.render('help/index', {
+        const image = await Render.render('help/index', {
             helpCfg,
             helpGroup,
             ...themeData,
             element: 'default'
         }, {
             e,
-            scale: 1.6
+            retType: 'base64',
+            scale: 1.6,
         })
+        return  e.reply([image,new Button().help()])
     }
 
     async videoHelp(e) {
@@ -201,15 +200,17 @@ export class Help extends plugin {
         })
 
         let themeData = await this.getThemeData(helpCfg, helpCfg)
-        return await Render.render('help/index', {
+        const image = await Render.render('help/index', {
             helpCfg,
             helpGroup,
             ...themeData,
             element: 'default'
         }, {
             e,
-            scale: 1.6
+            retType: 'base64',
+            scale: 1.6,
         })
+        return  e.reply([image,new Button().help()])
     }
 
 
@@ -275,15 +276,17 @@ export class Help extends plugin {
         })
 
         let themeData = await this.getThemeData(helpCfg, helpCfg)
-        return await Render.render('help/index', {
+        const image = await Render.render('help/index', {
             helpCfg,
             helpGroup,
             ...themeData,
             element: 'default'
         }, {
             e,
-            scale: 1.6
+            retType: 'base64',
+            scale: 1.6,
         })
+        return  e.reply([image,new Button().help()])
     }
 
     async allHelp(e) {
@@ -495,15 +498,17 @@ export class Help extends plugin {
         })
 
         let themeData = await this.getThemeData(helpCfg, helpCfg)
-        return await Render.render('help/index', {
+        const image = await Render.render('help/index', {
             helpCfg,
             helpGroup,
             ...themeData,
             element: 'default'
         }, {
             e,
-            scale: 1.6
+            retType: 'base64',
+            scale: 1.6,
         })
+        return  e.reply([image,new Button().help()])
     }
 
     async getThemeData(diyStyle, sysStyle) {

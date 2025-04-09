@@ -1,7 +1,8 @@
 import {createHash} from 'node:crypto';
 import Qrcode from 'qrcode';
 import sharp from 'sharp';
-
+import config from '../Config.js';
+import { HttpsProxyAgent } from "https-proxy-agent"
 let pollMap = {}
 
 const CONSTANTS = {
@@ -272,8 +273,8 @@ class BApi {
             signSecret: "2653583c8873dea268ab9386918b1d65"
         })
     }
-
-    async _fetchRequest({
+    
+     async _fetchRequest({
         url,
         method = 'GET',
         params = {},
@@ -299,6 +300,17 @@ class BApi {
             headers,
             body: null
           }
+          
+          if (config.switchProxy) {
+            const agent = new HttpsProxyAgent(config.proxyAddress);
+            agent.timeout = 5000
+            agent.on('error', (err) => {
+              logger.error('[Bili-Plugin] 代理连接错误:', err);
+            });
+            requestOptions.agent = agent
+            logger.debug(`[Bili-Plugin] 代理已启用 → ${config.proxyAddress}`);
+          }
+
           if (method === 'POST') {
             requestOptions.body = new URLSearchParams(bodyParams || finalParams).toString();
           }

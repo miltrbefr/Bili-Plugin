@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import QQBot from '../model/QQBot.js';
 import config from '../model/Config.js';
 
 export class Bililog extends plugin {
@@ -42,7 +41,7 @@ export class Bililog extends plugin {
             const records = JSON.parse(rawData);
             records.forEach(record => {
                 let message = String(record.message)
-                if ((['QQBot'].includes(e.adapter_name) || QQBot.check(e)) && !config.QQBotsendlink ) {
+                if (['QQBot'].includes(e.adapter_name) && !config.QQBotsendlink ) {
                     message = String(record.message).replace(/https:\/\/b23\.tv\//g, 'https://b23 .tv/')
                 }
                 forwardNodes.push({

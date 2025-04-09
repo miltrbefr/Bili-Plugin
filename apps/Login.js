@@ -4,6 +4,7 @@ import path from 'path';
 import moment from 'moment';
 import config from '../model/Config.js';
 import BApi from '../model/BAPI/BAPI.js';
+import Button from '../model/Buttons.js';
 
 const signApi = config.signApi
 const loginapi = config.loginApi
@@ -45,8 +46,8 @@ export class Bililogin extends plugin {
             } else {
                 qrInfo = await BApi.getloginqrcode(loginkey, e)
             }
-            if (qrInfo.data.url)  this.reply(['免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.url), '请在90s内使用哔站进行扫码'], true);
-            else  this.reply(['免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.base64), '请在90s内使用哔站进行扫码'], true);
+            if (qrInfo.data.url)  this.reply(['请在90s内使用哔站进行扫码\n免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.url), new Button().bind()], true);
+            else  this.reply(['请在90s内使用哔站进行扫码\n免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.base64), new Button().bind()], true);
             redis.set(`login:${String(e.user_id).replace(/:/g, '_').trim()}`, "1", {
                 EX: 120
             });
@@ -185,10 +186,10 @@ export class Bililogin extends plugin {
             if (!fs.existsSync(cookieFile)) throw new Error("Cookie file does not exist.");
             cookies = JSON.parse(fs.readFileSync(cookieFile, 'utf8'))
             if (Object.keys(cookies).length === 0) {
-                return await e.reply("您的登录已过期，请先发送【哔站登录】重新进行绑定", true);
+                return await e.reply(["您的登录已过期，请先发送【哔站登录】重新进行绑定", new Button().bind()])
             }
         } catch (err) {
-            e.reply("未绑定ck，请发送【哔站登录】进行绑定", true);
+            e.reply(["未绑定ck，请发送【哔站登录】进行绑定", new Button().bind()])
             return
         }
 
@@ -249,6 +250,6 @@ export class Bililogin extends plugin {
 
         fs.writeFileSync(cookieFile, JSON.stringify(cookies, null, 4));
         const replyMessage = anyFailure ? "部分账号刷新失败。\n" : "所有账号刷新成功。\n";
-        e.reply(`${replyMessage}${refreshedAccounts.join('\n')}`, true);
+        e.reply([`${replyMessage}${refreshedAccounts.join('\n')}`, new Button().bind()])
     }
 }

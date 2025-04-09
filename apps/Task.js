@@ -2,16 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import config from '../model/Config.js';
 import Bili from '../model/bili.js';
-import QQBot from '../model/QQBot.js';
 import moment from 'moment';
 import common from '../../../lib/common/common.js'
-import {
-    pluginRoot
-} from '../model/constant.js';
+import {pluginRoot} from '../model/constant.js';
 
 const filePath = `${pluginRoot}/config/config.yaml`
 
-let autoGetEventFlag = false
 
 export class Bilitask extends plugin {
     constructor() {

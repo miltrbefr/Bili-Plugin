@@ -9,6 +9,7 @@ function bkn(skey) {
     return hash;
 }
 
+
 class QQApi {
     constructor() {}
 

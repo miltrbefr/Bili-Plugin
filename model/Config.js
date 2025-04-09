@@ -75,6 +75,8 @@ class Config {
                 Enable_LoginApi: false,
                 signApi: "http://113.44.131.92:2536/bili",
                 loginApi: "http://113.44.131.92:3333/bili",
+                switchProxy: false,
+                proxyAddress: 'http://127.0.0.1:7890',
                 cron: this.generateCronExpression(),
                 livecron: this.generateCronlive(),
                 QQDaily: this.generateCronluckyword() || this.generateCronExpression(),
@@ -96,7 +98,7 @@ class Config {
                 whoisMyWifecdTime: 300,
                 whoisMyWifecacheTime: 3600,
                 whoisMyWifemaxMembers: 5,
-                Authorization: '鉴权配置野收官发需要'
+                Authorization: 'Bearer <access_token>'
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -106,6 +108,8 @@ class Config {
                 Enable_LoginApi: currentConfig?.Enable_LoginApi || false,
                 signApi: currentConfig?.signApi || "http://113.44.131.92:2536/bili",
                 loginApi: currentConfig?.loginApi || "http://113.44.131.92:3333/bili",
+                switchProxy: currentConfig?.switchProxy || false,
+                proxyAddress: currentConfig?.proxyAddress || 'http://127.0.0.1:7890',
                 cron: currentConfig?.cron || this.generateCronExpression(),
                 livecron: currentConfig?.livecron || this.generateCronlive(),
                 QQDaily: currentConfig?.QQDaily || this.generateCronluckyword() || this.generateCronExpression(),
@@ -127,7 +131,7 @@ class Config {
                 whoisMyWifecdTime: currentConfig?.whoisMyWifecdTime || 300,
                 whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
-                Authorization: currentConfig?.Authorization || '鉴权配置野收官发需要'
+                Authorization: currentConfig?.Authorization || 'Bearer <access_token>'
             };
 
             let needsUpdate = false;
@@ -152,6 +156,16 @@ class Config {
         } catch (error) {
             logger.error(`[BILI PLUGIN] 配置加载失败: ${error}`);
         }
+    }
+
+
+    get proxyAddress() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.proxyAddress
+    }
+    get switchProxy() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.switchProxy
     }
 
     get QQBotsendlink() {
@@ -190,31 +204,6 @@ class Config {
     get baoshiapi() {
         if (!this.cache) this.loadConfig();
         return this.cache?.baoshiapi
-    }
-
-    get QQBot() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.QQBot
-    }
-
-    get appid() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.appid
-    }
-
-    get ark() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.ark
-    }
-
-    get ck() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.ck
-    }
-
-    get button() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.button
     }
 
     get maxVideoSizeMB() {
