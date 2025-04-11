@@ -54,5 +54,5 @@ whoisMyWifecacheTime: 3600
 whoisMyWifemaxMembers: 5
 #鉴权请求API需要
 Authorization: 'Bearer <access_token>'
-#是否直接发送按钮，仅支持TRSS && ICQQ
+#是否直接发送按钮，仅支持TRSS && ICQQ，仅9.1.50 ~9.1.65？&& 电脑 可见
 sendbutton: true
