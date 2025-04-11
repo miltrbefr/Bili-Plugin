@@ -98,7 +98,8 @@ class Config {
                 whoisMyWifecdTime: 300,
                 whoisMyWifecacheTime: 3600,
                 whoisMyWifemaxMembers: 5,
-                Authorization: 'Bearer <access_token>'
+                Authorization: 'Bearer <access_token>',
+                sendbutton: true
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -131,7 +132,8 @@ class Config {
                 whoisMyWifecdTime: currentConfig?.whoisMyWifecdTime || 300,
                 whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
-                Authorization: currentConfig?.Authorization || 'Bearer <access_token>'
+                Authorization: currentConfig?.Authorization || 'Bearer <access_token>',
+                sendbutton: currentConfig?.sendbutton || true
             };
 
             let needsUpdate = false;
@@ -158,7 +160,10 @@ class Config {
         }
     }
 
-
+    get sendbutton() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.sendbutton
+    }
     get proxyAddress() {
         if (!this.cache) this.loadConfig();
         return this.cache?.proxyAddress
