@@ -42,7 +42,7 @@ const checkAdapters = async () => {
                         normalMsgs = normalMsgs[0]
 
                     return {
-                        messages: configs.sendbutton ? [...normalMsgs, ...processed.buttonMsgs] : normalMsgs,
+                        messages: configs.sendbutton ? [[...normalMsgs], ...processed.buttonMsgs] : normalMsgs,
                     }
                 }
                 let { messages } = await processMessages()
