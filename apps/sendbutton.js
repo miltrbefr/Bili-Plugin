@@ -45,7 +45,7 @@ const checkAdapters = async () => {
                         messages: configs.sendbutton ? [...normalMsgs, ...processed.buttonMsgs] : normalMsgs,
                     }
                 }
-                const {messages} = await processMessages()
+                let { messages } = await processMessages()
                 const sendMsg = async () => {
                     for (const i of messages) try {
                         Bot.makeLog("debug", ["发送消息", i], id)
@@ -55,7 +55,6 @@ const checkAdapters = async () => {
                         if (ret.message_id)
                             rets.message_id.push(ret.message_id)
                     } catch (err) {
-                        Bot.makeLog("error", ["发送消息错误", i, err], id)
                         rets.error.push(err)
                         return false
                     }
