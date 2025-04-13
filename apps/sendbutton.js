@@ -61,7 +61,7 @@ const checkAdapters = async () => {
                 }
                 if (await sendMsg() === false) {
                     messages = await this.makeMsg(id, pick,
-                        [await Bot.makeForwardMsg([{ message: messages }])])
+                        [await Bot.makeForwardMsg([{ message: messages?.[0] }])])
                     await sendMsg()
                 }
                 return rets.data.length === 1 ? rets.data[0] : rets
