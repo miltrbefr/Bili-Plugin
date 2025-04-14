@@ -10,7 +10,7 @@ export class Help extends plugin {
         super({
             name: "Bili:帮助",
             event: "message",
-            priority: -1677979616,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)(功能|菜单|帮助|指令|help)$',
                     fnc: "allHelp"

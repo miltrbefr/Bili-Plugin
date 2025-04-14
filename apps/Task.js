@@ -15,7 +15,7 @@ export class Bilitask extends plugin {
             name: "Bili:自动任务",
             desc: "一些定时任务",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?日签打卡$/,
                 fnc: "QQDailysign",

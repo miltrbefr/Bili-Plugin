@@ -2,9 +2,9 @@ import cfg from '../../../lib/config/config.js'
 import moment from "moment"
 import config from '../model/Config.js';
 import Button from '../model/Buttons.js';
-const cdTime = config.whoisMyWifecdTime // 5分钟冷却(主人除外)
-const cacheTime = config.whoisMyWifecacheTime // 60分钟缓存(群友信息)
-const maxMembers = config.whoisMyWifemaxMembers // 选择5个群友(影响每次成功率)
+const cdTime = config.whoisMyWifecdTime
+const cacheTime = config.whoisMyWifecacheTime
+const maxMembers = config.whoisMyWifemaxMembers
 const expression = /^(我(老婆|老公)呢|今日(老婆|老公))$/
 
 export class Biliwife extends plugin {
@@ -13,7 +13,7 @@ export class Biliwife extends plugin {
             name: 'Bili:娶群友',
             dsc: '娶群友',
             event: 'message.group',
-            priority: 300,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: "^(我(老婆|老公)呢|今日(老婆|老公))$",
                 fnc: 'whoisMyWife'

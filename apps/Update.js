@@ -12,7 +12,7 @@ export class Biliupdate extends plugin {
     super({
       name: "Bili:更新",
       event: "message",
-      priority: 1000,
+      priority: Number.MIN_SAFE_INTEGER,
       rule: [
         {
           reg: `^#*(哔站|${pluginName})(插件)?(强制)?更新$|^#*(强制)?(哔站|${pluginName})更新(插件)?$`,

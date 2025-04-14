@@ -8,7 +8,7 @@ export class BiliAccount extends plugin {
             name: "Bili:快捷操作视频",
             desc: "简单快捷视频操作",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?(点赞|评论|收藏|取消收藏|点踩|取消点赞|不喜欢|一键三连)视频/,
                 fnc: "Operationvideo"

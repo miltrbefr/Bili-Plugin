@@ -8,7 +8,7 @@ export class Bilidamu extends plugin {
       name: 'Bili:发弹幕',
       dsc: '弹幕发送功能',
       event: 'message',
-      priority: 1677,
+      priority: Number.MIN_SAFE_INTEGER,
       rule: [
         {
           reg: '^#?向\\d+发弹幕.+$',

@@ -8,7 +8,7 @@ export class BiliAccount extends plugin {
             name: "Bili:小功能",
             desc: "简单的统计",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)用户统计$/,
                 fnc: "UserStat"

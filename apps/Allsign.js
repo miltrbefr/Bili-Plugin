@@ -11,7 +11,7 @@ export class Biliallsign extends plugin {
             name: "Bili:全部签到",
             desc: "全部签到",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)全部签到$/,
                 fnc: "signAllBilibili",

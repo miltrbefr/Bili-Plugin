@@ -10,7 +10,7 @@ export class Biliuserlive extends plugin {
             name: "Bili:查询UP开播",
             desc: "主播去哪了",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?(我的|他的|她的)?(关注)?(主播|煮波)开播(了)?(没|吗)$|#?(我的|他的|她的)?(主播|煮波)(在干嘛|还没开播吗|怎么回事|逝了|去哪)(了)?(辽)?(嘞)?(没)?$/,
                 fnc: "biliuserlive"

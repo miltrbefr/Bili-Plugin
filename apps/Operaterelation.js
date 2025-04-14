@@ -8,7 +8,7 @@ export class BiliAccount extends plugin {
             name: "Bili:快捷操作用户关系",
             desc: "简单快捷用户关系操作",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?(关注|取关|拉黑|取消拉黑|踢出粉丝|取消关注)(up|主播|煮波|博主)(主)?$|^#?踢出粉丝$/i,
                 fnc: "Operationrelation"

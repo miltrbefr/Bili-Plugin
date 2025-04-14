@@ -6,9 +6,9 @@ export class Bilijointime extends plugin {
             name: "Bili:进群多久了",
             desc: "进群多久了",
             event: "message.group",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
-                reg: /^#?(我|它|她|他|he|she|it|i)?进群多久了$/i,
+                reg: /^#?(我|它|她|他|he|she|it|i)?进群(多久了|时间)$/i,
                 fnc: "jointime"
             }]
         })

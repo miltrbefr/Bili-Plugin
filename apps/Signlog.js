@@ -8,7 +8,7 @@ export class Bililog extends plugin {
             name: "Bili:签到记录",
             desc: "签到记录",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?(我的)?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)签到记录$/,
                 fnc: "bilisignlog"

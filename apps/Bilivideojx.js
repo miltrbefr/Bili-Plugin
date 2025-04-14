@@ -12,7 +12,7 @@ export class Bilijx extends plugin {
             name: "Bili:视频解析",
             desc: "B站链接解析增强版",
             event: "message",
-            priority: -1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: 'bilibili.com|b23.tv|bili2233.cn',
                 fnc: "handleRedirect"
@@ -40,7 +40,7 @@ export class Bilijx extends plugin {
                 await handler.call(this, e, result.data);
             }
         } catch (error) {
-            logger.error('[Bili-Plugin] 解析出错:', error);
+            logger.info('[Bili-Plugin] 解析出错:', error);
         }
     }
 

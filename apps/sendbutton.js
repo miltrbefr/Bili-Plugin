@@ -1,6 +1,6 @@
 import configs from '../model/Config.js';
 let attempts = 0
-const maxAttempts = 20
+const maxAttempts = 50
 const delay = 100
 const checkAdapters = async () => {
     const ICQQ = Bot.adapter.find(adapter => adapter.name === 'ICQQ')

@@ -11,7 +11,7 @@ export class Biliinfo extends plugin {
             name: "Bili:我的哔站",
             desc: "信息查询",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?(我的|他的|她的)(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)$/,
                 fnc: "biliinfo"

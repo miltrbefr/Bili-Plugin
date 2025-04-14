@@ -11,7 +11,7 @@ export class BilibiliLiveDanmu extends plugin {
       name: 'Bili:直播间推送',
       dsc: '实时监听房间',
       event: 'message',
-      priority: 1,
+      priority: Number.MIN_SAFE_INTEGER,
       rule: [
         {
           reg: '^#?开始推送直播间(.*)$',

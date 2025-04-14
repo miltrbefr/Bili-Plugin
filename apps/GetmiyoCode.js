@@ -6,7 +6,7 @@ export class Bilimiyocode extends plugin {
             name: "Bili:兑换码",
             desc: "简单的获取米游社兑换码",
             event: "message",
-            priority: -Infinity,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^(#|原神)?(\*|星铁)?(%|绝区零)?兑换码$/,
                 fnc: "getmiyocod"
