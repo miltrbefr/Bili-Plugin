@@ -1,20 +1,52 @@
 import configs from '../model/Config.js'
-
+import fs from 'fs'
+import path from 'path'
 const isTRSS = Array.isArray(Bot.uin)
 let QQBotconfig = null
-
-try {
-    QQBotconfig = (await import('../../../plugins/Yunzai-QQBot-Plugin/Model/index.js').catch(e => null)) || (await import('../../../plugins/QQBot-Plugin/Model/index.js').catch(e => null))
-} catch (e) {
-    logger.error(`[plugins/Yunzai-QQBot-Plugin/Model/index.js || plugins/QQBot-Plugin/Model/index.js]路径未获取到小叶姐姐QQBot配置文件 ${logger.yellow("直接发链接功能")} 将无法使用`)
+/**
+ * 动态导入模块，支持大小写不敏感的路径匹配
+ * @param {string} modulePath - 模块路径
+ * @returns {Promise<object|null>} 导入的模块或 null（如果失败）
+ */
+async function tryImport(modulePath) {
+    try {
+        return await import(modulePath)
+    } catch (e) {
+        const dir = path.dirname(modulePath)
+        const fileName = path.basename(modulePath)
+        try {
+            const files = fs.readdirSync(dir);
+            const matchedFile = files.find(file => 
+                file.toLowerCase() === fileName.toLowerCase()
+            )
+            if (matchedFile) {
+                const resolvedPath = path.join(dir, matchedFile)
+                return await import(resolvedPath)
+            }
+        } catch (e) {
+            return null
+        }
+        return null
+    }
 }
-
+const possiblePaths = [
+    '../../../plugins/Yunzai-QQBot-Plugin/Model/index.js',
+    '../../../plugins/QQBot-Plugin/Model/index.js',
+]
+for (const modulePath of possiblePaths) {
+    QQBotconfig = await tryImport(modulePath)
+    if (QQBotconfig) break
+}
+if (!QQBotconfig) {
+    logger.error(
+        `[BILI-PLUGIN] 未找到QQBot的配置文件 ${logger.yellow("直接发链接功能")} 将无法使用`
+    )
+}
 
 let attempts = 0
 const maxAttempts = 50
 const delay = 100
 const checkAdapters = async () => {
-    const ICQQ = Bot.adapter.find(adapter => adapter.name === 'ICQQ');
     const QQBot1 = Bot.adapter.find(adapter => adapter.version === 'qq-group-bot v11.45.14');
     const setupQQBot = (adapter) => {
         adapter.makeMsg = async function(data, msg) {
