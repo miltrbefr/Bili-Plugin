@@ -1,37 +1,46 @@
-import configs from '../model/Config.js'
+import configs from '../model/Config.js';
+import fs from 'fs'
+import path from 'path'
 const isTRSS = Array.isArray(Bot.uin)
 let QQBotconfig = null
+/**
+ * 动态导入模块，支持大小写不敏感的路径匹配
+ * @param {string} modulePath - 模块路径
+ * @returns {Promise<object|null>} 导入的模块或 null
+ */
+async function tryImport(modulePath) {
+    try {
+        return await import(modulePath)
+    } catch (e) {
+        const dir = path.dirname(modulePath)
+        const fileName = path.basename(modulePath)
+        try {
+            const files = fs.readdirSync(dir);
+            const matchedFile = files.find(file => 
+                file.toLowerCase() === fileName.toLowerCase()
+            )
+            if (matchedFile) {
+                const resolvedPath = path.join(dir, matchedFile)
+                return await import(resolvedPath)
+            }
+        } catch (e) {
+            return null
+        }
+        return null
+    }
+}
 const possiblePaths = [
     '../../../plugins/Yunzai-QQBot-Plugin/Model/index.js',
-    '../../../plugins/QQBot-Plugin/Model/index.js',
-    '../../../plugins/yunzai-qqbot-plugin/Model/index.js',
-    '../../../plugins/Yunzai-QQBot-plugin/Model/index.js',
-    '../../../plugins/yunzai-QQBot-Plugin/Model/index.js',
-    '../../../plugins/qqbot-plugin/Model/index.js',
-    '../../../plugins/QQBot-plugin/Model/index.js',
-    '../../../plugins/Qqbot-Plugin/Model/index.js',
-    '../../../plugins/Yunzai-QQBot/Model/index.js',
-    '../../../plugins/QQBot/Model/index.js',
-    '../../../plugins/qqbot/Model/index.js',
+    '../../../plugins/QQBot-Plugin/Model/index.js'
 ]
-try {
-    for (const path of possiblePaths) {
-        try {
-            QQBotconfig = await import(path)
-            if (QQBotconfig) break
-        } catch (e) {
-            logger.info(`[BILI-PLUGIN] 尝试加载路径 ${path} 的适配器失败`)
-        }
-    }
-    if (!QQBotconfig) {
-        logger.warn(
-            `[BILI-PLUGIN] 未找到QQBot的配置文件 ${logger.yellow("直接发链接功能")} 将无法使用`
-        )
-        logger.error('请确保已安装并更新最新版QQBot插件')
-    }
-} catch (e) {
-    logger.error(`加载QQBot配置时发生错误: ${e.message}`)
-    logger.error('请升级至最新版云崽');
+for (const modulePath of possiblePaths) {
+    QQBotconfig = await tryImport(modulePath)
+    if (QQBotconfig) break
+}
+if (!QQBotconfig) {
+    logger.error(
+        `[BILI-PLUGIN] 未找到QQBot的配置文件 ${logger.yellow("直接发链接功能")} 将无法使用`
+    )
 }
 
 let attempts = 0
