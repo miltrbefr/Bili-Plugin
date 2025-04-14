@@ -90,11 +90,6 @@ export class Help extends plugin {
                         icon: 39,
                         title: '我(老婆/老公)呢',
                         desc: '娶群友小功能'
-                    },
-                    {
-                        icon: 56,
-                        title: '(全部)功能统计',
-                        desc: '统计所有插件使用情况'
                     }
                 ]
             }
