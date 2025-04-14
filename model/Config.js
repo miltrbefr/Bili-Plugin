@@ -99,7 +99,8 @@ class Config {
                 whoisMyWifecacheTime: 3600,
                 whoisMyWifemaxMembers: 5,
                 Authorization: 'Bearer <access_token>',
-                sendbutton: true
+                sendbutton: true,
+                QQBotsendlink: true,
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -133,8 +134,9 @@ class Config {
                 whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
                 Authorization: currentConfig?.Authorization || 'Bearer <access_token>',
-                sendbutton: currentConfig?.sendbutton || true
-            };
+                sendbutton: currentConfig?.sendbutton || true,
+                QQBotsendlink: currentConfig?.QQBotsendlink || true,
+            }
 
             let needsUpdate = false;
             for (const key in defaultConfig) {
@@ -160,6 +162,11 @@ class Config {
         }
     }
 
+    get QQBotsendlink() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.QQBotsendlink
+    }
+    
     get sendbutton() {
         if (!this.cache) this.loadConfig();
         return this.cache?.sendbutton

@@ -62,7 +62,7 @@ pnpm install --filter=bili-plugin
 |------------------|-----------------------------------|
 | 核心功能         | `B站登录` `我的B站`  `B站签到`  |
 | 直播间功能        | `发送弹幕`  `监听直播间所有信息` |
-| Bot帮助         |  `日签打卡` `自动群幸运字符` `发送按钮` |
+| Bot帮助         |  `日签打卡` `自动群幸运字符` `发送按钮` `官机发送链接`|
 | 视频帮助         | `快捷操作视频(点赞/收藏等)` `快捷关注UP` |
 | 小功能帮助         | `今日运势` `节日/报时推送`  `全插件功能统计`  `娶群友小游戏`    |
 
@@ -81,6 +81,7 @@ pnpm install --filter=bili-plugin
 | -------- | ------------ |
 | [Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai) | 喵喵的 Miao-Yunzai |
 | [TRSS Yunzai](https://github.com/TimeRainStarSky/Yunzai) | 食欲的 TRSS Yunzai |
+| [QQBot-Plugin](https://gitee.com/xiaoye12123/Yunzai-QQBot-Plugin) | 小叶的Yunzai-QQBot-Plugin |
 | [哔哩哔哩 - API 收集整理](https://github.com/SocialSisterYi/bilibili-API-collect) | 哔哩哔哩 - API 收集整理 |
 
 

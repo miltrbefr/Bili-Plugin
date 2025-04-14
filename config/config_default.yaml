@@ -56,3 +56,5 @@ whoisMyWifemaxMembers: 5
 Authorization: 'Bearer <access_token>'
 #是否直接发送按钮，仅支持TRSS && ICQQ，仅9.1.50 ~9.1.65？&& 电脑 可见
 sendbutton: true
+#QQBot是否开启发送链接，必须使用小叶姐姐的适配器，神秘链接：https://gitee.com/xiaoye12123/Yunzai-QQBot-Plugin
+QQBotsendlink: true
