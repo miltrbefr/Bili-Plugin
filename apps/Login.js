@@ -46,13 +46,17 @@ export class Bililogin extends plugin {
             } else {
                 qrInfo = await BApi.getloginqrcode(loginkey, e)
             }
-            if (qrInfo.data.url)  this.reply(['请在90s内使用哔站进行扫码\n免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.url), new Button().bind()], true);
-            else  this.reply(['请在90s内使用哔站进行扫码\n免责声明:\n您将通过扫码完成获取哔哩哔哩的ck用于请求B站API接口以获取数据。\n本Bot不会保存您的登录状态。\n我方仅提供相关B站内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~', segment.image(qrInfo.data.base64), new Button().bind()], true);
+            if (qrInfo.data.url)  this.reply([segment.image(qrInfo.data.url), '请在90s内使用B站进行扫码',new Button().bind()], true)
+            else  this.reply([segment.image(qrInfo.data.base64), '请在90s内使用B站进行扫码',new Button().bind()], true)
             redis.set(`login:${String(e.user_id).replace(/:/g, '_').trim()}`, "1", {
                 EX: 120
             });
 
             const pollRequest = async () => {
+                if (pollCount >= maxPolls) {
+                    handleError('登录超时，请稍后重新尝试')
+                    return true
+                }
                 try {
                     let result
                     if (config.Enable_LoginApi) {
@@ -61,46 +65,55 @@ export class Bililogin extends plugin {
                     } else {
                         result = await BApi.pollQrCode(loginkey)
                     }
-
-                    logger.info("[Bili-Plugin]二维码轮询状态:", result);
-
+                    logger.info("[Bili-Plugin]二维码轮询状态:", result)
                     if (result.code === 0 && result.data) {
                         await saveCookieData(String(e.user_id).replace(/:/g, '_').trim(), result.data);
                         e.reply('登录成功', true);
                         redis.del(`login:${String(e.user_id).replace(/:/g, '_').trim()}`);
-                        if (e.group_id) redis.set(`bili:group:${String(e.user_id).replace(/:/g, '_').trim()}`, `${e.group_id}`);
-                        return;
+                        if (e.group_id) redis.set(`bili:group:${String(e.user_id).replace(/:/g, '_').trim()}`, `${e.group_id}`)
+                        return
                     } else if (result.code === 86038) {
-                        handleError('二维码已失效，请重新尝试');
+                        handleError('登录二维码已失效，请重新尝试')
+                        return true
                     } else if (result.code === 86090) {
-                        handleUnconfirmed();
-                    } else if (pollCount >= maxPolls) {
-                        handleError('二维码超时未确认，请重新尝试');
+                        handleUnconfirmed()
                     } else {
-                        pollCount++;
-                        setTimeout(pollRequest, intervalTime);
+                        pollCount++
+                        if (pollCount >= maxPolls) {
+                            handleError('登录超时，请稍后重新尝试')
+                            return true
+                        } else {
+                            setTimeout(pollRequest, intervalTime)
+                        }
                     }
                 } catch (error) {
-                    logger.error('[Bili-Plugin]登录插件报错', error);
-                    handleError('发生错误，请稍后再试');
+                    logger.error('[Bili-Plugin]登录插件报错', error)
+                    handleError('发生错误，请稍后再试')
+                    return true
                 }
-            };
-
+            }
             const handleUnconfirmed = async () => {
+                pollCount++;
+                if (pollCount >= maxPolls) {
+                    handleError('登录超时，请稍后重新尝试')
+                    return true
+                } else {
+                    setTimeout(pollRequest, intervalTime)
+                }
                 let key = `bili:${String(e.user_id).replace(/:/g, '_').trim()}`;
                 if (!(await redis.get(key))) {
                     redis.set(key, "1", {
-                        EX: 50
-                    });
-                    e.reply('扫码成功，请确认登录', true);
+                        EX: 60
+                    })
+                    e.reply('扫码成功，请确认登录', true)
                 }
-                pollCount++;
-                setTimeout(pollRequest, intervalTime);
-            };
+                pollCount++
+            }
             const handleError = (msg) => {
-                e.reply(msg, true);
-                redis.del(`login:${String(e.user_id).replace(/:/g, '_').trim()}`);
-            };
+                e.reply(msg, true)
+                redis.del(`login:${String(e.user_id).replace(/:/g, '_').trim()}`)
+                return true
+            }
             const saveCookieData = async (userId, data) => {
                 const storagePath = path.join(tempBilibiliDir, `${userId}.json`);
                 const cookiesArray = data.cookie.split('; ');
@@ -145,33 +158,30 @@ export class Bililogin extends plugin {
                     const existingCustomFields = {
                         coin: cookies[parsedCookies['DedeUserID']].coin,
                         live: cookies[parsedCookies['DedeUserID']].live
-                    };
+                    }
                     cookies[parsedCookies['DedeUserID']] = {
                         ...parsedCookies,
                         ...existingCustomFields
-                    };
+                    }
                 } else {
                     cookies[parsedCookies['DedeUserID']] = {
                         ...parsedCookies,
                         coin: true,
                         live: false
-                    };
+                    }
                 }
-                redis.set(`bili:userset:${String(e.user_id).replace(/:/g, '_').trim()}`, parsedCookies['DedeUserID']); // 设置当前账号
+                redis.set(`bili:userset:${String(e.user_id).replace(/:/g, '_').trim()}`, parsedCookies['DedeUserID'])
                 if (!fs.existsSync(path.dirname(storagePath))) {
                     fs.mkdirSync(path.dirname(storagePath), {
                         recursive: true
-                    });
+                    })
                 }
-                fs.writeFileSync(storagePath, JSON.stringify(cookies, null, 2));
-            };
-
-            let pollCount = 0;
-            const maxPolls = 18;
-            const intervalTime = 5000;
-
-            pollRequest();
-
+                fs.writeFileSync(storagePath, JSON.stringify(cookies, null, 2))
+            }
+            let pollCount = 0
+            const maxPolls = 18
+            const intervalTime = 5000
+            await pollRequest()
         } catch (error) {
             logger.error('[Bili-Plugin]获取二维码报错：', error);
             e.reply('获取二维码失败，请稍后再试', true);
