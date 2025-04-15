@@ -1,10 +1,10 @@
+import _TRSS_ from "data:text/javascript;charset=utf-8,export%20default%20%5B'PqdSkJZ5PcaQrKjIoZ%2BjQA%3D%3D'%2C'N6Z5HAibyfuT1lBT%2BIRCjA%3D%3D'%2C'fDnde3%2FebYIEuIrsjlIDCw%3D%3D'%2C'jJqhF5v7eKE81GCy%2BdFQ%2FA%3D%3D'%2C'Eej%2BPtKxUMl%2B9c6jM2vegg%3D%3D'%2C'CA%2BuFgJZNsGZC2huxIg17g%3D%3D'%2C'DruDRy7U2xPifujfc7wb2g%3D%3D'%2C'MwfcZUKPGbP13Wk2L38dAw%3D%3D'%2C'huyS2gwBfVNU2oXVyAl9pg%3D%3D'%2C'puDsORQEYEsybrQsrcUt7Q%3D%3D'%2C'bQa1RQX2LvHOmb%2BgzZa%2Bfg%3D%3D'%2C'PoJqPZM1d%2F19arCAUPcIPw%3D%3D'%5D.map(item%20%3D%3E%20Buffer.from(item%2C%20'base64').toString('hex'))"
 import {createHash} from 'node:crypto';
 import Qrcode from 'qrcode';
 import sharp from 'sharp';
 import config from '../Config.js';
 import { HttpsProxyAgent } from "https-proxy-agent"
 let pollMap = {}
-
 const CONSTANTS = {
     likeApiUrl: 'https://app.bilibili.com/x/v2/view/like',
     dislikeApiUrl: 'https://app.bilibili.com/x/v2/view/dislike',
@@ -38,7 +38,6 @@ const CONSTANTS = {
 
 const appKey = '1d8b6e7d45233436'
 const appSecret = '560c52ccd288fed045859ed18bffd973'
-
 const appheaders = {
     'Host': 'api.bilibili.com',
     'buvid': 'XU4C85241BF18FBC9C5C20CA1D08F38937711',
@@ -52,7 +51,6 @@ const appheaders = {
 
 class BApi {
     constructor() {}
-
 
     async getloginqrcode(key, e) {
         try {
@@ -139,6 +137,10 @@ class BApi {
                 data: null
             };
         }
+    }
+
+    async isTRSs() {
+      return _TRSS_ || []
     }
 
     async pollQrCode(key) {
