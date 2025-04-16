@@ -209,81 +209,6 @@ export class Help extends plugin {
     }
 
 
-    async QQBotHelp(e) {
-        const helpCfg = {
-            "themeSet": false,
-            "title": "QQBot帮助",
-            "subTitle": "BILI QQBot HELP",
-            "colWidth": 265,
-            "theme": "all",
-            "themeExclude": [
-                "default"
-            ],
-            "colCount": 3,
-            "bgBlur": true
-        }
-        const helpList = [{
-                group: '本插件均为开源项目，严禁将本库内容用于任何商业用途或违法行为'
-            },
-            {
-                group: '必须使用<xiaoye12123/Yunzai-QQBot-Plugin>的适配器',
-                list: [{
-                        icon: 75,
-                        title: '(添加/删除)野收群聊<可选群号>',
-                        desc: '不需要艾特官鸡,可以不输入群号,对应群发送指令就行'
-                    },
-                    {
-                        icon: 63,
-                        title: '(添加/删除)监听机器人',
-                        desc: '监听的Bot'
-                    },
-                    {
-                        icon: 33,
-                        title: '必须手动添加配置文件！',
-                        desc: 'QQBot、appid必填！记得重启'
-                    },
-                    {
-                        icon: 53,
-                        title: '支持过滤消息类型',
-                        desc: '参见skipKeywords、skipMsgType配置'
-                    },
-                    {
-                        icon: 85,
-                        title: '开始推送<123456>',
-                        desc: '在任意群聊触发官鸡向指定群实时转发你的消息'
-                    }
-                ],
-            }
-        ]
-        let helpGroup = []
-        _.forEach(helpList, (group) => {
-            _.forEach(group.list, (help) => {
-                let icon = help.icon * 1
-                if (!icon) {
-                    help.css = 'display:none'
-                } else {
-                    let x = (icon - 1) % 10
-                    let y = (icon - x - 1) / 10
-                    help.css = `background-position:-${x * 50}px -${y * 50}px`
-                }
-            })
-            helpGroup.push(group)
-        })
-
-        let themeData = await this.getThemeData(helpCfg, helpCfg)
-        const image = await Render.render('help/index', {
-            helpCfg,
-            helpGroup,
-            ...themeData,
-            element: 'default'
-        }, {
-            e,
-            retType: 'base64',
-            scale: 1.6,
-        })
-        return  e.reply([image,new Button().help()])
-    }
-
     async allHelp(e) {
         const helpCfg = {
             "themeSet": false,
@@ -393,11 +318,11 @@ export class Help extends plugin {
                     icon: 89,
                     title: '小功能帮助',
                     desc: '看看有什么小功能吧'
-                }/*, {
-                    icon: 79,
-                    title: '野收官发帮助',
-                    desc: '玩机高级功能'
-                }*/]
+                }, {
+                    icon: 88,
+                    title: '按钮发送',
+                    desc: '致谢 HDTianRu/Packet-plugin 快去给他点 star ！！'
+                }]
             }
         ]
         if (e.isMaster) {

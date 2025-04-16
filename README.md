@@ -83,6 +83,7 @@ pnpm install --filter=bili-plugin
 | [TRSS Yunzai](https://github.com/TimeRainStarSky/Yunzai) | 食欲的 TRSS Yunzai |
 | [TRSS-Plugin](https://gitee.com/TimeRainStarSky/TRSS-Plugin) | 食欲的吴迪插件 |
 | [QQBot-Plugin](https://gitee.com/xiaoye12123/Yunzai-QQBot-Plugin) | 小叶的Yunzai-QQBot-Plugin |
+| [Packet-plugin](https://gitee.com/HDTianRu/Packet-plugin) | 天如的吴迪插件 🔥🌲去点star|
 | [哔哩哔哩 - API 收集整理](https://github.com/SocialSisterYi/bilibili-API-collect) | 哔哩哔哩 - API 收集整理 |
 
 

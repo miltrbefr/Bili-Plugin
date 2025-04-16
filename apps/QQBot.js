@@ -1,6 +1,8 @@
 import configs from '../model/Config.js';
 import fs from 'fs'
 import path from 'path'
+import { Elem } from '../model/Packet.js'
+import Make from '../model/MakButton.js'
 const isTRSS = Array.isArray(Bot.uin)
 let QQBotconfig = null
 /**
@@ -47,9 +49,138 @@ let attempts = 0
 const maxAttempts = 250
 const delay = 200
 const checkAdapters = async () => {
+    const Napcat = Bot.adapter.find(adapter => adapter.name === 'OneBotv11')
     let QQBot = Bot.adapter.find(adapter => adapter.version === 'qq-group-bot v11.45.14')
     if (QQBotconfig) QQBot = Bot.adapter.find(adapter => adapter.name === 'QQBot')
     const ICQQ = Bot.adapter.find(adapter => adapter.name === 'ICQQ')
+
+    const setupNapcat = (adapter) => {
+        adapter.makeMsg = async function(msg) {
+            if (!Array.isArray(msg))
+                msg = [msg]
+            const msgs = []
+            const forward = []
+            const buttons = []
+            for (let i of msg) {
+                if (typeof i !== "object")
+                    i = {
+                        type: "text",
+                        data: {
+                            text: i
+                        }
+                    }
+                else if (!i.data)
+                    i = {
+                        type: i.type,
+                        data: {
+                            ...i,
+                            type: undefined
+                        }
+                    }
+
+                switch (i.type) {
+                    case "at":
+                        i.data.qq = String(i.data.qq)
+                        break
+                    case "reply":
+                        i.data.id = String(i.data.id)
+                        break
+                    case "button":
+                        buttons.push(i)
+                        continue
+                    case "node":
+                        forward.push(...i.data)
+                        continue
+                    case "raw":
+                        i = i.data
+                        break
+                }
+
+                if (i.data.file)
+                    i.data.file = await this.makeFile(i.data.file)
+
+                msgs.push(i)
+            }
+            return [msgs, forward, buttons]
+        }
+
+        adapter.sendFriendMsg = async function(data, msg) {
+            data.isGroup = false
+            return this.sendMsg(msg, message => {
+                Bot.makeLog("info", `发送好友消息：${this.makeLog(message)}`, `${data.self_id} => ${data.user_id}`, true)
+                return data.bot.sendApi("send_msg", {
+                  user_id: data.user_id,
+                  message,
+                })
+              }, msg => this.sendFriendForwardMsg(data, msg), msg => this.sendButton(data, msg))
+        }
+
+        adapter.sendGroupMsg = async function(data, msg) {
+            data.isGroup = true
+            return this.sendMsg(msg, message => {
+                Bot.makeLog("info", `发送群消息：${this.makeLog(message)}`, `${data.self_id} => ${data.group_id}`, true)
+                return data.bot.sendApi("send_msg", {
+                  group_id: data.group_id,
+                  message,
+                })
+              }, msg => this.sendGroupForwardMsg(data, msg), msg => this.sendButton(data, msg))
+        }
+
+        adapter.sendButton = async function(data, buttons) {
+           if(data.isGroup) {
+             Bot.makeLog("info", `发送群按钮消息：${this.makeLog(buttons)}`, `${data.self_id} => ${data.group_id}`, true)
+           } else {
+             Bot.makeLog("info", `发送私聊按钮消息：${this.makeLog(buttons)}`, `${data.self_id} => ${data.user_id}`, true)
+           }
+           const buttonData = []
+           buttons.forEach(button => {
+               if (Array.isArray(button.data)) {
+                   buttonData.push(...button.data)
+               } else {
+                   buttonData.push(button.data)
+               }
+           })
+           const raw = {
+               rows: Make.makeButtons(buttonData)
+           }
+           const packet = Make.button(raw)
+           return Elem(data, packet)
+        }
+
+        adapter.sendMsg = async function(msg, send, sendForwardMsg, sendButton) {
+            const [message, forward, buttons] = await this.makeMsg(msg)
+            const ret = []
+            if (forward.length) {
+                const data = await sendForwardMsg(forward)
+                if (Array.isArray(data))
+                    ret.push(...data)
+                else
+                    ret.push(data)
+            }
+            
+            if (message.length)
+                ret.push(await send(message))
+
+            if (buttons.length) {
+                const Z = await sendButton(buttons)
+                if (Array.isArray(Z))
+                    ret.push(...Z)
+                else
+                    ret.push(Z)
+            }
+            if (ret.length === 1) return ret[0]
+
+            const message_id = []
+            for (const i of ret)
+                if (i?.message_id)
+                    message_id.push(i.message_id)
+            return {
+                data: ret,
+                message_id
+            }
+        }
+    }
+
     const setupICQQ = (adapter) => {
         adapter.sendMsg = async function(id, pick, msg, ...args) {
             const rets = {
@@ -271,8 +402,9 @@ const checkAdapters = async () => {
     const handleAdapters = () => {
         if (QQBot) setupQQBot(QQBot)
         if (ICQQ && configs.sendbutton) setupICQQ(ICQQ)
+        if (Napcat && configs.sendbutton) setupNapcat(Napcat)
     }
-    if (QQBot && ICQQ) {
+    if (QQBot && ICQQ && Napcat) {
         handleAdapters()
         return
     }

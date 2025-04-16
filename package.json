@@ -1,6 +1,6 @@
 {
   "name": "bili-plugin",
-  "version": "2.1.5",
+  "version": "2.2.1",
   "type": "module",
   "main": "index.js",
   "author": "NenNen_CN",
@@ -11,6 +11,10 @@
     "image-size": "^1.2.0",
     "bufferpack": "^0.0.6",
     "qrcode": "1.5.4",
-    "sharp": "0.33.5"
+    "sharp": "0.33.5",
+    "protobufjs": "^7.4.0",
+    "ulid": "^3.0.0",
+    "zlib": "^1.0.5",
+    "form-data": "^4.0.1"
   }
 }
