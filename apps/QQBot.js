@@ -46,8 +46,8 @@ if (!QQBotconfig) {
 }
 
 let attempts = 0
-const maxAttempts = 250
-const delay = 200
+const maxAttempts = 500
+const delay = 500
 const checkAdapters = async () => {
     const Napcat = Bot.adapter.find(adapter => adapter.name === 'OneBotv11')
     let QQBot = Bot.adapter.find(adapter => adapter.version === 'qq-group-bot v11.45.14')
