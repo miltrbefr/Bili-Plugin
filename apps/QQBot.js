@@ -46,14 +46,13 @@ if (!QQBotconfig) {
 }
 
 let attempts = 0
-const maxAttempts = 500
-const delay = 500
+const maxAttempts = 100
+const delay = 100
 const checkAdapters = async () => {
     const Napcat = Bot.adapter.find(adapter => adapter.name === 'OneBotv11')
     let QQBot = Bot.adapter.find(adapter => adapter.version === 'qq-group-bot v11.45.14')
     if (QQBotconfig) QQBot = Bot.adapter.find(adapter => adapter.name === 'QQBot')
     const ICQQ = Bot.adapter.find(adapter => adapter.name === 'ICQQ')
-
     const setupNapcat = (adapter) => {
         adapter.makeMsg = async function(msg) {
             if (!Array.isArray(msg))
@@ -417,3 +416,6 @@ const checkAdapters = async () => {
     await checkAdapters()
 }
 if (isTRSS && (QQBotconfig && configs.QQBotsendlink || configs.sendbutton)) checkAdapters()
+Bot.on('message', async () => {
+if (isTRSS && (QQBotconfig && configs.QQBotsendlink || configs.sendbutton)) checkAdapters()
+})
