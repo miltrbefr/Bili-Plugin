@@ -37,7 +37,9 @@ export const Send = async (
       cmd: cmd,
       data: Buffer.from(data).toString("hex")
     })
-    return pb.decode(req.data)
+    let rsp = pb.decode(req.data)
+    if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
+    return rsp
   } catch (error) {
     logger.error(`sendMessage failed: ${error.message}`, error)
   }
