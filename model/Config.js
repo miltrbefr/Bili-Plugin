@@ -100,6 +100,7 @@ class Config {
                 whoisMyWifemaxMembers: 5,
                 Authorization: 'Bearer <access_token>',
                 sendbutton: true,
+                buttonType: ['0','1','3','4'],
                 QQBotsendlink: true,
             };
             this.saveConfig(this.filePath, defaultConfig);
@@ -135,6 +136,7 @@ class Config {
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
                 Authorization: currentConfig?.Authorization || 'Bearer <access_token>',
                 sendbutton: currentConfig?.sendbutton || true,
+                buttonType: currentConfig?.buttonType || ['0','1','3','4'],
                 QQBotsendlink: currentConfig?.QQBotsendlink || true,
             }
 
@@ -162,6 +164,11 @@ class Config {
         }
     }
 
+    get buttonType() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.buttonType
+    }
+    
     get QQBotsendlink() {
         if (!this.cache) this.loadConfig();
         return this.cache?.QQBotsendlink

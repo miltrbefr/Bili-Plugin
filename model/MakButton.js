@@ -1,3 +1,4 @@
+import configs from '../model/Config.js'
 import {ulid} from 'ulid'
 class Button {
     constructor() {}
@@ -58,11 +59,22 @@ class Button {
       makeButtons(button_square) {
         const msgs = []
         const random = Math.floor(Math.random() * 2)
+        const validTypes = (configs.buttonType || [])
+        .map(item => Number(item))
+        .filter(num => !isNaN(num) && Number.isInteger(num));
+        let typeIndex = 0;
+        if (validTypes.length > 0) {
+         typeIndex = Math.floor(Math.random() * validTypes.length);
+        } 
         for (const button_row of button_square) {
           let column = 0
           const buttons = []
           for (let button of button_row) {
-            let style = (random + msgs.length + buttons.length) % 2
+            let style
+            if (validTypes.length > 0) {
+                style = validTypes[typeIndex]
+                typeIndex = (typeIndex + 1) % validTypes.length
+            } else style = (random + msgs.length + buttons.length) % 2
             button = this.makeButton(button,style)
             if (button) buttons.push(button)
           }

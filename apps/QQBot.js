@@ -3,7 +3,6 @@ import fs from 'fs'
 import path from 'path'
 import { Elem } from '../model/Packet.js'
 import Make from '../model/MakButton.js'
-const isTRSS = Array.isArray(Bot.uin)
 let QQBotconfig = null
 /**
  * 动态导入模块，支持大小写不敏感的路径匹配
@@ -46,8 +45,8 @@ if (!QQBotconfig) {
 }
 
 let attempts = 0
-const maxAttempts = 100
-const delay = 100
+const maxAttempts = 200
+const delay = 200
 const checkAdapters = async () => {
     const Napcat = Bot.adapter.find(adapter => adapter.name === 'OneBotv11')
     let QQBot = Bot.adapter.find(adapter => adapter.version === 'qq-group-bot v11.45.14')
@@ -181,6 +180,37 @@ const checkAdapters = async () => {
     }
 
     const setupICQQ = (adapter) => {
+        adapter.makeButtons = function(id, pick, button_square, forward) {
+            const msgs = [];
+            const random = Math.floor(Math.random() * 2)
+            const validTypes = (configs.buttonType || [])
+                .map(item => Number(item))
+                .filter(num => !isNaN(num) && Number.isInteger(num));
+            let typeIndex = 0;
+            if (validTypes.length > 0) {
+                typeIndex = Math.floor(Math.random() * validTypes.length);
+            }
+            for (const button_row of button_square) {
+                const buttons = [];
+                for (const button of button_row) {
+                    let style
+                    if (validTypes.length > 0 && configs.sendbutton) {
+                        style = validTypes[typeIndex]
+                        typeIndex = (typeIndex + 1) % validTypes.length
+                    } else style = (random + msgs.length + buttons.length) % 2
+                    const processedButton = this.makeButton(id, pick, button, style, forward)
+                    if (processedButton) {
+                        buttons.push(processedButton)
+                    }
+                }
+                if (buttons.length > 0) {
+                    msgs.push({
+                        buttons
+                    })
+                }
+            }
+            return msgs
+        }
         adapter.sendMsg = async function(id, pick, msg, ...args) {
             const rets = {
                 message_id: [],
@@ -415,7 +445,7 @@ const checkAdapters = async () => {
     await new Promise(resolve => setTimeout(resolve, delay));
     await checkAdapters()
 }
-if (isTRSS && (QQBotconfig && configs.QQBotsendlink || configs.sendbutton)) checkAdapters()
+if (QQBotconfig && configs.QQBotsendlink || configs.sendbutton) checkAdapters()
 Bot.on('message', async () => {
-if (isTRSS && (QQBotconfig && configs.QQBotsendlink || configs.sendbutton)) checkAdapters()
+if (QQBotconfig && configs.QQBotsendlink || configs.sendbutton) checkAdapters()
 })
