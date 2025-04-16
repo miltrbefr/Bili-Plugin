@@ -184,7 +184,7 @@ function buildBasePbContent(id, isGroupMsg) {
       [isGroupMsg ? "2" : "1"]: isGroupMsg ? {
         "1": id
       } : {
-        "2": id
+        "1": id
       }
     },
     "2": {
