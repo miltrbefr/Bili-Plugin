@@ -45,6 +45,29 @@ export const Send = async (
   }
 }
 
+export const SendLong_msg = async (
+  e,
+  resid
+) => {
+  try {
+    const elem = {
+      "37": {
+        "6": 1,
+        "7": resid,
+        "17": 0,
+        "19": {
+          "15": 0,
+          "31": 0,
+          "41": 0
+        }
+      }
+    }
+    return Elem(e, elem)
+  } catch (error) {
+    logger.error(`sendMessage failed: ${error.message}`, error)
+  }
+}
+
 export const Elem = async (
   e,
   content

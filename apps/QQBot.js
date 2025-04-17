@@ -1,7 +1,7 @@
 import configs from '../model/Config.js';
 import fs from 'fs'
 import path from 'path'
-import { Elem } from '../model/Packet.js'
+import { Elem, SendLong_msg } from '../model/Packet.js'
 import Make from '../model/MakButton.js'
 let QQBotconfig = null
 /**
@@ -59,6 +59,7 @@ const checkAdapters = async () => {
             const msgs = []
             const forward = []
             const buttons = []
+            const longmsg = []
             for (let i of msg) {
                 if (typeof i !== "object")
                     i = {
@@ -86,6 +87,9 @@ const checkAdapters = async () => {
                     case "button":
                         buttons.push(i)
                         continue
+                    case "long_msg":
+                        longmsg.push(i.data.resid)
+                        continue
                     case "node":
                         forward.push(...i.data)
                         continue
@@ -99,7 +103,7 @@ const checkAdapters = async () => {
 
                 msgs.push(i)
             }
-            return [msgs, forward, buttons]
+            return [msgs, forward, buttons, longmsg]
         }
 
         adapter.sendFriendMsg = async function(data, msg) {
@@ -110,7 +114,7 @@ const checkAdapters = async () => {
                   user_id: data.user_id,
                   message,
                 })
-              }, msg => this.sendFriendForwardMsg(data, msg), msg => this.sendButton(data, msg))
+              }, msg => this.sendFriendForwardMsg(data, msg), msg => this.sendButton(data, msg), msg => this.sendlongmsg(data, msg))
         }
 
         adapter.sendGroupMsg = async function(data, msg) {
@@ -121,12 +125,25 @@ const checkAdapters = async () => {
                   group_id: data.group_id,
                   message,
                 })
-              }, msg => this.sendGroupForwardMsg(data, msg), msg => this.sendButton(data, msg))
+              }, msg => this.sendGroupForwardMsg(data, msg), msg => this.sendButton(data, msg), msg => this.sendlongmsg(data, msg))
+        }
+
+        adapter.sendlongmsg = async function(data, longmsg) {
+            if(data.isGroup) {
+                Bot.makeLog("info", `发送群聊长消息：${this.makeLog(longmsg)}`, `${data.self_id} => ${data.group_id}`, true)
+              } else {
+                Bot.makeLog("info", `发送私聊长消息：${this.makeLog(longmsg)}`, `${data.self_id} => ${data.user_id}`, true)
+              }
+            let ret = []
+             for (const i of longmsg) {
+                ret.push(await SendLong_msg(data, i))
+             }
+             return ret
         }
 
         adapter.sendButton = async function(data, buttons) {
            if(data.isGroup) {
-             Bot.makeLog("info", `发送群按钮消息：${this.makeLog(buttons)}`, `${data.self_id} => ${data.group_id}`, true)
+             Bot.makeLog("info", `发送群聊按钮消息：${this.makeLog(buttons)}`, `${data.self_id} => ${data.group_id}`, true)
            } else {
              Bot.makeLog("info", `发送私聊按钮消息：${this.makeLog(buttons)}`, `${data.self_id} => ${data.user_id}`, true)
            }
@@ -145,8 +162,8 @@ const checkAdapters = async () => {
            return Elem(data, packet)
         }
 
-        adapter.sendMsg = async function(msg, send, sendForwardMsg, sendButton) {
-            const [message, forward, buttons] = await this.makeMsg(msg)
+        adapter.sendMsg = async function(msg, send, sendForwardMsg, sendButton, sendlongmsg) {
+            const [message, forward, buttons, longmsg] = await this.makeMsg(msg)
             const ret = []
             if (forward.length) {
                 const data = await sendForwardMsg(forward)
@@ -161,10 +178,22 @@ const checkAdapters = async () => {
 
             if (buttons.length) {
                 const Z = await sendButton(buttons)
+                /*
                 if (Array.isArray(Z))
                     ret.push(...Z)
                 else
                     ret.push(Z)
+                */
+            }
+
+            if (longmsg.length) {
+                const Z = await sendlongmsg(longmsg)
+                /*
+                if (Array.isArray(Z))
+                    ret.push(...Z)
+                else
+                    ret.push(Z)
+                */
             }
             if (ret.length === 1) return ret[0]
 
