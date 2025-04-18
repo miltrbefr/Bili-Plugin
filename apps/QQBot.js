@@ -3,6 +3,8 @@ import fs from 'fs'
 import path from 'path'
 import { Elem, SendLong_msg } from '../model/Packet.js'
 import Make from '../model/MakButton.js'
+import * as Packet from '../model/Packet.js'
+if (!global.Packet) global.Packet = Packet
 let QQBotconfig = null
 /**
  * 动态导入模块，支持大小写不敏感的路径匹配
@@ -90,6 +92,9 @@ const checkAdapters = async () => {
                     case "long_msg":
                         longmsg.push(i.data.resid)
                         continue
+                    case "json":
+                        i.data.data = JSON.stringify(i.data)
+                        break
                     case "node":
                         forward.push(...i.data)
                         continue

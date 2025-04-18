@@ -43,10 +43,6 @@ export class Bilitask extends plugin {
                 name: '[Bili-Plugin]幸运字符',
                 fnc: () => this.autolukyword()
             }, {
-                cron: '0 1/20 * * * ?',
-                name: '[Bili-Plugin]自动检测更新',
-                fnc: () => this.update()
-            }, {
                 cron: config.festivalpush,
                 name: '[Bili-Plugin]自动节日推送',
                 fnc: () => this.autofestival()
@@ -106,14 +102,6 @@ export class Bilitask extends plugin {
                 await Bot[Bot.uin].pickGroup(g).sendMsg(message)
             }
         await Bili.sleep(2500)
-        }
-    }
-
-    async update(e = this.e) {
-        const action = await Bili.isUpdate()
-        if (action) {
-            await Bili.execSync(`cd ${pluginRoot} && git pull`)
-            await Bili.restart()
         }
     }
 
