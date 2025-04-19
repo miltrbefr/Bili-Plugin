@@ -317,13 +317,13 @@ export class Help extends plugin {
                     title: '小功能帮助',
                     desc: '看看有什么小功能吧'
                 }, {
-                    icon: 79,
-                    title: '<腾讯/作业/二号>图床',
-                    desc: '获取图床链接'
-                }, {
                     icon: 88,
                     title: '按钮发送',
-                    desc: '搞鸡功能'
+                    desc: '快去给天如点star'
+                }, {
+                    icon: 99,
+                    title: 'HDTianRu/Packet-plugin',
+                    desc: '快去点star！！！'
                 }]
             }
         ]
