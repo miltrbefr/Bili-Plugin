@@ -1,9 +1,7 @@
-import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
-import config from '../model/Config.js';
-
+import { Config as config, Bili as Bili} from "#model"
 export class Biliuserlive extends plugin {
     constructor() {
         super({

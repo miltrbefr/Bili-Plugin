@@ -1,5 +1,4 @@
-import Bili from '../model/bili.js';
-
+import { Bili as Bili} from "#model"
 export class Bilimiyocode extends plugin {
     constructor() {
         super({

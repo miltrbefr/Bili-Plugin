@@ -1,10 +1,8 @@
+import { Config as config, Button as Button, BAPI as BApi} from "#model"
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
-import config from '../model/Config.js';
-import BApi from '../model/BAPI/BAPI.js';
-import Button from '../model/Buttons.js';
 
 const signApi = config.signApi
 const loginapi = config.loginApi

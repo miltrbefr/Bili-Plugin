@@ -1,9 +1,10 @@
 {
   "name": "bili-plugin",
-  "version": "2.2.1",
+  "version": "2.2.3",
   "type": "module",
   "main": "index.js",
   "author": "NenNen_CN",
+  "Contributor": [1677979616,1514664085,3374625944],
   "license": "MIT",
   "dependencies": {
     "ws": "^8.16.0",
@@ -16,5 +17,8 @@
     "ulid": "^3.0.0",
     "zlib": "^1.0.5",
     "form-data": "^4.0.1"
+  },
+  "imports": {
+    "#model": "./model/index.js"
   }
 }

@@ -1,5 +1,4 @@
-import config from '../model/Config.js';
-import Bili from '../model/bili.js';
+import { Bili as Bili, Config as config} from "#model"
 import fs from 'fs';
 import path from 'path';
 
@@ -40,7 +39,7 @@ export class Bilijx extends plugin {
                 await handler.call(this, e, result.data);
             }
         } catch (error) {
-            logger.info('[Bili-Plugin] 解析出错:', error);
+            logger.error('[Bili-Plugin] 解析出错:', error);
         }
     }
 

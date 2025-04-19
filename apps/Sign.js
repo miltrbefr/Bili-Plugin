@@ -1,9 +1,6 @@
-import Bili from '../model/bili.js';
 import fs from 'fs';
 import path from 'path';
-import config from '../model/Config.js';
-import Button from '../model/Buttons.js';
-
+import { Config as config, Button as Button, Bili as Bili} from "#model"
 export class Bilisign extends plugin {
     constructor() {
         super({
@@ -63,18 +60,18 @@ export class Bilisign extends plugin {
                 redis.del(`bili:alsign:${userId}`)
             }
             if (await redis.get(`bili:alsign:${userId}`)) {
-                logger.warn(`[Bili-Plugin]哔站账号${userId}今日已签到`)
-                await this.e.reply([`哔站账号${userId}今日已签到, 需要重新签到请发送<哔站重新签到>，获取签到记录发送<哔站签到记录>`])
+                logger.warn(`[B站自动签到][QQ: ${e.user_id} 账号：${userId}] 今日已签`);
+                await this.e.reply([`[QQ: ${e.user_id} 账号：${userId}] 今日已签\n查看签到记录请发送<B站签到记录>`])
                 await Bili.sleep(2000)
                 continue
             }
 
-            let replyMessage = `账号${userId}的本次哔站签到结果\n===========================\n`;
+            let replyMessage = `[B站签到]🌸QQ: ${e.user_id} 账号：${userId} \n===========================\n`;
             const r = await Bili.checkcookies(userCookies)
             if (r.code !== 0) {
                 delete cookiesData[userId];
                 fs.writeFileSync(cookiesFilePath, JSON.stringify(cookiesData, null, 2))
-                logger.warn(`[Bili-PLUGIN(已成功删除过期文件)]B站签到QQ(${fileName})的账号${userId}的Cookie已过期...`)
+                logger.warn(`[B站签到][QQ: ${fileName} 账号：${userId}] Cookie已过期...`)
                 await this.e.reply([`B站账号${userId}的Cookie已过期, 请发送【哔站登录】重新进行绑定...`, new Button().bind()])
                 continue
             }
@@ -206,8 +203,8 @@ export class Bilisign extends plugin {
             }
             issign = true
         }
-        const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
-        e.reply([forwardMessage, new Button().help()]);
+        const forwardMessage = await Bot.makeForwardMsg(forwardNodes)
+        if (issign) e.reply([forwardMessage, new Button().help()])
         const tempDirPath = path.join('./data/bilisign');
         if (!fs.existsSync(tempDirPath)) {
             fs.mkdirSync(tempDirPath, {

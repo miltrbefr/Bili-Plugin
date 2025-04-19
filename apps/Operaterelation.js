@@ -1,8 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import Bili from '../model/bili.js';
-import Button from '../model/Buttons.js'
-export class BiliAccount extends plugin {
+import { Bili as Bili, Button as Button} from "#model"
+export class Bilirelate extends plugin {
     constructor() {
         super({
             name: "Bili:快捷操作用户关系",

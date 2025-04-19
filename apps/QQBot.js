@@ -1,9 +1,7 @@
 import configs from '../model/Config.js';
 import fs from 'fs'
 import path from 'path'
-import { Elem, SendLong_msg } from '../model/Packet.js'
-import Make from '../model/MakButton.js'
-import * as Packet from '../model/Packet.js'
+import { MakButton as Make, Packet } from "#model"
 if (!global.Packet) global.Packet = Packet
 let QQBotconfig = null
 /**
@@ -141,7 +139,7 @@ const checkAdapters = async () => {
               }
             let ret = []
              for (const i of longmsg) {
-                ret.push(await SendLong_msg(data, i))
+                ret.push(await Packet.SendLong_msg(data, i))
              }
              return ret
         }
@@ -164,7 +162,7 @@ const checkAdapters = async () => {
                rows: Make.makeButtons(buttonData)
            }
            const packet = Make.button(raw)
-           return Elem(data, packet)
+           return Packet.Elem(data, packet)
         }
 
         adapter.sendMsg = async function(msg, send, sendForwardMsg, sendButton, sendlongmsg) {

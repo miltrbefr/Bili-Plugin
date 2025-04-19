@@ -1,4 +1,4 @@
-import Bili from '../model/bili.js';
+import { Bili as Bili} from "#model"
 import fs from 'fs';
 import path from 'path';
 
@@ -8,7 +8,7 @@ export class BiliSearch extends plugin {
             name: "Bili:查询UP",
             desc: "简单的查询",
             event: "message",
-            priority: 1677,
+            priority: Number.MIN_SAFE_INTEGER,
             rule: [{
                 reg: /^#?查询up(.*)/mi,
                 fnc: "Searchup"

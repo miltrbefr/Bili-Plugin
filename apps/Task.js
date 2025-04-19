@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import config from '../model/Config.js';
-import Bili from '../model/bili.js';
+import { Config as config, Bili as Bili} from "#model"
 import moment from 'moment';
 import common from '../../../lib/common/common.js'
 import {pluginRoot} from '../model/constant.js';
@@ -42,7 +41,11 @@ export class Bilitask extends plugin {
                 cron: config.luckywordcron,
                 name: '[Bili-Plugin]幸运字符',
                 fnc: () => this.autolukyword()
-            }, {
+            }, /*{
+                cron: '0 1/20 * * * ?',
+                name: '[Bili-Plugin]自动检测更新',
+                fnc: () => this.update()
+            },*/ {
                 cron: config.festivalpush,
                 name: '[Bili-Plugin]自动节日推送',
                 fnc: () => this.autofestival()
@@ -104,7 +107,15 @@ export class Bilitask extends plugin {
         await Bili.sleep(2500)
         }
     }
-
+/*
+    async update(e = this.e) {
+        const action = await Bili.isUpdate()
+        if (action) {
+            await Bili.execSync(`cd ${pluginRoot} && git pull`)
+            await Bili.restart()
+        }
+    }
+*/
     async autolukyword(e) {
         const configs = await Bili.loadConfig(filePath);
         const rawIsluckywordBots = (await Bili.getConfig("isluckywordBots", configs)) || [];
@@ -282,7 +293,7 @@ export class Bilitask extends plugin {
             });
 
             try {
-                const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
+                const forwardMessage = await Bot.makeForwardMsg(forwardNodes)
                 if (this.e) {
                     await this.e.reply(forwardMessage, false);
                 } else {

@@ -1,8 +1,7 @@
-import Bili from '../model/bili.js';
+import { Bili as Bili, Config as config} from "#model"
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
-import config from '../model/Config.js';
 import common from '../../../lib/common/common.js'
 
 export class Biliallsign extends plugin {
@@ -96,7 +95,8 @@ export class Biliallsign extends plugin {
             }
             let signedCount = 0,
                 signskipCount = 0,
-                overdueCount = 0;
+                overdueCount = 0,
+                count = 0;
             for (const file of files) {
                 const cookiesFilePath = path.join(cookiesDirPath, file);
                 const fileName = path.basename(file, '.json')
@@ -109,26 +109,26 @@ export class Biliallsign extends plugin {
                 for (const userId in cookiesData) {
                     try {
                         if (await redis.get(`bili:alsign:${userId}`)) {
-                            logger.warn(`[Bili-Plugin]哔站账号${userId}今日已签到`);
+                            logger.warn(`[B站自动签到][QQ: ${fileName} 账号：${userId}] 今日已签`);
                             signskipCount++;
                             continue;
                         }
-
-                        logger.mark(`[Bili-Plugin]开始${fileName}的哔站签到账号${userId}执行签到`);
+                        count++
+                        logger.mark(`[B站自动签到][QQ: ${fileName} 账号：${userId}][第${count + 1}个]`);
                         const userCookies = cookiesData[userId];
-                        let replyMessage = `🌸账号${userId}的本次哔站签到结果\n===========================\n`;
+                        let replyMessage = `[B站签到]🌸QQ: ${fileName} 账号：${userId} \n===========================\n`;
                         const r = await Bili.checkcookies(userCookies)
                         if(r.code !== 0) {
                            delete cookiesData[userId];
                            fs.writeFileSync(cookiesFilePath, JSON.stringify(cookiesData, null, 2))
-                           logger.warn(`[Bili-PLUGIN(已成功删除过期文件)]B站签到QQ(${fileName})的账号${userId}的Cookie已过期...`)
+                           logger.warn(`[B站自动签到][QQ: ${fileName} 账号：${userId}] Cookie已过期...`)
                            overdueCount++
                            continue
                         }
 
                         const videoData = await Bili.getFeed(userCookies).catch(err => {
                             logger.error(`[Bili-Plugin]获取视频失败: ${err}`);
-                            return [];
+                            return []
                         })
                         for (let i = 0; i < videoData.length; i++) {
                             const video = videoData[i];
@@ -276,7 +276,6 @@ export class Biliallsign extends plugin {
                  logger.error('不必要的错误，可以忽略',error)
                 }
             }
-
         } catch (err) {
             logger.error(`[Bili-Plugin]签到任务异常终止: ${err}`);
             await redis.del('bili:autosign:task');

@@ -1,7 +1,6 @@
 import fs from 'fs';
-import path from 'path';
-import Bili from '../model/bili.js';
-
+import path from 'path'
+import { Bili as Bili} from "#model"
 export class BiliAccount extends plugin {
     constructor() {
         super({

@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import config from '../model/Config.js';
-
+import { Config as config} from "#model"
 export class Bililog extends plugin {
     constructor() {
         super({

@@ -1,10 +1,9 @@
 import cfg from '../../../lib/config/config.js'
 import moment from "moment"
-import config from '../model/Config.js';
-import Button from '../model/Buttons.js';
-const cdTime = config.whoisMyWifecdTime
-const cacheTime = config.whoisMyWifecacheTime
-const maxMembers = config.whoisMyWifemaxMembers
+import { Config as config, Button as Button} from "#model"
+const cdTime = config.whoisMyWifecdTime // 5分钟冷却(主人除外)
+const cacheTime = config.whoisMyWifecacheTime // 60分钟缓存(群友信息)
+const maxMembers = config.whoisMyWifemaxMembers // 选择5个群友(影响每次成功率)
 const expression = /^(我(老婆|老公)呢|今日(老婆|老公))$/
 
 export class Biliwife extends plugin {

@@ -1,9 +1,8 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import Render from '../model/renders.js';
 import {style} from '../resources/help/imgs/config.js';
-import config from '../model/Config.js';
 import _ from 'lodash';
-import Button from '../model/Buttons.js'
+import { Config as config, Button as Button} from "#model"
 
 export class Help extends plugin {
     constructor() {
@@ -15,11 +14,6 @@ export class Help extends plugin {
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)(站|瞻|蘸|占|战|斩|展|沾|栈|湛)(功能|菜单|帮助|指令|help)$',
                     fnc: "allHelp"
                 },
-                /*{
-                    reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?野收官发(功能|菜单|帮助|指令|help)$',
-                    fnc: "QQBotHelp",
-                    permission: 'master'
-                },*/
                 {
                     reg: '^#?(B|b|币|逼|比|🖊|毕|哔|必|壁)?(站|瞻|蘸|占|战|斩|展|沾|栈|湛)?视频(操作)?(功能|菜单|帮助|指令|help)$',
                     fnc: "videoHelp"
@@ -90,6 +84,11 @@ export class Help extends plugin {
                         icon: 39,
                         title: '我(老婆/老公)呢',
                         desc: '娶群友小功能'
+                    },
+                    {
+                        icon: 56,
+                        title: '(全部)功能统计',
+                        desc: '统计所有插件使用情况'
                     }
                 ]
             }
@@ -208,7 +207,6 @@ export class Help extends plugin {
         return  e.reply([image,new Button().help()])
     }
 
-
     async allHelp(e) {
         const helpCfg = {
             "themeSet": false,
@@ -319,9 +317,13 @@ export class Help extends plugin {
                     title: '小功能帮助',
                     desc: '看看有什么小功能吧'
                 }, {
+                    icon: 79,
+                    title: '<腾讯/作业/二号>图床',
+                    desc: '获取图床链接'
+                }, {
                     icon: 88,
                     title: '按钮发送',
-                    desc: '致谢 HDTianRu/Packet-plugin 快去给他点 star ！！'
+                    desc: '搞鸡功能'
                 }]
             }
         ]

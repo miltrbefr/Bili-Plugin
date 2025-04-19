@@ -1,9 +1,8 @@
-import Bili from '../model/bili.js';
+import { Bili as Bili, Button as Button} from "#model"
 import fs from 'fs';
 import path from 'path';
 import Render from '../model/renders.js';
 import {pluginResources} from '../model/constant.js';
-import Button from '../model/Buttons.js';
 
 export class Biliinfo extends plugin {
     constructor() {

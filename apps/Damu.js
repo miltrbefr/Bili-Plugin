@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import Bili from '../model/bili.js';
+import { Bili as Bili} from "#model"
 
 export class Bilidamu extends plugin {
   constructor() {
