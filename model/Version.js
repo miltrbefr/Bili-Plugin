@@ -7,7 +7,7 @@ const isMiao = packageJson.name === 'miao-yunzai'
 const isTrss = !!Array.isArray(Bot.uin)
 let currentVersion = packageJsons.version
 let author = packageJsons.author
-let Contributor = packageJsons.Contributor
+let Contributor = Array.isArray(packageJsons.Contributor) ? [...packageJsons.Contributor] : [packageJsons.Contributor]
 let Version = {
   isMiao,
   isTrss,
