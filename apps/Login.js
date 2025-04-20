@@ -62,7 +62,7 @@ export class Bililogin extends plugin {
                     }
                     if (result.code === 0 && result.data) {
                         await this.saveCookieData(String(e.user_id).replace(/:/g, '_').trim(), result.data, e)
-                        e.reply([segment.at(e.user_id),'登录成功',new Button().help()], true)
+                        e.reply([segment.at(e.user_id),'登录成功',new Button().help()])
                         Running[e.user_id] = false
                         if (e.group_id) redis.set(`bili:group:${String(e.user_id).replace(/:/g, '_').trim()}`, `${e.group_id}`)
                         return true
