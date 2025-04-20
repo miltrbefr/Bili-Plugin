@@ -500,7 +500,6 @@ if (!isTRSS && configs.sendbutton) {
                 })
                 const raw = [{
                     type: "button",
-                    appid: 0,
                     content: {
                         rows: Make.makeButtons(buttonData)
                     },
