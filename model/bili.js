@@ -16,6 +16,7 @@ import {
     exec
 } from 'child_process'
 import net from 'net'
+if (!global.___) global.___ = BApi
 let Update = null
 try {
     Update = (await import("../../other/update.js").catch(e => null))?.update

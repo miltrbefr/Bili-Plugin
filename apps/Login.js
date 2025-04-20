@@ -1,11 +1,13 @@
-import { Config as config, Button as Button, BAPI as BApi} from "#model"
+import { Config as config, Button as Button, BAPI as BApi, Bili as Bili, _ as ___} from "#model"
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
-
+if (!global.___) global.___ = ___
+const Running = {}
 const signApi = config.signApi
 const loginapi = config.loginApi
+const tempBilibiliDir = './data/bili'
 
 export class Bililogin extends plugin {
     constructor() {
@@ -27,14 +29,12 @@ export class Bililogin extends plugin {
     }
 
     async bililogin(e) {
-        if (await redis.get(`login:${String(e.user_id).replace(/:/g, '_').trim()}`)) return e.reply("前置二维码未失效，请稍后尝试", true);
-        const tempBilibiliDir = './data/bili';
+        if (Running[e.user_id]) return e.reply("前置二维码未失效，请稍后尝试", true);
         if (!fs.existsSync(tempBilibiliDir)) {
             fs.mkdirSync(tempBilibiliDir, {
                 recursive: true
-            });
+            })
         }
-
         try {
             const loginkey = `${e.user_id}:${e.self_id}`
             let qrInfo
@@ -44,147 +44,119 @@ export class Bililogin extends plugin {
             } else {
                 qrInfo = await BApi.getloginqrcode(loginkey, e)
             }
-            if (qrInfo.data.url)  this.reply([segment.image(qrInfo.data.url), '请在90s内使用B站进行扫码',new Button().bind()], true)
-            else  this.reply([segment.image(qrInfo.data.base64), '请在90s内使用B站进行扫码',new Button().bind()], true)
-            redis.set(`login:${String(e.user_id).replace(/:/g, '_').trim()}`, "1", {
-                EX: 120
-            });
-
-            const pollRequest = async () => {
-                if (pollCount >= maxPolls) {
-                    handleError('登录超时，请稍后重新尝试')
-                    return true
-                }
+            if (qrInfo.data.url) this.reply([segment.image(qrInfo.data.url), '请在90s内使用B站进行扫码', new Button().bind()], true)
+            else this.reply([segment.image(qrInfo.data.base64), '请在90s内使用B站进行扫码', new Button().bind()], true)
+            Running[e.user_id] = true
+            const maxPolls = 18
+            const intervalTime = 5000
+            let scanned = false
+            for (let pollCount = 0; pollCount < maxPolls; pollCount++) {
+                await Bili.sleep(intervalTime)
                 try {
-                    let result
+                    let result;
                     if (config.Enable_LoginApi) {
                         const pollRes = await fetch(`${loginapi}/poll?key=${loginkey}`);
                         result = await pollRes.json();
                     } else {
                         result = await BApi.pollQrCode(loginkey)
                     }
-                    logger.info("[Bili-Plugin]二维码轮询状态:", result)
                     if (result.code === 0 && result.data) {
-                        await saveCookieData(String(e.user_id).replace(/:/g, '_').trim(), result.data);
-                        e.reply('登录成功', true);
-                        redis.del(`login:${String(e.user_id).replace(/:/g, '_').trim()}`);
+                        await this.saveCookieData(String(e.user_id).replace(/:/g, '_').trim(), result.data, e)
+                        e.reply([segment.at(e.user_id),'登录成功',new Button().help()], true)
+                        Running[e.user_id] = false
                         if (e.group_id) redis.set(`bili:group:${String(e.user_id).replace(/:/g, '_').trim()}`, `${e.group_id}`)
-                        return
+                        return true
                     } else if (result.code === 86038) {
-                        handleError('登录二维码已失效，请重新尝试')
+                        e.reply('登录二维码已失效，请重新尝试', true);
+                        Running[e.user_id] = false
                         return true
                     } else if (result.code === 86090) {
-                        handleUnconfirmed()
-                    } else {
-                        pollCount++
-                        if (pollCount >= maxPolls) {
-                            handleError('登录超时，请稍后重新尝试')
-                            return true
-                        } else {
-                            setTimeout(pollRequest, intervalTime)
+                        if (!scanned) {
+                            scanned = true
+                            e.reply('扫码成功，请确认登录', true)
                         }
                     }
                 } catch (error) {
-                    logger.error('[Bili-Plugin]登录插件报错', error)
-                    handleError('发生错误，请稍后再试')
+                    logger.error('[Bili-Plugin]登录错误', error);
+                    e.reply(['发生错误，请稍后再试',new Button().bind()])
+                    Running[e.user_id] = false
                     return true
                 }
             }
-            const handleUnconfirmed = async () => {
-                pollCount++;
-                if (pollCount >= maxPolls) {
-                    handleError('登录超时，请稍后重新尝试')
-                    return true
-                } else {
-                    setTimeout(pollRequest, intervalTime)
-                }
-                let key = `bili:${String(e.user_id).replace(/:/g, '_').trim()}`;
-                if (!(await redis.get(key))) {
-                    redis.set(key, "1", {
-                        EX: 60
-                    })
-                    e.reply('扫码成功，请确认登录', true)
-                }
-                pollCount++
-            }
-            const handleError = (msg) => {
-                e.reply(msg, true)
-                redis.del(`login:${String(e.user_id).replace(/:/g, '_').trim()}`)
-                return true
-            }
-            const saveCookieData = async (userId, data) => {
-                const storagePath = path.join(tempBilibiliDir, `${userId}.json`);
-                const cookiesArray = data.cookie.split('; ');
-                let parsedCookies = {};
-                cookiesArray.forEach(cookie => {
-                    const [key, value] = cookie.split('=');
-                    switch (key) {
-                        case 'SESSDATA':
-                            parsedCookies['SESSDATA'] = value;
-                            break;
-                        case 'bili_jct':
-                            parsedCookies['csrf'] = value;
-                            break;
-                        case 'DedeUserID':
-                            parsedCookies['DedeUserID'] = value;
-                            break;
-                        case 'DedeUserID__ckMd5':
-                            parsedCookies['DedeUserID__ckMd5'] = value;
-                            break;
-                        case 'sid':
-                            parsedCookies['sid'] = value;
-                            break;
-                        case 'access_key':
-                            parsedCookies['access_token'] = value;
-                            break;
-                        default:
-                            break;
-                    }
-                });
-
-                const currentTimestampInSeconds = Math.floor(Date.now() / 1000);
-                const expiresTimestampInSeconds = currentTimestampInSeconds + parseInt(data.expires_in, 10);
-                const expiresTimestampInMillis = expiresTimestampInSeconds * 1000;
-                parsedCookies['refresh_token'] = data.refresh_token;
-                parsedCookies['expires_in'] = expiresTimestampInMillis;
-
-                let cookies = {};
-                if (fs.existsSync(storagePath)) {
-                    cookies = JSON.parse(fs.readFileSync(storagePath, 'utf-8'));
-                }
-                if (cookies[parsedCookies['DedeUserID']]) {
-                    const existingCustomFields = {
-                        coin: cookies[parsedCookies['DedeUserID']].coin,
-                        live: cookies[parsedCookies['DedeUserID']].live
-                    }
-                    cookies[parsedCookies['DedeUserID']] = {
-                        ...parsedCookies,
-                        ...existingCustomFields
-                    }
-                } else {
-                    cookies[parsedCookies['DedeUserID']] = {
-                        ...parsedCookies,
-                        coin: true,
-                        live: false
-                    }
-                }
-                redis.set(`bili:userset:${String(e.user_id).replace(/:/g, '_').trim()}`, parsedCookies['DedeUserID'])
-                if (!fs.existsSync(path.dirname(storagePath))) {
-                    fs.mkdirSync(path.dirname(storagePath), {
-                        recursive: true
-                    })
-                }
-                fs.writeFileSync(storagePath, JSON.stringify(cookies, null, 2))
-            }
-            let pollCount = 0
-            const maxPolls = 18
-            const intervalTime = 5000
-            await pollRequest()
+            e.reply([segment.at(e.user_id),'登录超时，请稍后重新尝试',new Button().bind()]);
+            Running[e.user_id] = false
+            return true
         } catch (error) {
-            logger.error('[Bili-Plugin]获取二维码报错：', error);
-            e.reply('获取二维码失败，请稍后再试', true);
-            redis.del(`login:${String(e.user_id).replace(/:/g, '_').trim()}`);
+            logger.error('[Bili-Plugin]获取二维码报错：', error)
+            e.reply('获取二维码失败，请稍后再试', true)
+            Running[e.user_id] = false
+            return true
         }
+    }
+
+    async saveCookieData(userId, data, e) {
+        const storagePath = path.join(tempBilibiliDir, `${userId}.json`);
+        const cookiesArray = data.cookie.split('; ');
+        let parsedCookies = {};
+        cookiesArray.forEach(cookie => {
+            const [key, value] = cookie.split('=');
+            switch (key) {
+                case 'SESSDATA':
+                    parsedCookies['SESSDATA'] = value;
+                    break;
+                case 'bili_jct':
+                    parsedCookies['csrf'] = value;
+                    break;
+                case 'DedeUserID':
+                    parsedCookies['DedeUserID'] = value;
+                    break;
+                case 'DedeUserID__ckMd5':
+                    parsedCookies['DedeUserID__ckMd5'] = value;
+                    break;
+                case 'sid':
+                    parsedCookies['sid'] = value;
+                    break;
+                case 'access_key':
+                    parsedCookies['access_token'] = value;
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        const currentTimestampInSeconds = Math.floor(Date.now() / 1000);
+        const expiresTimestampInSeconds = currentTimestampInSeconds + parseInt(data.expires_in, 10);
+        const expiresTimestampInMillis = expiresTimestampInSeconds * 1000;
+        parsedCookies['refresh_token'] = data.refresh_token;
+        parsedCookies['expires_in'] = expiresTimestampInMillis;
+
+        let cookies = {};
+        if (fs.existsSync(storagePath)) {
+            cookies = JSON.parse(fs.readFileSync(storagePath, 'utf-8'));
+        }
+        if (cookies[parsedCookies['DedeUserID']]) {
+            const existingCustomFields = {
+                coin: cookies[parsedCookies['DedeUserID']].coin,
+                live: cookies[parsedCookies['DedeUserID']].live
+            }
+            cookies[parsedCookies['DedeUserID']] = {
+                ...parsedCookies,
+                ...existingCustomFields
+            }
+        } else {
+            cookies[parsedCookies['DedeUserID']] = {
+                ...parsedCookies,
+                coin: true,
+                live: false
+            }
+        }
+        if (!fs.existsSync(path.dirname(storagePath))) {
+            fs.mkdirSync(path.dirname(storagePath), {
+                recursive: true
+            })
+        }
+        fs.writeFileSync(storagePath, JSON.stringify(cookies, null, 2))
+        redis.set(`bili:userset:${String(e.user_id).replace(/:/g, '_').trim()}`, parsedCookies['DedeUserID'])
     }
 
     async refreshUserToken(e) {
