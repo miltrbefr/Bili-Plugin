@@ -509,7 +509,7 @@ if (!isTRSS && configs.sendbutton) {
                 modifiedReply(raw, false, data)
                 return ret
             }
-            return ret
+            return modifiedReply(msg, quote, data)
         }
     }
 }
