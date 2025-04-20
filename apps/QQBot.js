@@ -1,7 +1,7 @@
 import configs from '../model/Config.js';
 import fs from 'fs'
 import path from 'path'
-import { MakButton as Make, Packet } from "#model"
+import { MakButton as Make, Packet, loader as PluginLoader} from "#model"
 if (!global.Packet) global.Packet = Packet
 let QQBotconfig = null
 /**
@@ -481,3 +481,35 @@ if (QQBotconfig && configs.QQBotsendlink || configs.sendbutton) checkAdapters()
 Bot.on('message', async () => {
 if (QQBotconfig && configs.QQBotsendlink || configs.sendbutton) checkAdapters()
 })
+const isTRSS = Array.isArray(Bot.uin)
+if (!isTRSS && configs.sendbutton) {
+    const originalLoaderReply = PluginLoader.reply
+    PluginLoader.reply = function(e) {
+        originalLoaderReply.call(this, e)
+        const modifiedReply = e.reply
+        e.reply = async (msg = "", quote = false, data = {}) => {
+            const buttons = (Array.isArray(msg) ? msg : [msg]).filter(i => i.type == "button")
+            if (buttons.length > 0) {
+                const buttonData = []
+                buttons.forEach(button => {
+                  if (Array.isArray(button.data[0])) {
+                    buttonData.push(...button.data)
+                  } else {
+                    buttonData.push(button.data)
+                  }
+                })
+                const raw =  {
+                    type: "button",
+                    appid: 0,
+                    content: {
+                        rows: Make.makeButtons(buttonData)
+                    },
+                }
+                const ret = await modifiedReply(msg, quote, data)
+                modifiedReply(raw, false, data)
+                return ret
+            }
+            return ret
+        }
+    }
+}
