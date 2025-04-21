@@ -102,6 +102,7 @@ class Config {
                 sendbutton: true,
                 buttonType: ['0','1','3','4'],
                 QQBotsendlink: true,
+                Napsendtext: false,
             };
             this.saveConfig(this.filePath, defaultConfig);
         } else {
@@ -138,6 +139,7 @@ class Config {
                 sendbutton: currentConfig?.sendbutton || true,
                 buttonType: currentConfig?.buttonType || ['0','1','3','4'],
                 QQBotsendlink: currentConfig?.QQBotsendlink || true,
+                Napsendtext: currentConfig?.Napsendtext || false,
             }
 
             let needsUpdate = false;
@@ -162,6 +164,11 @@ class Config {
         } catch (error) {
             logger.error(`[BILI PLUGIN] 配置加载失败: ${error}`);
         }
+    }
+
+    get Napsendtext() {
+        if (!this.cache) this.loadConfig()
+        return this.cache?.Napsendtext
     }
 
     get buttonType() {
