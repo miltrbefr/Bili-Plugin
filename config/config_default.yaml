@@ -62,3 +62,7 @@ buttonType: ['0','1','3','4']
 QQBotsendlink: true
 #是否开启Nap的娱乐功能，每条文本消息自带99+的回应
 Napsendtext: false
+#是否开启ICQQ的娱乐功能，每条文本消息自带99+的回应
+ICQQsendfacetext: false
+#表情id，自己尝试
+faceids: []

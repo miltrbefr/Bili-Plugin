@@ -32,14 +32,21 @@ export const Send = async (
   content
 ) => {
   try {
-    const data = encode(typeof content === 'object' ? content : JSON.parse(content))
-    const req = await e.bot.sendApi('send_packet', {
-      cmd: cmd,
-      data: Buffer.from(data).toString("hex")
-    })
-    let rsp = pb.decode(req.data)
-    if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
-    return rsp
+    if (e.bot?.adapter?.name === 'OneBotv11') {
+      const data = encode(typeof content === 'object' ? content : JSON.parse(content))
+      const req = await e.bot.sendApi('send_packet', {
+        cmd: cmd,
+        data: Buffer.from(data).toString("hex")
+      })
+      let rsp = pb.decode(req.data)
+      if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
+      return rsp
+    } else {
+      const payload = await e.bot.sdk.sendUni(cmd, e.bot.icqq.core.pb.encode(content))
+      const rsp = e.bot.icqq.core.pb.decode(payload)
+      if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
+      return rsp
+    }
   } catch (error) {
     logger.error(`sendMessage failed: ${error.message}`, error)
   }
