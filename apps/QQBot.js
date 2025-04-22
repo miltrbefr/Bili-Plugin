@@ -509,7 +509,7 @@ if (isTRSS && (configs.Napsendtext || configs.ICQQsendfacetext)) {
         originalLoaderReply.call(this, e)
         const modifiedReply = e.reply
         e.reply = async (msg = "", quote = false, data = {}) => {
-            if ((configs.Napsendtext && e.bot?.adapter?.name === 'OneBotv11') || (configs.ICQQsendfacetext && e.bot?.adapter?.name === 'ICQQ')) {
+            if (e.group_id && (configs.Napsendtext && e.bot?.adapter?.name === 'OneBotv11') || (configs.ICQQsendfacetext && e.bot?.adapter?.name === 'ICQQ')) {
                 let msgArray = Array.isArray(msg) ? [...msg] : [msg]
                 const hasContent = msgArray.every(item => {
                     const type = item?.type;
