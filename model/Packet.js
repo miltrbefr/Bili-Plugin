@@ -51,7 +51,7 @@ export const Send = async (
       return rsp
     } else {
       ret = Array.from(data)
-      const payload = await e.bot.sendUni(cmd, ret)
+      const payload = await Bot.sendUni(cmd, ret)
       const rsp = pb.decode(payload)
       if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
       return rsp
