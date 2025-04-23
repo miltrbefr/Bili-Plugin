@@ -545,33 +545,4 @@ if (isTRSS && (configs.Napsendtext || configs.ICQQsendfacetext)) {
             return modifiedReply(msg, quote, data)
         }
     }
-} else {
-    const originalLoaderReply = PluginLoader.reply
-    PluginLoader.reply = function(e) {
-        originalLoaderReply.call(this, e)
-        const modifiedReply = e.reply
-        e.reply = async (msg = "", quote = false, data = {}) => {
-            if (configs.sendbutton) {
-                const buttons = (Array.isArray(msg) ? msg : [msg]).filter(i => i.type == "button")
-                if (buttons.length > 0) {
-                    const buttonData = []
-                    buttons.forEach(button => {
-                      if (Array.isArray(button.data[0])) {
-                        buttonData.push(...button.data)
-                      } else {
-                        buttonData.push(button.data)
-                      }
-                    })
-                    const data = {
-                      rows: Make.makeButtons(buttonData)
-                    }
-                    const packet = Make.button(data)
-                    let rep = await modifiedReply(msg, quote, data)
-                    await Packet.Elem(e, packet)
-                    return rep
-                }
-            }
-            return modifiedReply(msg, quote, data)
-        }
-    }
 }

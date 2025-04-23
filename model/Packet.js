@@ -49,12 +49,6 @@ export const Send = async (
       const rsp = pb.decode(payload)
       if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
       return rsp
-    } else {
-      let core = await import("icqq")
-      const payload = await Bot.sendUni(cmd, core.pb.encode(data))
-      const rsp = pb.decode(payload)
-      if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
-      return rsp
     }
   } catch (error) {
     logger.error(`sendMessage failed: ${error.message}`, error)
