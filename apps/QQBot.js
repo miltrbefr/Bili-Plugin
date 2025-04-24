@@ -325,7 +325,7 @@ const checkAdapters = async () => {
                 }
                 return rets.data.length === 1 ? rets.data[0] : rets
             } catch (error) {
-                Bot.makeLog("error", ["消息发送错误", messages, error], id)
+                Bot.makeLog("error", ["消息发送错误", msg, error], id)
                 rets.error.push(error)
                 return rets
             }
