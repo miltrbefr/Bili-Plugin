@@ -6,7 +6,7 @@ import common from '../../../lib/common/common.js'
 import {pluginRoot} from '../model/constant.js';
 
 const filePath = `${pluginRoot}/config/config.yaml`
-
+let livesendtask = false
 
 export class Bilitask extends plugin {
     constructor() {
