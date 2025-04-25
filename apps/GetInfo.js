@@ -27,7 +27,7 @@ export class Biliinfo extends plugin {
                 qqNumbers.push(msg.qq);
             }
         }
-        if (qqNumbers.length > 0) {
+        if (qqNumbers.length > 0 && !e?.msg?.includes("我")) {
             userID = String(qqNumbers[0])
         }
         if (userID === selfID) userID = e.user_id

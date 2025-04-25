@@ -359,7 +359,7 @@ class BApi {
             };
             return this._fetchRequest({
                 url: CONSTANTS.userinfoApiUrl,
-                method: 'POST',
+                method: 'GET',
                 params,
               })
     }
