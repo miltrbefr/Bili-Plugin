@@ -965,24 +965,22 @@ class Bili {
 
     async checkcookies(userCookies) {
         try {
-            const getInfoUrl = `https://member.bilibili.com/x2/creative/h5/calendar/event?ts=0&access_key=${userCookies.access_token}`
-            let response = await fetch(getInfoUrl)
-            let apiResponse = await response.json()
-            if (apiResponse.code !== 0) {
+            let apiResponse = await BApi.myinfo2(userCookies)
+            if (apiResponse.code === -400) {
                 return {
-                    code: 0,
-                    msg: '请求异常,跳过检查'
+                    code: -1,
+                    msg: '账号cookie已过期'
                 }
             }
-            if (apiResponse.data?.pfs?.profile?.jointime) {
+            if (apiResponse.code === 0) {
                 return {
                     code: 0,
                     msg: '账号cookie有效'
                 }
             }
             return {
-                code: -1,
-                msg: '账号cookie已过期'
+                code: 0,
+                msg: '请求异常,跳过检查'
             }
         } catch (error) {
             return {
