@@ -1,7 +1,7 @@
 import configs from '../model/Config.js';
 import fs from 'fs'
 import path from 'path'
-import { MakButton as Make, Packet, loader as PluginLoader} from "#model"
+import { Packet, loader as PluginLoader} from "#model"
 if (!global.Packet) global.Packet = Packet
 let QQBotconfig = null
 /**
@@ -72,14 +72,12 @@ const checkAdapters = async () => {
     const Napcat = Bot?.adapter?.find(adapter => adapter.name === 'OneBotv11')
     let QQBot = Bot?.adapter?.find(adapter => adapter.version === 'qq-group-bot v11.45.14')
     if (QQBotconfig) QQBot = Bot?.adapter?.find(adapter => adapter.name === 'QQBot')
-    const ICQQ = Bot?.adapter?.find(adapter => adapter.name === 'ICQQ')
     const setupNapcat = (adapter) => {
         adapter.makeMsg = async function(msg) {
             if (!Array.isArray(msg))
                 msg = [msg]
             const msgs = []
             const forward = []
-            const buttons = []
             const longmsg = []
             for (let i of msg) {
                 if (typeof i !== "object")
@@ -105,9 +103,6 @@ const checkAdapters = async () => {
                     case "reply":
                         i.data.id = String(i.data.id)
                         break
-                    case "button":
-                        buttons.push(i)
-                        continue
                     case "long_msg":
                         longmsg.push(i.data.resid)
                         continue
@@ -127,7 +122,7 @@ const checkAdapters = async () => {
 
                 msgs.push(i)
             }
-            return [msgs, forward, buttons, longmsg]
+            return [msgs, forward, longmsg]
         }
 
         adapter.sendFriendMsg = async function(data, msg) {
@@ -138,7 +133,7 @@ const checkAdapters = async () => {
                   user_id: data.user_id,
                   message,
                 })
-              }, msg => this.sendFriendForwardMsg(data, msg), msg => this.sendButton(data, msg), msg => this.sendlongmsg(data, msg))
+              }, msg => this.sendFriendForwardMsg(data, msg), msg => this.sendlongmsg(data, msg))
         }
 
         adapter.sendGroupMsg = async function(data, msg) {
@@ -149,7 +144,7 @@ const checkAdapters = async () => {
                   group_id: data.group_id,
                   message,
                 })
-              }, msg => this.sendGroupForwardMsg(data, msg), msg => this.sendButton(data, msg), msg => this.sendlongmsg(data, msg))
+              }, msg => this.sendGroupForwardMsg(data, msg), msg => this.sendlongmsg(data, msg))
         }
 
         adapter.sendlongmsg = async function(data, longmsg) {
@@ -165,29 +160,8 @@ const checkAdapters = async () => {
              return ret
         }
 
-        adapter.sendButton = async function(data, buttons) {
-           if(data.isGroup) {
-             Bot.makeLog("info", `发送群聊按钮消息：${this.makeLog(buttons)}`, `${data.self_id} => ${data.group_id}`, true)
-           } else {
-             Bot.makeLog("info", `发送私聊按钮消息：${this.makeLog(buttons)}`, `${data.self_id} => ${data.user_id}`, true)
-           }
-           const buttonData = []
-           buttons.forEach(button => {
-               if (Array.isArray(button.data)) {
-                   buttonData.push(...button.data)
-               } else {
-                   buttonData.push(button.data)
-               }
-           })
-           const raw = {
-               rows: Make.makeButtons(buttonData)
-           }
-           const packet = Make.button(raw)
-           return Packet.Elem(data, packet)
-        }
-
-        adapter.sendMsg = async function(msg, send, sendForwardMsg, sendButton, sendlongmsg) {
-            const [message, forward, buttons, longmsg] = await this.makeMsg(msg)
+        adapter.sendMsg = async function(msg, send, sendForwardMsg, sendlongmsg) {
+            const [message, forward, longmsg] = await this.makeMsg(msg)
             const ret = []
             if (forward.length) {
                 const data = await sendForwardMsg(forward)
@@ -200,24 +174,8 @@ const checkAdapters = async () => {
             if (message.length)
                 ret.push(await send(message))
 
-            if (buttons.length) {
-                const Z = await sendButton(buttons)
-                /*
-                if (Array.isArray(Z))
-                    ret.push(...Z)
-                else
-                    ret.push(Z)
-                */
-            }
-
             if (longmsg.length) {
-                const Z = await sendlongmsg(longmsg)
-                /*
-                if (Array.isArray(Z))
-                    ret.push(...Z)
-                else
-                    ret.push(Z)
-                */
+                await sendlongmsg(longmsg)
             }
             if (ret.length === 1) return ret[0]
 
@@ -232,105 +190,6 @@ const checkAdapters = async () => {
         }
     }
 
-    const setupICQQ = (adapter) => {
-        adapter.makeButtons = function(id, pick, button_square, forward) {
-            const msgs = [];
-            const random = Math.floor(Math.random() * 2)
-            const validTypes = (configs.buttonType || [])
-                .map(item => Number(item))
-                .filter(num => !isNaN(num) && Number.isInteger(num));
-            let typeIndex = 0;
-            if (validTypes.length > 0) {
-                typeIndex = Math.floor(Math.random() * validTypes.length);
-            }
-            for (const button_row of button_square) {
-                const buttons = [];
-                for (const button of button_row) {
-                    let style
-                    if (validTypes.length > 0 && configs.sendbutton) {
-                        style = validTypes[typeIndex]
-                        typeIndex = (typeIndex + 1) % validTypes.length
-                    } else style = (random + msgs.length + buttons.length) % 2
-                    const processedButton = this.makeButton(id, pick, button, style, forward)
-                    if (processedButton) {
-                        buttons.push(processedButton)
-                    }
-                }
-                if (buttons.length > 0) {
-                    msgs.push({
-                        buttons
-                    })
-                }
-            }
-            return msgs
-        }
-        adapter.sendMsg = async function(id, pick, msg, ...args) {
-            const rets = {
-                message_id: [],
-                data: [],
-                error: []
-            }
-            try {
-                const processMessages = async () => {
-                    const processed = {
-                        buttonMsgs: [],
-                        normalMsgs: [],
-                        rawMsgs: Array.isArray(msg) ? [...msg] : [msg]
-                    }
-                    for (const item of processed.rawMsgs) {
-                        const type = item?.type;
-                        if (type === 'button') {
-                            processed.buttonMsgs.push({
-                                type: "button",
-                                appid: this.markdown_appid,
-                                content: {
-                                    rows: this.makeButtons(id, pick, item.data)
-                                },
-                            })
-                        } else {
-                            processed.normalMsgs.push(item);
-                        }
-                    }
-                    let normalMsgs = await this.makeMsg(id, pick, processed.normalMsgs);
-                    if (normalMsgs.length === 0) {
-                        return {
-                            messages: processed.buttonMsgs,
-                        }
-                    }
-                    if (Array.isArray(normalMsgs) && normalMsgs.length > 0 && Array.isArray(normalMsgs[0]))
-                        normalMsgs = normalMsgs[0]
-
-                    return {
-                        messages: configs.sendbutton ? [[...normalMsgs], ...processed.buttonMsgs] : normalMsgs,
-                    }
-                }
-                let { messages } = await processMessages()
-                const sendMsg = async () => {
-                    for (const i of messages) try {
-                        Bot.makeLog("debug", ["发送消息", i], id)
-                        const ret = await pick.sendMsg(i, ...args)
-                        Bot.makeLog("debug", ["发送消息返回", ret], id)
-                        rets.data.push(ret)
-                        if (ret.message_id)
-                            rets.message_id.push(ret.message_id)
-                    } catch (err) {
-                        rets.error.push(err)
-                        return false
-                    }
-                }
-                if (await sendMsg() === false) {
-                    messages = await this.makeMsg(id, pick,
-                        [await Bot.makeForwardMsg([{ message: messages?.[0] }])])
-                    await sendMsg()
-                }
-                return rets.data.length === 1 ? rets.data[0] : rets
-            } catch (error) {
-                Bot.makeLog("error", ["消息发送错误", msg, error], id)
-                rets.error.push(error)
-                return rets
-            }
-        }
-    }
     const setupQQBot = (adapter) => {
         adapter.makeMsg = async function(data, msg) {
             const sendType = ['audio', 'image', 'video', 'file']
@@ -483,10 +342,9 @@ const checkAdapters = async () => {
     }
     const handleAdapters = () => {
         if (QQBot) setupQQBot(QQBot)
-        if (ICQQ && configs.sendbutton) setupICQQ(ICQQ)
-        if (Napcat && configs.sendbutton) setupNapcat(Napcat)
+        if (Napcat) setupNapcat(Napcat)
     }
-    if (QQBot && ICQQ && Napcat) {
+    if (QQBot && Napcat) {
         handleAdapters()
         return
     }
@@ -498,9 +356,9 @@ const checkAdapters = async () => {
     await new Promise(resolve => setTimeout(resolve, delay));
     await checkAdapters()
 }
-if (QQBotconfig && configs.QQBotsendlink || configs.sendbutton) checkAdapters()
+if (QQBotconfig && configs.QQBotsendlink) checkAdapters()
 Bot.on('message', async () => {
-if (QQBotconfig && configs.QQBotsendlink || configs.sendbutton) checkAdapters()
+if (QQBotconfig && configs.QQBotsendlink) checkAdapters()
 })
 const isTRSS = Array.isArray(Bot.uin)
 if (isTRSS && (configs.Napsendtext || configs.ICQQsendfacetext)) {

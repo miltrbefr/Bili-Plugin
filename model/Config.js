@@ -99,8 +99,6 @@ class Config {
                 whoisMyWifecacheTime: 3600,
                 whoisMyWifemaxMembers: 5,
                 Authorization: 'Bearer <access_token>',
-                sendbutton: true,
-                buttonType: ['0','1','3','4'],
                 QQBotsendlink: true,
                 Napsendtext: false,
                 ICQQsendfacetext: false,
@@ -138,8 +136,6 @@ class Config {
                 whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
                 Authorization: currentConfig?.Authorization || 'Bearer <access_token>',
-                sendbutton: currentConfig?.sendbutton || true,
-                buttonType: currentConfig?.buttonType || ['0','1','3','4'],
                 QQBotsendlink: currentConfig?.QQBotsendlink || true,
                 Napsendtext: currentConfig?.Napsendtext || false,
                 ICQQsendfacetext: currentConfig?.ICQQsendfacetext || false,
@@ -184,21 +180,12 @@ class Config {
         if (!this.cache) this.loadConfig()
         return this.cache?.Napsendtext
     }
-
-    get buttonType() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.buttonType
-    }
     
     get QQBotsendlink() {
         if (!this.cache) this.loadConfig();
         return this.cache?.QQBotsendlink
     }
     
-    get sendbutton() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.sendbutton
-    }
     get proxyAddress() {
         if (!this.cache) this.loadConfig();
         return this.cache?.proxyAddress
