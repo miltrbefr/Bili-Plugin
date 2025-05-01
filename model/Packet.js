@@ -16,11 +16,13 @@ const gunzip = promisify(_gunzip)
 
 const RandomUInt = () => crypto.randomBytes(4).readUInt32BE()
 
-BigInt.prototype.toJSON = function() {
-  return this.toString()
-}
-
 export const Proto = pb
+
+export const replacer = (key, value) => {
+  if (typeof value === 'bigint') return Number(value) >= Number.MAX_SAFE_INTEGER ? value.toString() : Number(value)
+  else if (Buffer.isBuffer(value)) return `hex->${bytesToHex(value)}`
+  else return value
+}
 
 export const encode = (json) => {
   return pb.encode(processJSON(json))
@@ -43,13 +45,44 @@ export const Send = async (
       let rsp = pb.decode(req.data)
       if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
       return rsp
-    } else if (e.bot?.adapter?.name === 'ICQQ') {
+    } else {
       ret = Array.from(data)
       const payload = await e.bot.sdk.sendUni(cmd, ret)
       const rsp = pb.decode(payload)
       if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
       return rsp
     }
+  } catch (error) {
+    logger.error(`sendMessage failed: ${error.message}`, error)
+  }
+}
+
+export const Elem = async (
+  e,
+  content
+) => {
+  try {
+    const packet = {
+      "1": {
+        [e.isGroup ? "2" : "1"]: {
+          "1": e.isGroup ? e.group_id : e.user_id
+        }
+      },
+      "2": {
+        "1": 1,
+        "2": 0,
+        "3": 0
+      },
+      "3": {
+        "1": {
+          "2": typeof content === 'object' ? content : JSON.parse(content)
+        }
+      },
+      "4": RandomUInt(),
+      "5": RandomUInt()
+    }
+
+    return Send(e, 'MessageSvc.PbSendMsg', packet)
   } catch (error) {
     logger.error(`sendMessage failed: ${error.message}`, error)
   }
@@ -73,32 +106,6 @@ export const SendLong_msg = async (
       }
     }
     return Elem(e, elem)
-  } catch (error) {
-    logger.error(`sendMessage failed: ${error.message}`, error)
-  }
-}
-
-export const Elem = async (
-  e,
-  content
-) => {
-  try {
-    let packet = buildBasePbContent(e.isGroup ? e.group_id : e.user_id, e.isGroup)
-    const parsed = typeof content === 'object' ? content : JSON.parse(content)
-    const elements = Array.isArray(parsed) ? parsed : [parsed]
-
-    packet = {
-      ...packet,
-      "3": {
-        "1": {
-          "2": elements
-        }
-      },
-      "4": RandomUInt(),
-      "5": RandomUInt()
-    }
-
-    return Send(e, 'MessageSvc.PbSendMsg', packet)
   } catch (error) {
     logger.error(`sendMessage failed: ${error.message}`, error)
   }
@@ -146,7 +153,7 @@ export const sendLong = async (
       }
     }
   }
-  const compressedData = await gzip(encode(data))
+  const compressedData = await gzip(pb.encode(data))
   const target = e.isGroup ? BigInt(e.group_id) : e.user_id
 
   const packet = {
@@ -213,30 +220,10 @@ export const getMsg = async (
   return Send(e, 'trpc.msg.register_proxy.RegisterProxy.SsoGetGroupMsg', packet)
 }
 
-function buildBasePbContent(id, isGroupMsg) {
-  const base = {
-    "1": {
-      [isGroupMsg ? "2" : "1"]: isGroupMsg ? {
-        "1": id
-      } : {
-        "1": id
-      }
-    },
-    "2": {
-      "1": 1,
-      "2": 0,
-      "3": 0
-    },
-    "3": {
-      "1": {
-        "2": []
-      }
-    }
-  }
-  return base
-}
+// 仅用于方便用户手动输入pb时使用，一般不需要使用
+export const processJSON = (json) => _processJSON(typeof json === 'string' ? JSON.parse(json) : json)
 
-function processJSON(json, path = []) {
+function _processJSON(json, path = []){
   const result = {}
   if (Buffer.isBuffer(json) || json instanceof Uint8Array) {
     return json

@@ -81,7 +81,7 @@ class Protobuf {
                 value = decoded
               }
             } catch {
-              //value = 'hex->' + this.bytesToHex(value)
+              // do nothing
             }
           }
           break
@@ -110,12 +110,6 @@ class Protobuf {
     const bigint = (BigInt(long.high) << 32n) | (BigInt(long.low) & 0xffffffffn)
     const int = Number(bigint)
     return Number.isSafeInteger(int) ? int : bigint
-  }
-
-  bytesToHex(bytes) {
-    return Array.from(bytes)
-      .map(byte => byte.toString(16).padStart(2, '0'))
-      .join('');
   }
 }
 
