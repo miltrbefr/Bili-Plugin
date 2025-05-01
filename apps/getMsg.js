@@ -23,12 +23,16 @@ export class getMsg extends plugin {
       )
       const forwardNodes = []
       const msg = []
-      msg.push("pb(elem):")
-      for (const i of data["3"]["6"]["3"]["1"]["2"]) {
-        msg.push(JSON.stringify(i,  Packet.replacer, 2))
+      const target = data?.["3"]?.["6"]?.["3"]?.["1"]?.["2"]
+      if (target && Array.isArray(target)) {
+        msg.push("pb(elem):")
+        msg.push("可使用rjPacket.Elem(this.e, { } )进行发送pb消息")
+        for (const i of target) {
+          msg.push(JSON.stringify(i,Packet.replacer, 2))
+        }
       }
       msg.push("pb(raw):")
-      msg.push(JSON.stringify(data,  Packet.replacer, 2))
+      msg.push(JSON.stringify(data,Packet.replacer, 2))
       for (const i of msg) {
         forwardNodes.push({
             user_id: e.user_id,

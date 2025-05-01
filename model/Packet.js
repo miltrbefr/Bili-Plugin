@@ -257,7 +257,7 @@ function _processJSON(json, path = []){
           if (value.startsWith("hex->")) {
             const hexStr = value.slice("hex->".length)
             if (isHexString(hexStr)) {
-              result[numKey] = hexStringToByteArray(hexStr)
+              result[numKey] = Buffer.from(hexStr, "hex")
             } else {
               result[numKey] = value
             }
@@ -265,7 +265,7 @@ function _processJSON(json, path = []){
             currentPath.slice(-2).join(",") === "5,2" &&
             isHexString(value)
           ) {
-            result[numKey] = hexStringToByteArray(value)
+            result[numKey] = Buffer.from(value, "hex")
           } else {
             result[numKey] = value
           }
@@ -282,14 +282,4 @@ function _processJSON(json, path = []){
 
 function isHexString(s) {
   return s.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(s)
-}
-
-function hexStringToByteArray(s) {
-  return Buffer.from(s, "hex")
-}
-
-function bytesToHex(bytes) {
-  return Array.from(bytes)
-    .map(byte => byte.toString(16).padStart(2, '0'))
-    .join('');
 }
