@@ -201,23 +201,11 @@ const checkAdapters = async () => {
                 ret.push(await send(message))
 
             if (buttons.length) {
-                const Z = await sendButton(buttons)
-                /*
-                if (Array.isArray(Z))
-                    ret.push(...Z)
-                else
-                    ret.push(Z)
-                */
+               await sendButton(buttons)
             }
 
             if (longmsg.length) {
-                const Z = await sendlongmsg(longmsg)
-                /*
-                if (Array.isArray(Z))
-                    ret.push(...Z)
-                else
-                    ret.push(Z)
-                */
+               await sendlongmsg(longmsg)
             }
             if (ret.length === 1) return ret[0]
 
@@ -445,12 +433,7 @@ const checkAdapters = async () => {
                         }
                 }
                 if (i.type === 'text' && i.text) {
-                    let toQRCodeRegExp
-                    if (typeof config.toQRCode == 'boolean') {
-                        toQRCodeRegExp = config.toQRCode ? /(?<!\[[^\]]*\]\()(?:https?:\/\/)?[-\w]+(?:\.[-\w]+)+(?:[-\w.,@?^=%&:/~+#]*[-\w@?^=%&/~+#])?/g : false
-                    } else {
-                        toQRCodeRegExp = new RegExp(config.toQRCode, 'g')
-                    }
+                    let toQRCodeRegExp = /(?<!\[[^\]]*\]\()(?:https?:\/\/)?[-\w]+(?:\.[-\w]+)+(?:[-\w.,@?^=%&:/~+#]*[-\w@?^=%&/~+#])?/g
                     const match = i.text.match(toQRCodeRegExp)
                     if (match) {
                         for (const url of match) {
