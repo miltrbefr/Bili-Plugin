@@ -19,10 +19,16 @@ const RandomUInt = () => crypto.randomBytes(4).readUInt32BE()
 export const Proto = pb
 
 export const replacer = (key, value) => {
-  if (typeof value === 'bigint') return Number(value) >= Number.MAX_SAFE_INTEGER ? value.toString() : Number(value)
-  else if (Buffer.isBuffer(value)) return `hex->${bytesToHex(value)}`
-  else return value
-}
+  if (typeof value === 'bigint') {
+    return Number(value) >= Number.MAX_SAFE_INTEGER ? value.toString() : Number(value);
+  } else if (Buffer.isBuffer(value)) {
+    return `hex->${value.toString('hex')}`
+  } else if (value?.type === 'Buffer' && Array.isArray(value.data)) {
+    return `hex->${Buffer.from(value.data).toString('hex')}`
+  } else {
+    return value
+  }
+};
 
 export const encode = (json) => {
   return pb.encode(processJSON(json))
