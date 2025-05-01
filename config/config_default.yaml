@@ -54,6 +54,10 @@ whoisMyWifecacheTime: 3600
 whoisMyWifemaxMembers: 5
 #鉴权请求API需要
 Authorization: 'Bearer <access_token>'
+#是否直接发送按钮，仅支持TRSS && ICQQ && NapCat，仅9.1.50 ~9.1.65？&& 电脑 可见
+sendbutton: true
+#按钮类型，仅下面四种，不要自己乱写，可以自己删，发送消息的按钮由4个里面随机
+buttonType: ['0','1','3','4']
 #QQBot是否开启发送链接，必须使用小叶姐姐的适配器，神秘链接：https://gitee.com/xiaoye12123/Yunzai-QQBot-Plugin
 QQBotsendlink: true
 #是否开启Nap的娱乐功能，每条文本消息自带99+的回应
