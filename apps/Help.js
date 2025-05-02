@@ -61,6 +61,11 @@ export class Help extends plugin {
                         desc: '查询最近的节日'
                     },
                     {
+                        icon: 60,
+                        title: '看<语音/文件/视频>',
+                        desc: '群聊引用对应消息(支持Nap)'
+                    },
+                    {
                         icon: 6,
                         title: '进群多久了<@>',
                         desc: '看看他进群多久了'

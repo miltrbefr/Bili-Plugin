@@ -2,6 +2,7 @@ import _ from '../model/bili.js';
 export {_path,pluginName,pluginRoot,pluginResources,pluginApplications} from "./constant.js"
 export { default as MakButton } from "./MakButton.js"
 export  * as Packet  from "./Packet.js"
+export  * as Gfs  from "./Gfs.js"
 export { default as Bili } from "./bili.js"
 export { default as BAPI } from "./BAPI/BAPI.js"
 export { default as Config } from "./Config.js"
