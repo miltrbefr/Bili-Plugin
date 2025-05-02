@@ -66,6 +66,11 @@ export class Help extends plugin {
                         desc: '群聊引用对应消息(支持Nap)'
                     },
                     {
+                        icon: 50,
+                        title: 'get',
+                        desc: '群聊引用对应消息(支持Nap)'
+                    },
+                    {
                         icon: 6,
                         title: '进群多久了<@>',
                         desc: '看看他进群多久了'
