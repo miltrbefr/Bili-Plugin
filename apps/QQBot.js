@@ -141,6 +141,19 @@ const checkAdapters = async () => {
               }, msg => this.sendFriendForwardMsg(data, msg), msg => this.sendButton(data, msg), msg => this.sendlongmsg(data, msg))
         }
 
+        adapter.sendGroupSign = async function(data) {
+            Bot.makeLog("info", "群打卡", `${data.self_id} => ${data.group_id}`, true)
+            const body = {
+                2: {
+                    1: String(data.self_id),
+                    2: String(data.group_id),
+                    3: '9.0.90',
+                },
+            }
+            const rsp = await Packet.sendOidb(data, "OidbSvc.0xeb7_1", body)
+            return { result: rsp[3] & 0xffffffff }
+        }
+
         adapter.sendGroupMsg = async function(data, msg) {
             data.isGroup = true
             return this.sendMsg(msg, message => {
