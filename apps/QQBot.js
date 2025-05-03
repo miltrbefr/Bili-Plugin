@@ -154,6 +154,82 @@ const checkAdapters = async () => {
             return { result: rsp[3] & 0xffffffff }
         }
 
+        adapter.poke = async function(data,qq) {
+            Bot.makeLog("info", "发送群戳一戳", `${data.self_id} => ${data.group_id}`, true)
+            const body = {
+                1: qq,
+                2: data.group_id,
+            }
+            const rsp = await Packet.sendOidb(data, "OidbSvc.0xed3", body)
+            return rsp[3] === 0
+        }
+
+        adapter.pickGroup = function(data, group_id) {
+            if (typeof group_id === "string" && group_id.match("-")) {
+                const guild_id = group_id.split("-")
+                const i = {
+                  ...data.bot.gl.get(group_id),
+                  ...data,
+                  guild_id: guild_id[0],
+                  channel_id: guild_id[1],
+                }
+                return {
+                  ...i,
+                  sendMsg: this.sendGuildMsg.bind(this, i),
+                  getMsg: this.getMsg.bind(this, i),
+                  recallMsg: this.recallMsg.bind(this, i),
+                  getForwardMsg: this.getForwardMsg.bind(this, i),
+                  getInfo: this.getGuildInfo.bind(this, i),
+                  getChannelArray: this.getGuildChannelArray.bind(this, i),
+                  getChannelList: this.getGuildChannelList.bind(this, i),
+                  getChannelMap: this.getGuildChannelMap.bind(this, i),
+                  getMemberArray: this.getGuildMemberArray.bind(this, i),
+                  getMemberList: this.getGuildMemberList.bind(this, i),
+                  getMemberMap: this.getGuildMemberMap.bind(this, i),
+                  pickMember: this.pickMember.bind(this, i),
+                }
+              }
+          
+              const i = {
+                ...data.bot.gl.get(group_id),
+                ...data,
+                group_id,
+              }
+              return {
+                ...i,
+                sendMsg: this.sendGroupMsg.bind(this, i),
+                getMsg: this.getMsg.bind(this, i),
+                recallMsg: this.recallMsg.bind(this, i),
+                getForwardMsg: this.getForwardMsg.bind(this, i),
+                sendForwardMsg: this.sendGroupForwardMsg.bind(this, i),
+                sendFile: (file, name) => this.sendGroupFile(i, file, undefined, name),
+                getInfo: this.getGroupInfo.bind(this, i),
+                getAvatarUrl() { return this.avatar || `https://p.qlogo.cn/gh/${group_id}/${group_id}/0` },
+                getChatHistory: this.getGroupMsgHistory.bind(this, i),
+                getHonorInfo: this.getGroupHonorInfo.bind(this, i),
+                getEssence: this.getEssenceMsg.bind(this, i),
+                getMemberArray: this.getMemberArray.bind(this, i),
+                getMemberList: this.getMemberList.bind(this, i),
+                getMemberMap: this.getMemberMap.bind(this, i),
+                pickMember: this.pickMember.bind(this, i, group_id),
+                pokeMember: qq => this.poke(i,qq),
+                setName: this.setGroupName.bind(this, i),
+                setAvatar: this.setGroupAvatar.bind(this, i),
+                setAdmin: this.setGroupAdmin.bind(this, i),
+                setCard: this.setGroupCard.bind(this, i),
+                setTitle: this.setGroupTitle.bind(this, i),
+                sign: this.sendGroupSign.bind(this, i),
+                muteMember: this.setGroupBan.bind(this, i),
+                muteAll: this.setGroupWholeKick.bind(this, i),
+                kickMember: this.setGroupKick.bind(this, i),
+                quit: this.setGroupLeave.bind(this, i),
+                fs: this.getGroupFs(i),
+                get is_owner() { return data.bot.gml.get(group_id)?.get(data.self_id)?.role === "owner" },
+                get is_admin() { return data.bot.gml.get(group_id)?.get(data.self_id)?.role === "admin" || this.is_owner },
+              }
+        }
+
+
         adapter.sendGroupMsg = async function(data, msg) {
             data.isGroup = true
             return this.sendMsg(msg, message => {
