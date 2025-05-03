@@ -76,6 +76,11 @@ export class Help extends plugin {
                         desc: '看看他进群多久了'
                     },
                     {
+                        icon: 30,
+                        title: '刷屏<数字>',
+                        desc: '群聊引用对应消息(支持Nap)'
+                    },
+                    {
                         icon: 5,
                         title: '报时推送(添加/删除)群',
                         desc: '添加群到报时推送列表'
