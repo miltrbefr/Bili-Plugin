@@ -71,6 +71,11 @@ export class Help extends plugin {
                         desc: '群聊引用对应消息(支持Nap)'
                     },
                     {
+                        icon: 35,
+                        title: '全体假禁',
+                        desc: '管理员权限(支持Nap)'
+                    },
+                    {
                         icon: 6,
                         title: '进群多久了<@>',
                         desc: '看看他进群多久了'
