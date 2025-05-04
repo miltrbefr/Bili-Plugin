@@ -148,6 +148,52 @@ const checkAdapters = async () => {
             })
         }
 
+        adapter.searchSameGroup = async function(data, qq = data.user_id) {
+            Bot.makeLog("info", "查找机器人与这个人的共群", `${data.self_id} => ${qq}`, true)
+            let body = {
+                "1": 3316,
+                "2": 0,
+                "3": 0,
+                "4": {
+                    "1": data.self_id,
+                    "2": qq,
+                    "4": 1,
+                    "5": [
+                        {
+                            "3": {
+                                "1": data.self_id,
+                                "2": qq,
+                            },
+                            "5": 3436,
+                        },
+                        {
+                            "3": {
+                                "1": {
+                                    "1": {
+                                        "6": `${qq}`,
+                                    },
+                                    "2": 1,
+                                },
+                            },
+                            "5": 3460,
+                        },
+                    ],
+                    "6": 0,
+                },
+                "6": "android 8.9.28",
+            }
+            let res = await Packet.Send(data,"OidbSvc.0xcf4", body)
+            if (!res[4][12][1]) {
+                return [];
+            }
+            return res[4][12][1].map((item) => {
+                return {
+                    groupName: item["3"],
+                    Group_Id: item["1"],
+                };
+            })
+        }
+
         adapter.pickFriend = function(data,  user_id) {
             const i = {
                 ...data.bot.fl.get(user_id),
@@ -164,6 +210,7 @@ const checkAdapters = async () => {
                 sendFile: this.sendFriendFile.bind(this, i),
                 getInfo: this.getFriendInfo.bind(this, i),
                 poke: self  => this.pokeFriend(i,self),
+                searchSameGroup: qq  => this.searchSameGroup(i,qq),
                 getAvatarUrl() { return this.avatar || `https://q.qlogo.cn/g?b=qq&s=0&nk=${user_id}` },
                 getChatHistory: this.getFriendMsgHistory.bind(this, i),
                 thumbUp: this.sendLike.bind(this, i),
