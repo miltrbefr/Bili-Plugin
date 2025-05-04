@@ -141,6 +141,36 @@ const checkAdapters = async () => {
               }, msg => this.sendFriendForwardMsg(data, msg), msg => this.sendButton(data, msg), msg => this.sendlongmsg(data, msg))
         }
 
+        adapter.pokeFriend = async function(data, self = false) {
+            Bot.makeLog("info", "发送私聊戳一戳", `${data.self_id} => ${data.user_id}`, true)
+            return data.bot.sendApi("send_poke", {
+                user_id: self ? data.self_id : data.user_id,
+            })
+        }
+
+        adapter.pickFriend = function(data,  user_id) {
+            const i = {
+                ...data.bot.fl.get(user_id),
+                ...data,
+                user_id,
+              }
+              return {
+                ...i,
+                sendMsg: this.sendFriendMsg.bind(this, i),
+                getMsg: this.getMsg.bind(this, i),
+                recallMsg: this.recallMsg.bind(this, i),
+                getForwardMsg: this.getForwardMsg.bind(this, i),
+                sendForwardMsg: this.sendFriendForwardMsg.bind(this, i),
+                sendFile: this.sendFriendFile.bind(this, i),
+                getInfo: this.getFriendInfo.bind(this, i),
+                poke: self  => this.pokeFriend(i,self),
+                getAvatarUrl() { return this.avatar || `https://q.qlogo.cn/g?b=qq&s=0&nk=${user_id}` },
+                getChatHistory: this.getFriendMsgHistory.bind(this, i),
+                thumbUp: this.sendLike.bind(this, i),
+                delete: this.deleteFriend.bind(this, i),
+              }
+        }
+
         adapter.sendGroupSign = async function(data) {
             Bot.makeLog("info", "群打卡", `${data.self_id} => ${data.group_id}`, true)
             const body = {
