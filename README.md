@@ -91,8 +91,8 @@ pnpm install --filter=bili-plugin
 1. QQ: 1514664085
 2. QQ群: 470225982
 
-## [爱发电](https://afdian.com/a/ziyibots)
+## 赞助
 
 <details>
-<summary>爱发电 以及 感谢投喂 </summary>
-<img width="365px" height="450px" src="resources/imgs/afdian.jpg">
+<summary>赞赏码 以及 感谢投喂 </summary>
+<img width="450px" height="450px" src="resources/imgs/zanzhu.jpg">
