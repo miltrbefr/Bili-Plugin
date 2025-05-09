@@ -44,11 +44,11 @@ export const Send = async (
 ) => {
     try {
         const bot = isQQ ? Bot[e] : e.bot;
-        
+
         if (!isJce) {
             const data = encode(typeof content === 'object' ? content : JSON.parse(content));
             let ret;
-            
+
             if (bot?.adapter?.name === 'OneBotv11') {
                 ret = Buffer.from(data).toString("hex");
                 const req = await bot.sendApi('send_packet', {
@@ -72,14 +72,25 @@ export const Send = async (
         } else {
             let payload;
             if (bot?.adapter?.name === 'OneBotv11') {
-                let body = Buffer.from(content, 'base64').toString("hex");
+                let body
+                if (/^[0-9a-fA-F]+$/.test(content)) {
+                    body = content
+                } else {
+                    body = Buffer.from(content, 'base64').toString("hex");
+                }
                 const req = await bot.sendApi('send_packet', {
                     cmd: cmd,
                     data: body
                 });
                 payload = Buffer.from(req.data, 'hex');
             } else {
-                payload = await bot.sdk.sendUni(cmd, content);
+                let body
+                if (/^[0-9a-fA-F]+$/.test(content)) {
+                    body = Buffer.from(content, 'hex');
+                } else {
+                    body = content
+                }
+                payload = await bot.sdk.sendUni(cmd, body);
             }
             return payload ? jce.decodeWrapper(payload) : null;
         }
@@ -97,18 +108,19 @@ export const sendOidb = async (
     try {
         const bot = isQQ ? Bot[e] : e.bot;
         const sp = cmd
-        .replace("OidbSvc.", "")
-        .replace("oidb_", "")
-        .split("_");
-    const type1 = parseInt(sp[0], 16), type2 = parseInt(sp[1]);
-    body = {
-        1: type1,
-        2: isNaN(type2) ? 1 : type2,
-        3: 0,
-        4: body,
-        6: "android " + (bot?.apk?.ver || '9.0.90'),
-    }
-    return Send(e, cmd, body, false, isQQ)
+            .replace("OidbSvc.", "")
+            .replace("oidb_", "")
+            .split("_");
+        const type1 = parseInt(sp[0], 16),
+            type2 = parseInt(sp[1]);
+        body = {
+            1: type1,
+            2: isNaN(type2) ? 1 : type2,
+            3: 0,
+            4: body,
+            6: "android " + (bot?.apk?.ver || '9.0.90'),
+        }
+        return Send(e, cmd, body, false, isQQ)
     } catch (error) {
         logger.error(`sendMessage failed: ${error.message}`, error)
     }
@@ -121,7 +133,7 @@ export const sendOidbSvcTrpcTcp = async (
     isQQ = false
 ) => {
     try {
-         const bot = isQQ ? Bot[e] : e.bot;
+        const bot = isQQ ? Bot[e] : e.bot;
         let type1, type2;
         if (Array.isArray(cmd) && cmd.length > 2) {
             (type1 = cmd[1]), (type2 = cmd[2]);
@@ -134,11 +146,11 @@ export const sendOidbSvcTrpcTcp = async (
             (type1 = parseInt(sp[0], 16)), (type2 = parseInt(sp[1]));
         }
         const _body = {
-          1: type1,
-          2: type2,
-          4: body,
-          6: "android " + (bot?.apk?.ver || '9.0.90'),
-      }
+            1: type1,
+            2: type2,
+            4: body,
+            6: "android " + (bot?.apk?.ver || '9.0.90'),
+        }
         const rsp = await Send(e, cmd, _body, false, isQQ)
         if (rsp[3] === 0)
             return rsp[4]

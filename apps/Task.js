@@ -126,11 +126,11 @@ export class Bilitask extends plugin {
         let QQ = []
         for (let i of bots) {
             if (Bot[i]?.adapter?.id === 'QQ') {
-                QQ.push(i)
+                QQ.push(Number(i))
                 continue
             }
             if (!Bot[i].adapter) {
-                QQ.push(Bot.uin)
+                QQ.push(Number(Bot.uin))
                 break
             }
         }
@@ -141,7 +141,7 @@ export class Bilitask extends plugin {
                     if (!Bot[qq].fl.has(key)) await Packet.sendOidbSvcTrpcTcp(qq, "OidbSvcTrpcTcp.0x9078_1", {
                             "1": key,
                             "2": value
-                        }, false, true)
+                        }, true)
                         await Bot[qq].pickFriend(key).sendMsg('菜单')
                     } else {
                     if (!Bot[qq].fl.has(key)) await Bot[qq].sendOidbSvcTrpcTcp("OidbSvcTrpcTcp.0x9078_1", {
