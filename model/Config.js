@@ -120,6 +120,7 @@ class Config {
                 cron: currentConfig?.cron || this.generateCronExpression(),
                 livecron: currentConfig?.livecron || this.generateCronlive(),
                 QQDaily: currentConfig?.QQDaily || this.generateCronluckyword() || this.generateCronExpression(),
+                Autocron: currentConfig?.Autocron || this.generateCronluckyword() || this.generateCronExpression(),
                 luckywordcron: currentConfig?.luckywordcron || this.generateCronluckyword(),
                 festivalpush: currentConfig?.festivalpush || this.generateCronfestival(),
                 yiyan: currentConfig?.yiyan || "http://113.44.131.92:3333/text?wb=yy&type=text",

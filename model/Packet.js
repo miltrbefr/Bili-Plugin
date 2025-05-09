@@ -1,4 +1,5 @@
 import pb from "./protobuf/index.js"
+import * as jce from './Jce/index.js';
 import {
     Buffer
 } from 'buffer'
@@ -38,10 +39,13 @@ export const Send = async (
     e,
     cmd,
     content,
+    isJce = false,
     isQQ = false
 ) => {
     try {
         const bot = isQQ ? Bot[e] : e.bot;
+        
+        if (!isJce) {
             const data = encode(typeof content === 'object' ? content : JSON.parse(content));
             let ret;
             
@@ -65,6 +69,20 @@ export const Send = async (
                 }
                 return rsp;
             }
+        } else {
+            let payload;
+            if (bot?.adapter?.name === 'OneBotv11') {
+                let body = Buffer.from(content, 'base64').toString("hex");
+                const req = await bot.sendApi('send_packet', {
+                    cmd: cmd,
+                    data: body
+                });
+                payload = Buffer.from(req.data, 'hex');
+            } else {
+                payload = await bot.sdk.sendUni(cmd, content);
+            }
+            return payload ? jce.decodeWrapper(payload) : null;
+        }
     } catch (error) {
         logger.error(`sendMessage failed: ${error.message}`, error);
     }
@@ -88,9 +106,9 @@ export const sendOidb = async (
         2: isNaN(type2) ? 1 : type2,
         3: 0,
         4: body,
-        6: "android " + (bot.apk?.ver || '9.0.90'),
+        6: "android " + (bot?.apk?.ver || '9.0.90'),
     }
-    return Send(e, cmd, body, isQQ)
+    return Send(e, cmd, body, false, isQQ)
     } catch (error) {
         logger.error(`sendMessage failed: ${error.message}`, error)
     }
@@ -103,7 +121,7 @@ export const sendOidbSvcTrpcTcp = async (
     isQQ = false
 ) => {
     try {
-        const bot = isQQ ? Bot[e] : e.bot;
+         const bot = isQQ ? Bot[e] : e.bot;
         let type1, type2;
         if (Array.isArray(cmd) && cmd.length > 2) {
             (type1 = cmd[1]), (type2 = cmd[2]);
@@ -121,7 +139,7 @@ export const sendOidbSvcTrpcTcp = async (
           4: body,
           6: "android " + (bot?.apk?.ver || '9.0.90'),
       }
-        const rsp = await Send(e, cmd, _body, isQQ)
+        const rsp = await Send(e, cmd, _body, false, isQQ)
         if (rsp[3] === 0)
             return rsp[4]
     } catch (error) {
