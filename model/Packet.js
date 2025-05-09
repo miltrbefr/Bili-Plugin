@@ -37,38 +37,47 @@ export const encode = (json) => {
 export const Send = async (
     e,
     cmd,
-    content
+    content,
+    isQQ = false
 ) => {
     try {
-        const data = encode(typeof content === 'object' ? content : JSON.parse(content))
-        let ret
-        if (e.bot?.adapter?.name === 'OneBotv11') {
-            ret = Buffer.from(data).toString("hex")
-            const req = await e.bot.sendApi('send_packet', {
-                cmd: cmd,
-                data: ret
-            })
-            let rsp = pb.decode(req.data)
-            if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
-            return rsp
-        } else {
-            ret = Array.from(data)
-            const payload = await e.bot.sdk.sendUni(cmd, ret)
-            const rsp = pb.decode(payload)
-            if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') logger.error(`消息发送失败，请检查您的消息是否正确！`)
-            return rsp
-        }
+        const bot = isQQ ? Bot[e] : e.bot;
+            const data = encode(typeof content === 'object' ? content : JSON.parse(content));
+            let ret;
+            
+            if (bot?.adapter?.name === 'OneBotv11') {
+                ret = Buffer.from(data).toString("hex");
+                const req = await bot.sendApi('send_packet', {
+                    cmd: cmd,
+                    data: ret
+                });
+                let rsp = pb.decode(req.data);
+                if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') {
+                    logger.error(`消息发送失败，请检查您的消息是否正确！`);
+                }
+                return rsp;
+            } else {
+                ret = Array.from(data);
+                const payload = await bot.sdk.sendUni(cmd, ret);
+                let rsp = pb.decode(payload);
+                if (rsp[1] !== 0 && cmd === 'MessageSvc.PbSendMsg') {
+                    logger.error(`消息发送失败，请检查您的消息是否正确！`);
+                }
+                return rsp;
+            }
     } catch (error) {
-        logger.error(`sendMessage failed: ${error.message}`, error)
+        logger.error(`sendMessage failed: ${error.message}`, error);
     }
 }
 
 export const sendOidb = async (
     e,
     cmd,
-    body
+    body,
+    isQQ = false
 ) => {
     try {
+        const bot = isQQ ? Bot[e] : e.bot;
         const sp = cmd
         .replace("OidbSvc.", "")
         .replace("oidb_", "")
@@ -79,9 +88,9 @@ export const sendOidb = async (
         2: isNaN(type2) ? 1 : type2,
         3: 0,
         4: body,
-        6: "android " + (e.bot?.apk?.ver || '9.0.90'),
+        6: "android " + (bot.apk?.ver || '9.0.90'),
     }
-    return Send(e, cmd, body)
+    return Send(e, cmd, body, isQQ)
     } catch (error) {
         logger.error(`sendMessage failed: ${error.message}`, error)
     }
@@ -90,9 +99,11 @@ export const sendOidb = async (
 export const sendOidbSvcTrpcTcp = async (
     e,
     cmd,
-    body
+    body,
+    isQQ = false
 ) => {
     try {
+        const bot = isQQ ? Bot[e] : e.bot;
         let type1, type2;
         if (Array.isArray(cmd) && cmd.length > 2) {
             (type1 = cmd[1]), (type2 = cmd[2]);
@@ -108,9 +119,9 @@ export const sendOidbSvcTrpcTcp = async (
           1: type1,
           2: type2,
           4: body,
-          6: "android " + (e.bot?.apk?.ver || '9.0.90'),
+          6: "android " + (bot?.apk?.ver || '9.0.90'),
       }
-        const rsp = await Send(e, cmd, _body)
+        const rsp = await Send(e, cmd, _body, isQQ)
         if (rsp[3] === 0)
             return rsp[4]
     } catch (error) {

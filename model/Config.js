@@ -80,6 +80,7 @@ class Config {
                 cron: this.generateCronExpression(),
                 livecron: this.generateCronlive(),
                 QQDaily: this.generateCronluckyword() || this.generateCronExpression(),
+                Autocron: this.generateCronluckyword() || this.generateCronExpression(),
                 luckywordcron: this.generateCronluckyword(),
                 festivalpush: this.generateCronfestival(),
                 yiyan: "http://113.44.131.92:3333/text?wb=yy&type=text",
@@ -299,6 +300,11 @@ class Config {
     get luckywordcron() {
         if (!this.cache) this.loadConfig();
         return this.cache?.luckywordcron
+    }
+
+    get Autocron() {
+        if (!this.cache) this.loadConfig();
+        return this.cache?.Autocron;
     }
 
     get livecron() {

