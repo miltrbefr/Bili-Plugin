@@ -54,6 +54,8 @@ pnpm install --filter=bili-plugin
 > [!NOTE]
 >使用 `#B站功能` 获取完整帮助
 
+<img width="300px" height="500px" src="resources/imgs/help.jpg">
+
 | 分类         | 示例                          |
 |------------------|-----------------------------------|
 | 核心功能         | `B站登录` `我的B站`  `B站签到`  |
@@ -62,7 +64,6 @@ pnpm install --filter=bili-plugin
 | 视频帮助         | `快捷操作视频(点赞/收藏等)` `快捷关注UP` |
 | 小功能帮助         | `今日运势` `节日/报时推送`  `娶群友小游戏`    |
 
-<img width="300px" height="500px" src="resources/imgs/help.jpg">
 
 ---
 
