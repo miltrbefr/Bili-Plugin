@@ -62,9 +62,7 @@ pnpm install --filter=bili-plugin
 | 视频帮助         | `快捷操作视频(点赞/收藏等)` `快捷关注UP` |
 | 小功能帮助         | `今日运势` `节日/报时推送`  `娶群友小游戏`    |
 
-<details>
-<summary>菜单图片 </summary>
-<img width="1660px" height="2600px" src="resources/imgs/help.jpg">
+<img width="300px" height="500px" src="resources/imgs/help.jpg">
 
 ---
 
