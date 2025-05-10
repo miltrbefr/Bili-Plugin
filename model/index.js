@@ -3,6 +3,7 @@ export {_path,pluginName,pluginRoot,pluginResources,pluginApplications} from "./
 export { default as MakButton } from "./MakButton.js"
 export  * as Packet  from "./Packet.js"
 export  * as Gfs  from "./Gfs.js"
+export  * as jce  from "./Jce/index.js"
 export { default as Bili } from "./bili.js"
 export { default as BAPI } from "./BAPI/BAPI.js"
 export { default as Config } from "./Config.js"
