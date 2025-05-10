@@ -42,10 +42,6 @@ git clone --depth=1 https://github.com/miltrbefr/Bili-Plugin.git ./plugins/Bili-
 > ```
 > git clone --depth=1 https://gh.xiaohuanya.top/https://github.com/miltrbefr/Bili-Plugin.git ./plugins/Bili-Plugin/
 > ```
- - ~~Gitee 源（推荐国内用户）(已跑路)~~ 
-``` bash 
-git clone --depth=1 https://gitee.com/nennen-cn/Bili-Plugin.git ./plugins/Bili-Plugin/
-```
 
  - 安装依赖
 ``` bash 
@@ -64,7 +60,11 @@ pnpm install --filter=bili-plugin
 | 直播间功能        | `发送弹幕`  `监听直播间所有信息` |
 | Bot帮助         |  `日签打卡` `自动群幸运字符` `发送按钮` `官机发送链接`|
 | 视频帮助         | `快捷操作视频(点赞/收藏等)` `快捷关注UP` |
-| 小功能帮助         | `今日运势` `节日/报时推送`  `全插件功能统计`  `娶群友小游戏`    |
+| 小功能帮助         | `今日运势` `节日/报时推送`  `娶群友小游戏`    |
+
+<details>
+<summary>菜单图片 </summary>
+<img width="1660px" height="2600px" src="resources/imgs/help.jpg">
 
 ---
 
